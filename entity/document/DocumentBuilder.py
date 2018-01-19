@@ -8,7 +8,27 @@ class DocumentBuilder:
         pass
 
     @abstractmethod
-    def put(self, field, value, offset=None, length=None):
+    def put(self, field, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def put_float(self, field, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def put_byte(self, field, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def put_byte_array(self, field, value, offset=None, length=None):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def put_date(self, field, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def put_time(self, field, value):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
@@ -32,6 +52,10 @@ class DocumentBuilder:
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
+    def put_map(self, field, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
     def put_new_map(self, field):
         raise NotImplementedError("Should have implemented this")
 
@@ -44,11 +68,47 @@ class DocumentBuilder:
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
+    def put_document(self, field, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def put_value_obj(self, field, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
     def set_array_index(self, index):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
-    def add(self, value, offset=None, length=None):
+    def add(self, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def add_boolean(self, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def add_byte(self, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def add_long(self, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def add_float(self, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def add_byte_array(self, value, offset=None, length=None):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def add_document(self, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def add_value_obj(self, value):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod

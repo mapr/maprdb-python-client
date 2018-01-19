@@ -36,6 +36,58 @@ class Document:
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
+    def set_boolean(self, field_path, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def set_byte(self, field_path, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def set_long(self, field_path, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def set_float(self, field_path, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def set_decimal(self, field_path, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def set_time(self, field_path, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def set_date(self, field_path, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def set_timestamp(self, field_path, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def set_interval(self, field_path, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def set_byte_array(self, field_path, value, offset=None, length=None):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def set_map(self, field_path, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def set_document(self, field_path, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def set_value_obj(self, field_path, value):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
     def set_array(self, field_path, values):
         raise NotImplementedError("Should have implemented this")
 
@@ -57,10 +109,6 @@ class Document:
 
     @abstractmethod
     def get_byte(self, field_path):
-        raise NotImplementedError("Should have implemented this")
-
-    @abstractmethod
-    def get_short(self, field_path):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod

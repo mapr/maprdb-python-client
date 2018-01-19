@@ -28,15 +28,27 @@ class DocumentStore:
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
+    def find_by_id_value_obj(self, _id, field_paths=None, condition=None):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def find_by_id_string(self, _id, field_paths=None, condition=None):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
     def find_by_id(self, _id, field_paths=None, condition=None):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
-    def find(self, query=None, field_paths=None):
+    def find(self, query=None, field_paths=None, condition=None):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
-    def find_query(self, query=None, field_paths=None):
+    def find_query(self, query):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def find_query_string(self, query):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
@@ -44,23 +56,67 @@ class DocumentStore:
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
+    def insert_or_replace_document_stream(self, doc_stream, _id=None, field_as_key=None):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
     def update(self, _id, mutation):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
-    def delete(self, _id=None, doc=None, field_as_key=None, doc_stream=None):
+    def delete_by_id(self, _id):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
-    def insert(self, _id=None, doc=None, field_as_key=None, doc_stream=None):
+    def delete_document(self, doc, field_as_key=None):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
-    def insert(self, _id=None, doc=None, field_as_key=None, doc_stream=None):
+    def delete_document_stream(self, doc_stream, field_as_key=None):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def insert_document_with_id(self, _id, document):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def insert_document(self, document, field_as_key=None):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def insert_document_stream(self, document_stream, field_as_key=None):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def replace_document_with_id(self, _id, document):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def replace_document(self, document, field_as_key=None):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def replace_document_stream(self, document_stream, field_as_key=None):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
     def increment(self, _id, field, inc):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def increment_int(self, _id, field, inc):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def increment_float(self, _id, field, inc):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def increment_decimal(self, _id, field, inc):
+        raise NotImplementedError("Should have implemented this")
+
+    @abstractmethod
+    def increment_byte(self, _id, field, inc):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
