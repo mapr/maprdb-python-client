@@ -1,4 +1,5 @@
-import constants
+from entity.exceptions.UnsupportedConstructorException import UnsupportedConstructorException
+from entity.o_types import constants
 
 
 class OInterval:
@@ -20,16 +21,18 @@ class OInterval:
             self.__years = years
             total_days = long(((years * self.__APPROX_DAYS_IN_YEAR) + (months + self.__APPROX_DAYS_IN_MONTH) + days))
             self.__time_duration = constants.MILLISECONDS_PER_DAY * total_days + seconds * 1000 + milli_seconds
-        elif milli_seconds is not None:
+        elif milli_seconds is not None and years is None and months is None and days is None and seconds is None:
             self.__time_duration = long(milli_seconds)
             self.__milli_seconds = int(milli_seconds % 1000)
-            self.__seconds = int(milli_seconds / constants.MILLISECONDS_PER_DAY) / 1000
+            self.__seconds = int((milli_seconds % constants.MILLISECONDS_PER_DAY) / 1000)
             self.__days = int(milli_seconds / constants.MILLISECONDS_PER_DAY)
             self.__months = 0
             self.__years = 0
         elif iso8601DurationPattern is not None:
             # FIXME: parse the string as per ISO 8601 duration and time stamps format
             self.__init__(0, 0, 0, 0, 0)
+        else:
+            raise UnsupportedConstructorException("This params set is not supported for the OInterval init")
 
     @property
     def years(self):
@@ -60,11 +63,11 @@ class OInterval:
         return __result
 
     def __eq__(self, other):
-        if self == other:
+        if self is other:
             return True
         if other is None:
             return False
-        if not isinstance(other, self):
+        if not isinstance(self, type(other)):
             return False
         if self.time_duration != other.time_duration:
             return False

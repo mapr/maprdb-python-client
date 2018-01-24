@@ -69,9 +69,7 @@ class ValueImpl(Value):
     def get_interval(self):
         self.check_type(ValueType.INTERVAL)
         if self.obj_value is None:
-            # TODO implement OTimeStamp class
-            # self.obj_value = OInterval(self.json_value)
-            pass
+            self.obj_value = OInterval(self.json_value)
         return self.obj_value
 
     def get_list(self):

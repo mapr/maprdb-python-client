@@ -16,7 +16,7 @@ class Connection:
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
-    def new_document(self, json_string=None, json_map=None, bean=None):
+    def new_document(self, json_string=None, json_map=None, obj=None):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
