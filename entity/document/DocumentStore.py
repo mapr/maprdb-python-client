@@ -40,23 +40,11 @@ class DocumentStore:
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
-    def find(self, query=None, field_paths=None, condition=None):
+    def find(self, query=None, field_paths=None, condition=None, query_string=None):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
-    def find_query(self, query):
-        raise NotImplementedError("Should have implemented this")
-
-    @abstractmethod
-    def find_query_string(self, query):
-        raise NotImplementedError("Should have implemented this")
-
-    @abstractmethod
-    def insert_or_replace(self, doc, _id=None, field_as_key=None, doc_stream=None):
-        raise NotImplementedError("Should have implemented this")
-
-    @abstractmethod
-    def insert_or_replace_document_stream(self, doc_stream, _id=None, field_as_key=None):
+    def insert_or_replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
@@ -68,11 +56,7 @@ class DocumentStore:
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
-    def delete_document(self, doc, field_as_key=None):
-        raise NotImplementedError("Should have implemented this")
-
-    @abstractmethod
-    def delete_document_stream(self, doc_stream, field_as_key=None):
+    def delete_document(self, doc=None, field_as_key=None, doc_stream=None):
         raise NotImplementedError("Should have implemented this")
 
     @abstractmethod
