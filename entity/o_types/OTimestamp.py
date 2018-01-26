@@ -24,8 +24,10 @@ class OTimestamp:
 
     def __init__(self, year=None, month_of_year=None, day_of_month=None, hour_of_day=None, minute_of_hour=None,
                  second_of_minute=None, millis_of_second=None, date=None, millis_since_epoch=None):
-        if all([year, month_of_year, day_of_month, hour_of_day,
-                minute_of_hour, second_of_minute, millis_of_second]) is not None:
+        # if all([year, month_of_year, day_of_month, hour_of_day,
+        #         minute_of_hour, second_of_minute, millis_of_second]) is not None:
+        if (year is not None and month_of_year is not None and day_of_month is not None and hour_of_day is not None
+                and minute_of_hour is not None and second_of_minute is not None and millis_of_second is not None):
             self.__date_time = datetime.datetime(year=year, month=month_of_year, day=day_of_month,
                                                  hour=hour_of_day, minute=minute_of_hour, second=second_of_minute,
                                                  microsecond=millis_of_second * 1000)
@@ -34,7 +36,7 @@ class OTimestamp:
             self.__date_time = None
             self.__millis_since_epoch = millis_since_epoch
         elif date is not None:
-            if not isinstance(type(datetime.datetime), type(date)):
+            if not isinstance(type(date), type(datetime.datetime)):
                 raise TypeError
             self.__date_time = date
             self.__millis_since_epoch = (self.__date_time - self.__epoch).total_seconds() * 1000.0
@@ -77,7 +79,7 @@ class OTimestamp:
 
     # Create datetime object from millis since epoch
     def to_date(self):
-        return datetime.datetime.fromtimestamp(self.millis_since_epoch/1000.0)
+        return datetime.datetime.fromtimestamp(self.millis_since_epoch / 1000.0)
 
     # Returns the ISO8601 format timestamp string in UTC.
     def to_utc_str(self):
@@ -89,6 +91,10 @@ class OTimestamp:
 
     def to_str(self, pattern):
         return self.__get_date_time().strftime(pattern)
+
+    @staticmethod
+    def parse(date_time_str):
+        return OTimestamp(date=dateutil.parser.parse(date_time_str))
 
     def __str__(self):
         return self.to_utc_str()
@@ -111,7 +117,3 @@ class OTimestamp:
         if self.millis_since_epoch != other.millis_since_epoch:
             return False
         return True
-
-
-
-

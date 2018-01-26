@@ -8,23 +8,25 @@ class ODate:
     serial_version_uid = 0xaffa9a5dfe3ff863L
 
     __EPOCH_DATE = datetime.datetime(1970, 1, 1)
-    __START_OF_DAY = datetime.time(0, 0, 0)
+    __START_OF_DAY = datetime.time(hour=0, minute=0, second=0)
 
     def __init__(self, year=None, month=None, day_of_month=None, epoch=None, date=None, days_since_epoch=None):
         if all([year, month, day_of_month]) and epoch is None and date is None:
             self.__date = datetime.datetime(year, month, day_of_month)
+            self.__days_since_epoch = (self.__date - self.__EPOCH_DATE).days
         elif date is not None:
             if type(date) is not datetime.datetime:
                 raise TypeError("date should be datetime.date type or comparable to it")
             self.__date = date
+            self.__days_since_epoch = (self.__date - self.__EPOCH_DATE).days
         elif epoch is not None:
             self.__date = datetime.datetime.fromtimestamp(epoch)
+            self.__days_since_epoch = (self.__date - self.__EPOCH_DATE).days
         elif days_since_epoch is not None:
-            self.__days_since_epoch = day_of_month
+            self.__date = None
+            self.__days_since_epoch = days_since_epoch
         else:
             raise UnsupportedConstructorException
-
-        self.__days_since_epoch = (self.__date - self.__EPOCH_DATE).days
 
     @property
     def epoch_date(self):
@@ -33,10 +35,6 @@ class ODate:
     @property
     def start_of_day(self):
         return self.__START_OF_DAY
-
-    @property
-    def date(self):
-        return self.__date
 
     @property
     def days_since_epoch(self):
@@ -85,7 +83,7 @@ class ODate:
         return self.to_date_str()
 
     def __cmp__(self, other):
-        if type(other) is not self:
+        if not isinstance(self, type(other)):
             raise TypeError
         return self.days_since_epoch - other.days_since_epoch
 

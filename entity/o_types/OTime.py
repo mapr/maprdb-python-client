@@ -15,7 +15,8 @@ class OTime:
             self.__time = datetime.datetime.fromtimestamp(epoch).time()
             self.__millis_of_day = long((self.__time.hour * 60 * 60 + self.__time.second)
                                         * 1000 + self.__time.microsecond / 1000.0)
-        elif all([hour_of_day, minutes, seconds]) is not None:
+        # elif all([hour_of_day, minutes, seconds]) is not None:
+        elif hour_of_day is not None and minutes is not None and seconds is not None:
             if ms is None:
                 self.__time = datetime.time(hour=hour_of_day, minute=minutes, second=seconds, microsecond=0)
             else:
@@ -23,7 +24,7 @@ class OTime:
             self.__millis_of_day = long((self.__time.hour * 60 * 60 + self.__time.second)
                                         * 1000 + self.__time.microsecond / 1000.0)
         elif date is not None:
-            if not isinstance(type(date), datetime.datetime):
+            if not isinstance(type(date), type(datetime.datetime)):
                 raise TypeError
             self.__time = date.time()
             self.__millis_of_day = long((self.__time.hour * 60 * 60 + self.__time.second)
@@ -48,7 +49,7 @@ class OTime:
 
     @staticmethod
     def parse(time_str):
-        return OTime(date=dateutil.parser.parse("1970-01-01T"+time_str))
+        return OTime(date=dateutil.parser.parse("1970-01-01 " + time_str))
 
     @staticmethod
     def from_millis_of_day(millis_of_day):

@@ -1,5 +1,8 @@
 from Value import Value, ValueType
+from entity.o_types.ODate import ODate
 from entity.o_types.OInterval import OInterval
+from entity.o_types.OTime import OTime
+from entity.o_types.OTimestamp import OTimestamp
 
 
 class ValueImpl(Value):
@@ -52,8 +55,8 @@ class ValueImpl(Value):
     def get_date(self):
         self.check_type(ValueType.DATE)
         if self.obj_value is None:
-            # TODO implement ODate class
-            pass
+            self.obj_value = ODate.from_days_since_epoch(self.json_value)
+        return self.obj_value
 
     def get_map(self):
         self.check_type(ValueType.MAP)
@@ -91,8 +94,8 @@ class ValueImpl(Value):
     def get_time(self):
         self.check_type(ValueType.TIME)
         if self.obj_value is None:
-            # TODO implement OTime class
-            pass
+            self.obj_value = OTime.from_millis_of_day(millis_of_day=self.json_value)
+        return self.obj_value
 
     def get_long(self):
         switcher = {
@@ -129,8 +132,8 @@ class ValueImpl(Value):
     def get_timestamp(self):
         self.check_type(ValueType.TIMESTAMP)
         if self.obj_value is None:
-            # TODO implement OTimeStamp class
-            pass
+            self.obj_value = OTimestamp(millis_since_epoch=self.json_value)
+        return self.obj_value
 
     def get_decimal(self):
         # TODO check and implement get_decimal like java BigDecimal
