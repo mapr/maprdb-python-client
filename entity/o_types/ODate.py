@@ -56,12 +56,15 @@ class ODate:
             self.__date = self.__EPOCH_DATE + datetime.timedelta(self.__days_since_epoch)
         return self.__date
 
+    # Return the years of this datetime
     def get_year(self):
         return self.__get_date().year
 
+    # Return the month of this datetime
     def get_month(self):
         return self.__get_date().month
 
+    # Return the day of month of this datetime
     def get_day_of_month(self):
         return self.__get_date().day
 
@@ -74,8 +77,12 @@ class ODate:
     def to_string(self, pattern):
         return self.__get_date().strftime(pattern)
 
+    # return date with time set to 0
+    def to_date(self):
+        return datetime.datetime.combine(self.__get_date().date(), self.start_of_day)
+
     def __str__(self):
-        self.to_date_str()
+        return self.to_date_str()
 
     def __cmp__(self, other):
         if type(other) is not self:
