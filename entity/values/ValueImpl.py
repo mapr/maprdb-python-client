@@ -161,13 +161,22 @@ class ValueImpl(Value):
     def get_timestamp_as_long(self):
         return self.json_value
 
-    # TODO Implement method which convert int to byte
-    def int_to_byte(self, value):
-        pass
+    @staticmethod
+    def int_to_byte(value, length):
+        result = []
+        for i in range(0, length):
+            result.append(value >> (i * 8) & 0xff)
+        result.reverse()
 
-    # TODO Implement method which convert byte to int
-    def byte_to_int(self, value):
-        pass
+        return result
+
+    @staticmethod
+    def byte_to_int(value):
+        result = 0
+
+        for b in value:
+            result = result * 256 + int(b)
+        return result
 
     # TODO check get_binary and how we can implement it
 
