@@ -1,0 +1,2 @@
+class UnsupportedConstructorException(Exception):
+    pass
