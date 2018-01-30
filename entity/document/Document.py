@@ -4,9 +4,6 @@ from abc import ABCMeta, abstractmethod
 class Document:
     __metaclass__ = ABCMeta
 
-    def __init__(self):
-        pass
-
     @abstractmethod
     def set_id(self, _id):
         raise NotImplementedError("Should have implemented this")

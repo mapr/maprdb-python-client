@@ -1,93 +1,9 @@
 from abc import ABCMeta, abstractmethod
+from aenum import Enum
 
 
 class Value:
     __metaclass__ = ABCMeta
-
-    __TYPE_CODE_NULL = 1
-    __TYPE_CODE_BOOLEAN = 2
-    __TYPE_CODE_STRING = 3
-    __TYPE_CODE_BYTE = 4
-    __TYPE_CODE_INT = 5
-    __TYPE_CODE_LONG = 6
-    __TYPE_CODE_FLOAT = 7
-    __TYPE_CODE_DECIMAL = 8
-    __TYPE_CODE_DATE = 9
-    __TYPE_CODE_TIME = 10
-    __TYPE_CODE_TIMESTAMP = 11
-    __TYPE_CODE_INTERVAL = 12
-    __TYPE_CODE_BINARY = 13
-    __TYPE_CODE_MAP = 14
-    __TYPE_CODE_ARRAY = 15
-
-    @property
-    def type_code_boolean(self):
-        return self.__TYPE_CODE_BOOLEAN
-
-    @property
-    def type_code_null(self):
-        return self.__TYPE_CODE_NULL
-
-    @property
-    def type_code_string(self):
-        return self.__TYPE_CODE_STRING
-
-    @property
-    def type_code_byte(self):
-        return self.__TYPE_CODE_BYTE
-
-    @property
-    def type_code_int(self):
-        return self.__TYPE_CODE_INT
-
-    @property
-    def type_code_long(self):
-        return self.__TYPE_CODE_LONG
-
-    @property
-    def type_code_float(self):
-        return self.__TYPE_CODE_FLOAT
-
-    @property
-    def type_code_decimal(self):
-        return self.__TYPE_CODE_DECIMAL
-
-    @property
-    def type_code_date(self):
-        return self.__TYPE_CODE_DATE
-
-    @property
-    def type_code_time(self):
-        return self.__TYPE_CODE_TIME
-
-    @property
-    def type_code_timestamp(self):
-        return self.__TYPE_CODE_TIMESTAMP
-
-    @property
-    def type_code_interval(self):
-        return self.__TYPE_CODE_INTERVAL
-
-    @property
-    def type_code_binary(self):
-        return self.__TYPE_CODE_BINARY
-
-    @property
-    def type_code_map(self):
-        return self.__TYPE_CODE_MAP
-
-    @property
-    def type_code_array(self):
-        return self.__TYPE_CODE_ARRAY
-
-    # @staticmethod
-    # def is_scalar(value):
-    #     return value != Value.type_code_map and value != Value.type_code_array
-    #
-    # @staticmethod
-    # def is_numeric(value):
-    #     return Value.type_code_byte <= value <= Value.type_code_decimal
-
 
     @abstractmethod
     def get_type(self):
@@ -176,44 +92,66 @@ class Value:
 
 
 # TODO Python2 doesn't have enum. Impelement method for convert ValueType numeric field to string like 2 -> "BOOLEAN"
-class ValueType(object):
-    def __init__(self, value_type):
-        self.__value = value_type
+class ValueType(Enum):
+    # NULL = Value.type_code_null
+    NULL = 1
 
-    NULL = Value.type_code_null
+    # BOOLEAN = Value.type_code_boolean
+    BOOLEAN = 2
 
-    BOOLEAN = Value.type_code_boolean
+    # STRING = Value.type_code_string
+    STRING = 3
 
-    STRING = Value.type_code_string
+    # BYTE = Value.type_code_byte
+    BYTE = 4
 
-    BYTE = Value.type_code_byte
+    # INT = Value.type_code_int
+    INT = 5
 
-    INT = Value.type_code_int
+    # LONG = Value.type_code_long
+    LONG = 6
 
-    LONG = Value.type_code_long
+    # FLOAT = Value.type_code_float
+    FLOAT = 7
 
-    FLOAT = Value.type_code_float
+    # DECIMAL = Value.type_code_decimal
+    DECIMAL = 8
 
-    DECIMAL = Value.type_code_decimal
+    # DATE = Value.type_code_date
+    DATE = 9
 
-    DATE = Value.type_code_date
+    # TIME = Value.type_code_time
+    TIME = 10
 
-    TIME = Value.type_code_time
+    # TIMESTAMP = Value.get_timestamp
+    TIMESTAMP = 11
 
-    TIMESTAMP = Value.get_timestamp
+    # INTERVAL = Value.type_code_interval
+    INTERVAL = 12
 
-    INTERVAL = Value.type_code_interval
+    # BINARY = Value.type_code_binary
+    BINARY = 13
 
-    BINARY = Value.type_code_binary
+    # MAP = Value.type_code_map
+    MAP = 14
 
-    MAP = Value.type_code_map
-
-    ARRAY = Value.type_code_array
+    # ARRAY = Value.type_code_array
+    ARRAY = 15
 
     @staticmethod
-    def __is_scalar__(value):
-        return value != Value.type_code_map and value != Value.type_code_array
+    def __check_value(value_type):
+        value_dict = {ValueType.NULL: 1, ValueType.BOOLEAN: 2, ValueType.STRING: 3, ValueType.BYTE: 4, ValueType.INT: 5,
+                      ValueType.LONG: 6, ValueType.FLOAT: 7, ValueType.DECIMAL: 8, ValueType.DATE: 9,
+                      ValueType.TIME: 10, ValueType.TIMESTAMP: 11, ValueType.INTERVAL: 12,
+                      ValueType.BINARY: 13, ValueType.MAP: 14, ValueType.ARRAY: 15}
+        return value_dict[value_type]
 
     @staticmethod
-    def __is_numeric__(value):
-        return Value.type_code_byte <= value <= Value.type_code_decimal
+    def is_scalar(value):
+        return ValueType.__check_value(value) != ValueType.__check_value(ValueType.MAP)\
+               and ValueType.__check_value(value) != ValueType.__check_value(ValueType.ARRAY)
+
+    @staticmethod
+    def is_numeric(value):
+        return ValueType.__check_value(ValueType.BYTE) <= ValueType.__check_value(value)\
+               <= ValueType.__check_value(ValueType.DECIMAL)

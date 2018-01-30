@@ -1,11 +1,12 @@
-from Value import Value, ValueType
+from entity.values.Value import Value, ValueType
+from entity.json.JsonList import JsonList
 from entity.o_types.ODate import ODate
 from entity.o_types.OInterval import OInterval
 from entity.o_types.OTime import OTime
 from entity.o_types.OTimestamp import OTimestamp
 
 
-class ValueImpl(Value):
+class JsonValue(Value):
 
     def __init__(self, value_type=None, json_value=None, obj_value=None):
         self.value_type = value_type
@@ -61,7 +62,10 @@ class ValueImpl(Value):
     def get_map(self):
         self.check_type(ValueType.MAP)
         # TODO added get_map implementation after JSONDocument will done
-        pass
+        # TODO Test it
+        from entity.json.JsonDocument import JsonDocument
+        doc = JsonDocument(json_value=self)
+        return doc
 
     def get_time_as_int(self):
         return int(self.json_value)
@@ -78,7 +82,9 @@ class ValueImpl(Value):
     def get_list(self):
         self.check_type(ValueType.ARRAY)
         # TODO added get_map implementation after JSONList will done
-        pass
+        # TODO TEST IT
+        json_list = JsonList(json_value=self)
+        return json_list
 
     def get_byte(self):
         switcher = {
