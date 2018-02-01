@@ -1,0 +1,3 @@
+In the root project dir run next command:
+
+python -m grpc_tools.protoc -Imapr/ojai/proto --python_out=mapr/ojai/proto/gen/ --grpc_python_out=mapr/ojai/proto/gen/ mapr/ojai/proto/maprdb-server.proto
