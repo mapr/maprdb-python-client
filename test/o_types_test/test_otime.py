@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from entity.o_types.OTime import OTime
+from mapr.ojai.o_types.OTime import OTime
 
 try:
     import unittest2 as unittest

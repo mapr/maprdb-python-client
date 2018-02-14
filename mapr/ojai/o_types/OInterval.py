@@ -1,5 +1,5 @@
-from entity.exceptions.UnsupportedConstructorException import UnsupportedConstructorException
-from entity.o_types import constants
+from mapr.ojai.exceptions.UnsupportedConstructorException import UnsupportedConstructorException
+from mapr.ojai.o_types import constants
 
 
 class OInterval:

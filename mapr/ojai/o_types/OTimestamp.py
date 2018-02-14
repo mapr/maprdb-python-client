@@ -1,7 +1,7 @@
 import datetime
 import dateutil.parser
 
-from entity.exceptions import UnsupportedConstructorException
+from mapr.ojai.exceptions import UnsupportedConstructorException
 
 
 class OTimestamp:
@@ -41,7 +41,7 @@ class OTimestamp:
             self.__date_time = date
             self.__millis_since_epoch = (self.__date_time - self.__epoch).total_seconds() * 1000.0
         else:
-            raise UnsupportedConstructorException
+            raise UnsupportedConstructorException("Bad params set")
 
     @property
     def millis_since_epoch(self):

@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from entity.o_types.OTimestamp import OTimestamp
+from mapr.ojai.o_types.OTimestamp import OTimestamp
 
 try:
     import unittest2 as unittest
@@ -14,7 +14,7 @@ class OTimestampTest(unittest.TestCase):
         o_timestamp = OTimestamp(year=1970, month_of_year=4, day_of_month=10, hour_of_day=12,
                                  minute_of_hour=25, second_of_minute=55, millis_of_second=600)
         o_timestamp_clone = OTimestamp(year=1970, month_of_year=4, day_of_month=10, hour_of_day=12,
-                                  minute_of_hour=25, second_of_minute=55, millis_of_second=600)
+                                       minute_of_hour=25, second_of_minute=55, millis_of_second=600)
 
         self.assertEqual(o_timestamp.get_year(), 1970)
         self.assertEqual(o_timestamp.get_month(), 4)

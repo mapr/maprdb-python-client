@@ -1,7 +1,7 @@
 import datetime
 import dateutil.parser
 
-from entity.exceptions import UnsupportedConstructorException
+from mapr.ojai.exceptions import UnsupportedConstructorException
 
 
 class OTime:
@@ -108,9 +108,3 @@ class OTime:
         if self.millis_of_day != other.millis_of_day:
             return False
         return True
-
-
-
-
-
-

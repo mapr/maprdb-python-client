@@ -1,8 +1,6 @@
 from __future__ import unicode_literals
 
-from entity.o_types.OInterval import OInterval
-from entity.values import Value
-from entity.values.Value import ValueType
+from ojai.values.Value import ValueType
 
 try:
     import unittest2 as unittest
@@ -26,14 +24,14 @@ class ValueTypeTest(unittest.TestCase):
         self.assertFalse(ValueType.is_numeric(ValueType.TIMESTAMP))
         self.assertFalse(ValueType.is_numeric(ValueType.INTERVAL))
         self.assertFalse(ValueType.is_numeric(ValueType.BINARY))
-        self.assertFalse(ValueType.is_numeric(ValueType.MAP))
+        self.assertFalse(ValueType.is_numeric(ValueType.DICTIONARY))
         self.assertFalse(ValueType.is_numeric(ValueType.ARRAY))
 
-        self.assertFalse(ValueType.is_scalar(ValueType.MAP))
+        self.assertFalse(ValueType.is_scalar(ValueType.DICTIONARY))
         self.assertFalse(ValueType.is_scalar(ValueType.ARRAY))
 
         self.assertEqual(ValueType.ARRAY, ValueType.ARRAY)
-        self.assertNotEqual(ValueType.ARRAY, ValueType.MAP)
+        self.assertNotEqual(ValueType.ARRAY, ValueType.DICTIONARY)
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 import datetime
 import dateutil.parser
 
-from entity.exceptions import UnsupportedConstructorException
+from mapr.ojai.exceptions import UnsupportedConstructorException
 
 
 class ODate:
@@ -26,7 +26,7 @@ class ODate:
             self.__date = None
             self.__days_since_epoch = days_since_epoch
         else:
-            raise UnsupportedConstructorException
+            raise UnsupportedConstructorException("Bad params set")
 
     @property
     def epoch_date(self):

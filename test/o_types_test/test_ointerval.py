@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from entity.o_types.OInterval import OInterval
+from mapr.ojai.o_types.OInterval import OInterval
 
 try:
     import unittest2 as unittest
@@ -17,7 +17,7 @@ class OIntervalTest(unittest.TestCase):
         self.assertTrue(instance1.__eq__(instance2))
 
         self.assertEqual(instance1.time_duration, long(86754099))
-        from entity.o_types.constants import MILLISECONDS_PER_DAY
+        from mapr.ojai.o_types.constants import MILLISECONDS_PER_DAY
         self.assertEqual(instance1.seconds, int((86754099 % MILLISECONDS_PER_DAY) / 1000))
         self.assertEqual(instance1.days, int(86754099 / MILLISECONDS_PER_DAY))
         self.assertEqual(instance1.years, 0)
