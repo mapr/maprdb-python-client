@@ -9,10 +9,10 @@ class OTime:
     __serial_version_uid = 0xaffa9a5dfe3ff863L
     __EPOCH_DATE = datetime.datetime(1970, 1, 1)
 
-    def __init__(self, epoch=None, hour_of_day=None, minutes=None,
+    def __init__(self, timestamp=None, hour_of_day=None, minutes=None,
                  seconds=None, ms=None, date=None, millis_of_day=None):
-        if epoch is not None:
-            self.__time = datetime.datetime.fromtimestamp(epoch).time()
+        if timestamp is not None:
+            self.__time = datetime.datetime.fromtimestamp(timestamp).time()
             self.__millis_of_day = long((self.__time.hour * 60 * 60 + self.__time.second)
                                         * 1000 + self.__time.microsecond / 1000.0)
         # elif all([hour_of_day, minutes, seconds]) is not None:

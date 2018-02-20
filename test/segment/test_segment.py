@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 
 from mapr.ojai.field_logic.Segment import IndexSegment, SegmentType, NameSegment
-from test.json.test_jsonvalue import JsonValueTest
 
 try:
     import unittest2 as unittest

@@ -4,7 +4,7 @@ from datetime import datetime
 
 from struct import pack
 
-from mapr.ojai.json.JsonValue import JsonValue
+from mapr.ojai.ojai.JsonValue import JsonValue
 from mapr.ojai.o_types.ODate import ODate
 from mapr.ojai.o_types.OInterval import OInterval
 from mapr.ojai.o_types.OTime import OTime

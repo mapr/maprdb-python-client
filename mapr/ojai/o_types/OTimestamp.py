@@ -1,7 +1,7 @@
 import datetime
 import dateutil.parser
 
-from mapr.ojai.exceptions import UnsupportedConstructorException
+from mapr.ojai.exceptions.UnsupportedConstructorException import UnsupportedConstructorException
 
 
 class OTimestamp:
@@ -41,7 +41,7 @@ class OTimestamp:
             self.__date_time = date
             self.__millis_since_epoch = (self.__date_time - self.__epoch).total_seconds() * 1000.0
         else:
-            raise UnsupportedConstructorException("Bad params set")
+            raise UnsupportedConstructorException
 
     @property
     def millis_since_epoch(self):
@@ -82,11 +82,11 @@ class OTimestamp:
         return datetime.datetime.fromtimestamp(self.millis_since_epoch / 1000.0)
 
     # Returns the ISO8601 format timestamp string in UTC.
-    def to_utc_str(self):
+    def to_utc_str_now(self):
         return self.__get_date_time().utcnow().isoformat()
 
     # Returns the ISO8601 format timestamp string in local time zone.
-    def to_local_str(self):
+    def to_local_str_now(self):
         return self.__get_date_time().now().isoformat()
 
     def to_str(self, pattern):
@@ -97,7 +97,7 @@ class OTimestamp:
         return OTimestamp(date=dateutil.parser.parse(date_time_str))
 
     def __str__(self):
-        return self.to_utc_str()
+        return self.to_str('%Y-%m-%d %H:%M:%S')
 
     def __cmp__(self, other):
         if type(other) is not self or type(other) is not type(datetime.datetime):

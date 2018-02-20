@@ -1,7 +1,7 @@
-from mapr.ojai.json import JsonDocument
+from mapr.ojai.ojai import OJAIDocument
 
-from mapr.ojai.json.JsonDocumentStream import JsonDocumentStream
-from mapr.ojai.json.JsonOptions import Options
+from mapr.ojai.ojai.JsonDocumentStream import JsonDocumentStream
+from mapr.ojai.ojai.JsonOptions import Options
 
 
 class Json:
@@ -12,7 +12,7 @@ class Json:
     def new_document(json_string=None, json_map=None):
         """Returns a new, empty Document or from the specified JSON string or map."""
         if json_string is None and json_map is None:
-            return JsonDocument()
+            return OJAIDocument()
         elif json_string is not None and type(json_string) is str:
             byte_array = bytearray(json_string)
             # TODO  JsonDocumentStream required!!! iterator impl

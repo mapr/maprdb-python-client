@@ -7,19 +7,22 @@ class OInterval:
 
     __SERIAL_VERSION_UID = 0x228372f2047c1511L
 
-    __APPROX_DAYS_IN_YEAR = ((365 * 4) + 1) / 4.0
+    __APPROX_DAYS_IN_YEAR = ((365 * 4) + 1)/4.0
 
     __APPROX_DAYS_IN_MONTH = __APPROX_DAYS_IN_YEAR / 12
 
     def __init__(self, milli_seconds=None, years=None, months=None, days=None,
                  seconds=None, iso8601DurationPattern=None):
-        if all([milli_seconds, years, months, days, seconds]):
+        # if all([milli_seconds, years, months, days, seconds]):
+        if years is not None and months is not None and days is not None and seconds is not None and milli_seconds is not None:
             self.__milli_seconds = milli_seconds
             self.__seconds = seconds
             self.__days = days
             self.__months = months
             self.__years = years
-            total_days = long(((years * self.__APPROX_DAYS_IN_YEAR) + (months + self.__APPROX_DAYS_IN_MONTH) + days))
+            # total_days = long(((years * self.__APPROX_DAYS_IN_YEAR) + (months * self.__APPROX_DAYS_IN_MONTH) + days))
+            total_days = long(((years * self.__APPROX_DAYS_IN_YEAR) + (months * self.__APPROX_DAYS_IN_MONTH) + days))
+            # self.__time_duration = constants.MILLISECONDS_PER_DAY * total_days + seconds * 1000 + milli_seconds
             self.__time_duration = constants.MILLISECONDS_PER_DAY * total_days + seconds * 1000 + milli_seconds
         elif milli_seconds is not None and years is None and months is None and days is None and seconds is None:
             self.__time_duration = long(milli_seconds)
@@ -59,7 +62,7 @@ class OInterval:
         return self.__time_duration
 
     def __hash__(self):
-        __result = 31 * 1 * int(self.time_duration ^ (self.time_duration >> 2))
+        __result = 31 * 1 * int(self.time_duration ^ (self.time_duration >> 32))
         return __result
 
     def __eq__(self, other):

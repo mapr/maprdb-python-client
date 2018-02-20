@@ -4,7 +4,7 @@ from decimal import Decimal
 from ojai.values.Value import Value, ValueType
 
 from mapr.ojai.exceptions import UnsupportedConstructorException
-from mapr.ojai.json.JsonList import JsonList
+from mapr.ojai.ojai.JsonList import JsonList
 from mapr.ojai.o_types.ODate import ODate
 from mapr.ojai.o_types.OInterval import OInterval
 from mapr.ojai.o_types.OTime import OTime
@@ -25,7 +25,7 @@ class JsonValue(Value):
             self.json_value = None
         # object
         if value_type is None or obj_value is None:
-            raise UnsupportedConstructorException("value_type and obj_value cannot be None.")
+            raise UnsupportedConstructorException
         self.obj_value = obj_value
         self.key = None
 
@@ -78,8 +78,8 @@ class JsonValue(Value):
         self.check_type(ValueType.DICTIONARY)
         # TODO added get_map implementation after JSONDocument will done
         # TODO Test it
-        from mapr.ojai.json import JsonDocument
-        doc = JsonDocument(json_value=self)
+        from mapr.ojai.ojai import OJAIDocument
+        doc = OJAIDocument(json_value=self)
         return doc
 
     def get_time_as_int(self):
@@ -250,7 +250,7 @@ class JsonValue(Value):
     # this OJAI object serialized as JSON string using the default options
     # TODO options param required JsonOptions implementation
     def as_json_string(self, options=None):
-        # TODO returns org.ojai.json.JSON.toJsonString implementation.
+        # TODO returns org.ojai.ojai.JSON.toJsonString implementation.
         pass
 
     # TODO required as_json_string method!

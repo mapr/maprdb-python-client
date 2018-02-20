@@ -1,5 +1,6 @@
+from test.document.test_document import DocumentTest
 from test.field_path.test_fieldpath import FieldPathTest
-from test.json.test_jsonvalue import JsonValueTest
+from test.ojaitest.test_jsonvalue import JsonValueTest
 from test.o_types_test.test_odate import ODateTest
 from test.o_types_test.test_ointerval import OIntervalTest
 from test.o_types_test.test_otime import OTimeTest
@@ -14,8 +15,15 @@ except ImportError:
 
 if __name__ == '__main__':
 
-    test_classes_to_run = [JsonValueTest, SegmentTest, ODateTest, OTimeTest,
-                           OIntervalTest, OTimestampTest, ValueTypeTest, FieldPathTest]
+    test_classes_to_run = [JsonValueTest,
+                           SegmentTest,
+                           ODateTest,
+                           OTimeTest,
+                           OIntervalTest,
+                           OTimestampTest,
+                           ValueTypeTest,
+                           FieldPathTest,
+                           DocumentTest]
 
     loader = unittest.TestLoader()
 

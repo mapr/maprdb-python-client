@@ -12,7 +12,7 @@ class OTimeTest(unittest.TestCase):
 
     def test_days_from_epoch(self):
         epoch = 8587555
-        o_time = OTime(epoch=epoch)
+        o_time = OTime(timestamp=epoch)
         self.assertEqual(o_time.get_hour(), 12)
         self.assertEqual(o_time.get_minute(), 25)
         self.assertEqual(o_time.get_second(), 55)
