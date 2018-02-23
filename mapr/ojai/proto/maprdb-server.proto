@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package com.mapr.maprdb.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.mapr.maprdb.proto.grpc";
+
+// Common data structures
+enum ErrorCode {
+  NO_ERROR = 0;                   // no error, operation was successful
+  UNKNOWN_PAYLOAD_ENCODING = 1;   // specified payload encoding is not supported
+  CLUSTER_NOT_FOUND = 2;          // specified cluster does not exist
+  PATH_NOT_FOUND = 3;             // parent path of the specified table does not exist
+  TABLE_NOT_FOUND = 4;            // specified table does exist
+  ENCODING_ERROR = 5;
+  DECODING_ERROR = 6;
+}
+
+enum PayloadEncoding {
+  JSON_ENCODING = 0;      // Payload is encoded as JSON strings
+}
+
+// RPC calls and their Request/Response
+service MapRDbServer {
+  // Admin RPCs
+  rpc CreateTable (CreateTableRequest) returns (CreateTableResponse) {}
+  rpc DeleteTable (DeleteTableRequest) returns (DeleteTableResponse) {}
+  rpc TableExists (TableExistsRequest) returns (TableExistsResponse) {}
+
+  // CRUD RPCs
+  rpc InsertOrReplace (InsertOrReplaceRequest) returns (InsertOrReplaceResponse) {}
+  rpc FindById (FindByIdRequest) returns (FindByIdResponse) {}
+}
+
+message RpcError {
+  ErrorCode err = 1;
+  string error_description = 2; // NULL if `err` is `NO_ERROR`
+}
+
+message InsertOrReplaceRequest {
+  string table_path = 1;
+  PayloadEncoding payload_encoding = 2;
+  string json_payload = 3; // contains payload if the payload_encoding is `JSON_ENCODING`
+}
+
+message InsertOrReplaceResponse {
+  RpcError error = 1;
+  PayloadEncoding payload_encoding = 2;
+  string json_payload = 3; // contains payload if the payload_encoding is `JSON_ENCODING`
+}
+
+message FindByIdRequest {
+  string table_path = 1;
+  PayloadEncoding payload_encoding = 2;
+  string json_payload = 3; // contains payload if the payload_encoding is `JSON_ENCODING`
+}
+
+message FindByIdResponse {
+  RpcError error = 1;
+  PayloadEncoding payload_encoding = 2;
+  string json_payload = 3; // contains payload if the payload_encoding is `JSON_ENCODING`
+}
+
+message CreateTableRequest {
+  string table_path = 1;
+}
+
+message CreateTableResponse {
+  RpcError error = 1;
+}
+
+message DeleteTableRequest {
+  string table_path = 1;
+}
+
+message DeleteTableResponse {
+  RpcError error = 1;
+}
+
+message TableExistsRequest {
+  string table_path = 1;
+}
+
+message TableExistsResponse {
+  RpcError error = 1; // `NO_ERROR` if the table exists, `TABLE_NOT_FOUND` otherwise
+}

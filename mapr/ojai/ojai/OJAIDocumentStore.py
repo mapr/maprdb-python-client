@@ -1,17 +1,17 @@
 from ojai.document.DocumentStore import DocumentStore
 
+from mapr.ojai.proto.gen.maprdb_server_pb2 import InsertOrReplaceRequest, PayloadEncoding
 
-class JsonDocumentStore(DocumentStore):
 
-    def __init__(self, is_ready_only):
-        self.read_only = is_ready_only
+class OJAIDocumentStore(DocumentStore):
+
+    def __init__(self, url, store_path, connection):
+        self.__url = url
+        self.__store_path = store_path
+        self.__connection = connection
 
     def is_read_only(self):
-        if self.read_only is not None:
-            return self.read_only
-        else:
-            # TODO check it to the server via grpc
-            pass
+        pass
 
     def flush(self):
         pass
@@ -23,7 +23,14 @@ class JsonDocumentStore(DocumentStore):
         pass
 
     def insert_or_replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
-        pass
+        response = self.__connection.InsertOrReplace(
+            InsertOrReplaceRequest(table_path=self.__store_path,
+                                   payload_encoding=0,
+                                   json_payload=doc.as_json_str()))
+        print(response.error.err)
+        print(response.payload_encoding)
+        print(response.json_payload)
+        return response.error.err
 
     def update(self, _id, mutation):
         pass
