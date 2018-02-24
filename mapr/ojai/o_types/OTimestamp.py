@@ -1,4 +1,6 @@
 import datetime
+from time import timezone
+
 import dateutil.parser
 
 from mapr.ojai.exceptions.UnsupportedConstructorException import UnsupportedConstructorException
@@ -39,7 +41,7 @@ class OTimestamp:
             if not isinstance(type(date), type(datetime.datetime)):
                 raise TypeError
             self.__date_time = date
-            self.__millis_since_epoch = (self.__date_time - self.__epoch).total_seconds() * 1000.0
+            self.__millis_since_epoch = (self.__date_time.replace(tzinfo=None) - self.__epoch).total_seconds() * 1000.0
         else:
             raise UnsupportedConstructorException
 
@@ -97,7 +99,8 @@ class OTimestamp:
         return OTimestamp(date=dateutil.parser.parse(date_time_str))
 
     def __str__(self):
-        return self.to_str('%Y-%m-%d %H:%M:%S')
+        # return self.to_str('%Y-%m-%d %H:%M:%S')
+        return self.to_str('%Y-%m-%dT%H:%M:%SZ')
 
     def __cmp__(self, other):
         if type(other) is not self or type(other) is not type(datetime.datetime):

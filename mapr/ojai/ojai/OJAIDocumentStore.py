@@ -1,6 +1,6 @@
 from ojai.document.DocumentStore import DocumentStore
 
-from mapr.ojai.proto.gen.maprdb_server_pb2 import InsertOrReplaceRequest, PayloadEncoding
+from mapr.ojai.proto.gen.maprdb_server_pb2 import InsertOrReplaceRequest, PayloadEncoding, FindByIdRequest
 
 
 class OJAIDocumentStore(DocumentStore):
@@ -17,7 +17,17 @@ class OJAIDocumentStore(DocumentStore):
         pass
 
     def find_by_id(self, _id, field_paths=None, condition=None):
-        pass
+        if not isinstance(_id, (str, unicode)):
+            raise TypeError
+        response = self.__connection.FindById(
+            FindByIdRequest(table_path=self.__store_path,
+                            payload_encoding=0,
+                            # json_payload=_id))
+                            json_payload=_id))
+        print(response.error.err)
+        print(response.payload_encoding)
+        print(response.json_payload)
+        return response.error.err
 
     def find(self, query=None, field_paths=None, condition=None, query_string=None):
         pass
