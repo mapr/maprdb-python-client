@@ -4,7 +4,7 @@ from decimal import Decimal
 from ojai.values.Value import Value, ValueType
 
 from mapr.ojai.exceptions import UnsupportedConstructorException
-from mapr.ojai.ojai.JsonList import JsonList
+from mapr.ojai.ojai.OJAIList import OJAIList
 from mapr.ojai.o_types.ODate import ODate
 from mapr.ojai.o_types.OInterval import OInterval
 from mapr.ojai.o_types.OTime import OTime
@@ -98,7 +98,7 @@ class JsonValue(Value):
         self.check_type(ValueType.ARRAY)
         # TODO added get_map implementation after JSONList will done
         # TODO TEST IT
-        json_list = JsonList(json_value=self)
+        json_list = OJAIList(json_value=self)
         return json_list
 
     def get_byte(self):

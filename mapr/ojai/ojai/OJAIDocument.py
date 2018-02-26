@@ -10,6 +10,7 @@ from mapr.ojai.o_types.ODate import ODate
 from mapr.ojai.o_types.OInterval import OInterval
 from mapr.ojai.o_types.OTime import OTime
 from mapr.ojai.o_types.OTimestamp import OTimestamp
+from mapr.ojai.ojai.OJAIList import OJAIList
 
 
 class OJAIDocument(Document):
@@ -46,6 +47,9 @@ class OJAIDocument(Document):
 
     def empty(self):
         return self.size() == 0
+
+    def clear(self):
+        self.__internal_dict = {}
 
     def get_id_str(self):
         return str(self.__internal_dict["_id"])
@@ -119,10 +123,11 @@ class OJAIDocument(Document):
 
         for i in reversed(split_path):
             if tmp_dict == {}:
-                if isinstance(value, list):
-                    parsed_list = self.__parse_list(values_list=value)
-                    tmp_dict = {i: parsed_list}
-                elif oja_type is None:
+                # if isinstance(value, list):
+                #     parsed_list = self.__parse_list(values_list=value)
+                #     tmp_dict = {i: parsed_list}
+                # el
+                if oja_type is None:
                     tmp_dict = {i: value}
                 else:
                     tmp_dict = {i: {oja_type: value}}
@@ -211,9 +216,10 @@ class OJAIDocument(Document):
     #     pass
 
     def __set_array(self, field_path, values):
+        list_value = OJAIList.set_list(value=values)
         self.__internal_dict = self.__merge_two_dicts(self.__internal_dict,
                                                       self.__parse_field_path(field_path=field_path,
-                                                                              value=values))
+                                                                              value=list_value))
 
     def __set_none(self, field_path):
         self.__internal_dict = self.__merge_two_dicts(self.__internal_dict,

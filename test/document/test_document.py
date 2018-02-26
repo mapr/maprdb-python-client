@@ -152,16 +152,6 @@ class DocumentTest(unittest.TestCase):
                                                                 'test_timestamp': {'$date': '1970-12-12T19:12:12Z'},
                                                                 'test_float': {'$numberFloat': 11.1}}})
 
-    def test_doc_set_list(self):
-        doc = OJAIDocument().set('test_list', [1, 2, 3, 4, False, 'mystr', [{}, {}, []]])
-        self.assertEqual(doc.as_dictionary(), {'test_list': [{'$numberLong': 1},
-                                                             {'$numberLong': 2},
-                                                             {'$numberLong': 3},
-                                                             {'$numberLong': 4},
-                                                             False,
-                                                             'mystr',
-                                                             [{}, {}, []]]})
-
     def test_doc_set_none(self):
         doc = OJAIDocument().set('test_none', None)
         self.assertEqual(doc.as_dictionary(), {'test_none': None})
@@ -206,6 +196,19 @@ class DocumentTest(unittest.TestCase):
                                                'first': {},
                                                'test_float': {'$numberFloat': 11.1}})
 
+    def test_doc_set_list(self):
+        nested_doc = OJAIDocument().set('nested_int', 11).set('nested_str', 'strstr')
+        doc = OJAIDocument().set('test_list', [1, 2, 3, 4, False, 'mystr', [{}, {}, [7, 8, 9]]])
+        self.assertEqual(doc.as_dictionary(), {'test_list': [{'$numberLong': 1},
+                                                             {'$numberLong': 2},
+                                                             {'$numberLong': 3},
+                                                             {'$numberLong': 4},
+                                                             False,
+                                                             'mystr',
+                                                             [{}, {}, [{'$numberLong': 7},
+                                                                       {'$numberLong': 8},
+                                                                       {'$numberLong': 9}]]]})
+
     def test_doc_get(self):
         byte_array = bytearray([0x13, 0x00, 0x00, 0x00, 0x08, 0x00])
         doc = OJAIDocument().set_id(121212) \
@@ -217,8 +220,8 @@ class DocumentTest(unittest.TestCase):
             .set('first.test_time', OTime(timestamp=1518689532)) \
             .set('test_float', 11.1) \
             .set('first.test_timestamp', OTimestamp(millis_since_epoch=29877132000)) \
-            .set('first.test_date', ODate(days_since_epoch=3456))\
-            .set('first.test_interval', OInterval(milli_seconds=172800000))\
+            .set('first.test_date', ODate(days_since_epoch=3456)) \
+            .set('first.test_interval', OInterval(milli_seconds=172800000)) \
             .set('first.test_bool', True) \
             .set('first.test_bool_false', False) \
             .set('first.test_invalid', ODate(days_since_epoch=3457)) \
@@ -246,10 +249,18 @@ class DocumentTest(unittest.TestCase):
         self.assertEqual(doc.get_list('first.test_list'), [1, 2, 'str', False, '1979-06-20'])
         self.assertEqual(doc.get_binary('first.test_binary'), '\x13\x00\x00\x00\x08\x00')
 
+    def test_doc_set_list(self):
+        recursive_doc = OJAIDocument().set('nested_int', 11).set('test_list2', [1, {'dict_list': [{'b': 55}]}])\
+            .set('first.test_time', OTime(timestamp=1518689532))\
+            .set('first.test_timestamp', OTimestamp(millis_since_epoch=29877132000))
 
+        for i in range(3):
+            recursive_doc = OJAIDocument().set('test_list' + str(i), [1, {'dict_list' + str(i): [{'b' + str(i): 55}, recursive_doc]}])
 
-    # def test_doc_to_json(self):
-    #     doc = OJAIDocument().set_id(121212).set('test_int', 123).set('test_long', 55555555555).set('age', 30) \
-    #         .set('a."first.b".\"test_one\"', OTime(timestamp=1518689532)) \
-    #         .set('a.\"first.b\".test_two', OTimestamp(millis_since_epoch=29877132000)).set('kk', 91)
-    #     print doc.as_json_str()
+        nested_doc = OJAIDocument().set('nested_int', 11).set('test_list2', [1, {'dict_list': [{'b': 55}]}])\
+            .set('first.test_time', OTime(timestamp=1518689532))\
+            .set('first.test_timestamp', OTimestamp(millis_since_epoch=29877132000))
+        doc = OJAIDocument().set('test_list', [4, [{}, {'top_list': [recursive_doc, 15, 16, 17]}, [7, 8, 9]]])
+        # doc = OJAIDocument().set('test_list', [1, {'dict_list': [{'b': 55}]}])
+        # print doc.as_dictionary()
+        print doc.as_json_str()
