@@ -81,6 +81,8 @@ class OJAIDocument(Document):
             self.__set_array(field_path=field_path, values=value)
         elif isinstance(value, OJAIDocument):
             self.__set_document(field_path=field_path, value=value)
+        elif isinstance(value, str):
+            self.__set_str(field_path=field_path, value=value)
         elif value is None:
             self.__set_none(field_path=field_path)
         else:
@@ -138,6 +140,11 @@ class OJAIDocument(Document):
 
     def as_dictionary(self):
         return self.__internal_dict
+
+    def __set_str(self, field_path, value):
+        self.__internal_dict = self.__merge_two_dicts(self.__internal_dict,
+                                                      self.__parse_field_path(field_path=field_path,
+                                                                              value=value))
 
     def __set_boolean(self, field_path, value):
         self.__internal_dict = self.__merge_two_dicts(self.__internal_dict,
@@ -225,6 +232,29 @@ class OJAIDocument(Document):
         self.__internal_dict = self.__merge_two_dicts(self.__internal_dict,
                                                       self.__parse_field_path(field_path=field_path,
                                                                               value=None))
+
+    __dispatcher = {
+        str: __set_str,
+        unicode: __set_str,
+        bool: __set_boolean,
+        int: __set_long,
+        long: __set_long,
+        float: __set_float,
+        OTime: __set_time,
+        OTimestamp: __set_timestamp,
+        ODate: __set_date,
+        OInterval: __set_interval,
+        list: __set_array,
+        dict: __set_dict,
+        bytearray: __set_byte_array,
+        decimal.Decimal: __set_decimal,
+        None: __set_none
+    }
+
+    def __set_dispatcher(self, field_path, value):
+        t = type(value)
+        f = OJAIDocument.__dispatcher[t]
+        f(self, field_path, value)
 
     def delete(self, field_path):
         split_path = [part.strip("'").strip('"') for part in self.__regex.sub(self.__replacer,
@@ -355,23 +385,6 @@ class OJAIDocument(Document):
             return result
         else:
             return None
-
-    # TODO for functional style
-    # __dispatch = {
-    #     str: get_string,
-    #     bool: get_boolean,
-    #     int: get_int,
-    #     long: get_long,
-    #     float: get_float,
-    #     OTime: get_time,
-    #     OTimestamp: get_timestamp,
-    #     OInterval: get_interval,
-    #     ODate: get_date,
-    #     list: get_list,
-    #     dict: get_dictionary,
-    #     bytearray: get_binary,
-    #     decimal.Decimal: get_decimal
-    # }
 
     def as_json_str(self):
         return json.dumps(self.__internal_dict, indent=4)

@@ -1,5 +1,6 @@
 from ojai.document.DocumentStore import DocumentStore
 
+from mapr.ojai.exceptions.InvalidOJAIDocumentError import InvalidOJAIDocumentError
 from mapr.ojai.proto.gen.maprdb_server_pb2 import InsertOrReplaceRequest, PayloadEncoding, FindByIdRequest
 
 
@@ -33,6 +34,7 @@ class OJAIDocumentStore(DocumentStore):
         pass
 
     def insert_or_replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
+        self.__validate_document(doc_to_insert=doc)
         response = self.__connection.InsertOrReplace(
             InsertOrReplaceRequest(table_path=self.__store_path,
                                    payload_encoding=0,
@@ -65,3 +67,13 @@ class OJAIDocumentStore(DocumentStore):
 
     def check_and_replace(self, _id, condition, doc):
         pass
+
+    def __validate_document(self, doc_to_insert):
+        from mapr.ojai.ojai.OJAIDocument import OJAIDocument
+        if not isinstance(doc_to_insert, OJAIDocument):
+            raise TypeError
+
+        if '_id' in doc_to_insert.as_dictionary() and isinstance(doc_to_insert.as_dictionary()['_id'], str):
+            return True
+
+        raise InvalidOJAIDocumentError

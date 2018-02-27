@@ -198,7 +198,7 @@ class DocumentTest(unittest.TestCase):
 
     def test_doc_set_list(self):
         nested_doc = OJAIDocument().set('nested_int', 11).set('nested_str', 'strstr')
-        doc = OJAIDocument().set('test_list', [1, 2, 3, 4, False, 'mystr', [{}, {}, [7, 8, 9]]])
+        doc = OJAIDocument().set('test_list', [1, 2, 3, 4, False, 'mystr', [{}, {}, [7, 8, 9, nested_doc]]])
         self.assertEqual(doc.as_dictionary(), {'test_list': [{'$numberLong': 1},
                                                              {'$numberLong': 2},
                                                              {'$numberLong': 3},
@@ -207,7 +207,16 @@ class DocumentTest(unittest.TestCase):
                                                              'mystr',
                                                              [{}, {}, [{'$numberLong': 7},
                                                                        {'$numberLong': 8},
-                                                                       {'$numberLong': 9}]]]})
+                                                                       {'$numberLong': 9},
+                                                                       {
+                                                                           'nested_str': 'strstr',
+                                                                           'nested_int': {'$numberLong': 11}
+                                                                       }
+                                                                       ]
+                                                              ]
+                                                             ]
+                                               }
+                         )
 
     def test_doc_get(self):
         byte_array = bytearray([0x13, 0x00, 0x00, 0x00, 0x08, 0x00])
@@ -249,7 +258,7 @@ class DocumentTest(unittest.TestCase):
         self.assertEqual(doc.get_list('first.test_list'), [1, 2, 'str', False, '1979-06-20'])
         self.assertEqual(doc.get_binary('first.test_binary'), '\x13\x00\x00\x00\x08\x00')
 
-    def test_doc_set_list(self):
+    def test_doc_set_list_tmp(self):
         recursive_doc = OJAIDocument().set('nested_int', 11).set('test_list2', [1, {'dict_list': [{'b': 55}]}])\
             .set('first.test_time', OTime(timestamp=1518689532))\
             .set('first.test_timestamp', OTimestamp(millis_since_epoch=29877132000))
@@ -263,4 +272,4 @@ class DocumentTest(unittest.TestCase):
         doc = OJAIDocument().set('test_list', [4, [{}, {'top_list': [recursive_doc, 15, 16, 17]}, [7, 8, 9]]])
         # doc = OJAIDocument().set('test_list', [1, {'dict_list': [{'b': 55}]}])
         # print doc.as_dictionary()
-        print doc.as_json_str()
+        # print doc.as_json_str()

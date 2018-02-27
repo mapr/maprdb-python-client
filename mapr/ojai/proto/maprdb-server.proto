@@ -7,13 +7,15 @@ option java_package = "com.mapr.maprdb.proto.grpc";
 
 // Common data structures
 enum ErrorCode {
-  NO_ERROR = 0;                   // no error, operation was successful
-  UNKNOWN_PAYLOAD_ENCODING = 1;   // specified payload encoding is not supported
-  CLUSTER_NOT_FOUND = 2;          // specified cluster does not exist
-  PATH_NOT_FOUND = 3;             // parent path of the specified table does not exist
-  TABLE_NOT_FOUND = 4;            // specified table does exist
-  ENCODING_ERROR = 5;
-  DECODING_ERROR = 6;
+  NO_ERROR = 0;                    // no error, operation was successful
+  UNKNOWN_EXCEPTION = 10;          // catch all for all undefined errors on server
+  UNKNOWN_PAYLOAD_ENCODING = 20;   // specified payload encoding is not supported
+  CLUSTER_NOT_FOUND = 30;          // specified cluster does not exist
+  PATH_NOT_FOUND = 40;             // parent path of the specified table does not exist
+  TABLE_NOT_FOUND = 50;            // specified table does not exist
+  TABLE_ALREADY_EXISTS = 51;       // specified table already exist
+  ENCODING_ERROR = 60;
+  DECODING_ERROR = 61;
 }
 
 enum PayloadEncoding {

@@ -2,7 +2,7 @@ from mapr.ojai.exceptions.UnsupportedConstructorException import UnsupportedCons
 from mapr.ojai.o_types import constants
 
 
-class OInterval:
+class OInterval(object):
     """An immutable class which encapsulates a time interval."""
 
     __SERIAL_VERSION_UID = 0x228372f2047c1511L

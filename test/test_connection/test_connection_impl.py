@@ -85,12 +85,14 @@ class ConnectionTest(unittest.TestCase):
 if __name__ == '__main__':
 
     error_code = {0: 'NO_ERROR',
-                  1: 'UNKNOWN_PAYLOAD_ENCODING',
-                  2: 'CLUSTER_NOT_FOUND',
-                  3: 'PATH_NOT_FOUND',
-                  4: 'TABLE_NOT_FOUND',
-                  5: 'ENCODING_ERROR',
-                  6: 'DECODING_ERROR'}
+                  10: 'UNKNOWN_EXCEPTION',
+                  20: 'UNKNOWN_PAYLOAD_ENCODING',
+                  30: 'CLUSTER_NOT_FOUND',
+                  40: 'PATH_NOT_FOUND',
+                  50: 'TABLE_NOT_FOUND',
+                  51: 'TABLE_ALREADY_EXISTS',
+                  60: 'ENCODING_ERROR',
+                  61: 'DECODING_ERROR'}
 
     for k, v in error_code.iteritems():
         print(str(k) + " : " + str(v))

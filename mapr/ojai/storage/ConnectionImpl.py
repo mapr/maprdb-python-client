@@ -22,41 +22,51 @@ class ConnectionImpl(Connection):
         return self.__channel
 
     def create_table(self, table_path):
+        self.__validate_table_path(table_path=table_path)
         response = self.__connection.CreateTable(CreateTableRequest(table_path=table_path))
         if response.error.err == 0:
             return True
-        elif response.error.err == 2:
+        elif response.error.err == 51:
+            return False
+        elif response.error.err == 30:
             raise ClusterNotFoundError
         else:
             return False
 
     def is_table_exists(self, table_path):
+        self.__validate_table_path(table_path=table_path)
         response = self.__connection.TableExists(TableExistsRequest(table_path=table_path))
         if response.error.err == 0:
             return True
-        elif response.error.err == 2:
+        elif response.error.err == 30:
             raise ClusterNotFoundError
-        elif response.error.err == 3:
+        elif response.error.err == 40:
             raise PathNotFoundError
-        elif response.error.err == 4:
+        elif response.error.err == 50:
             return False
         else:
             print "SOMETHING WRONG"
             return False
 
     def delete_table(self, table_path):
+        self.__validate_table_path(table_path=table_path)
         response = self.__connection.DeleteTable(DeleteTableRequest(table_path=table_path))
         if response.error.err == 0:
             return True
-        elif response.error.err == 2:
+        elif response.error.err == 30:
             raise ClusterNotFoundError
-        elif response.error.err == 3:
+        elif response.error.err == 40:
             raise PathNotFoundError
-        elif response.error.err == 4:
+        elif response.error.err == 50:
+            # table not found
             return False
         else:
             print "SOMETHING WRONG"
             return False
+
+    def __validate_table_path(self, table_path):
+        if not isinstance(table_path, str):
+            raise TypeError
 
     def get_store(self, store_name, options=None):
         return OJAIDocumentStore(url=self.__connection_url, store_path=store_name, connection=self.__connection)

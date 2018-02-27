@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='maprdb-server.proto',
   package='com.mapr.maprdb.grpc',
   syntax='proto3',
-  serialized_pb=_b('\n\x13maprdb-server.proto\x12\x14\x63om.mapr.maprdb.grpc\"S\n\x08RpcError\x12,\n\x03\x65rr\x18\x01 \x01(\x0e\x32\x1f.com.mapr.maprdb.grpc.ErrorCode\x12\x19\n\x11\x65rror_description\x18\x02 \x01(\t\"\x83\x01\n\x16InsertOrReplaceRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12?\n\x10payload_encoding\x18\x02 \x01(\x0e\x32%.com.mapr.maprdb.grpc.PayloadEncoding\x12\x14\n\x0cjson_payload\x18\x03 \x01(\t\"\x9f\x01\n\x17InsertOrReplaceResponse\x12-\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1e.com.mapr.maprdb.grpc.RpcError\x12?\n\x10payload_encoding\x18\x02 \x01(\x0e\x32%.com.mapr.maprdb.grpc.PayloadEncoding\x12\x14\n\x0cjson_payload\x18\x03 \x01(\t\"|\n\x0f\x46indByIdRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12?\n\x10payload_encoding\x18\x02 \x01(\x0e\x32%.com.mapr.maprdb.grpc.PayloadEncoding\x12\x14\n\x0cjson_payload\x18\x03 \x01(\t\"\x98\x01\n\x10\x46indByIdResponse\x12-\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1e.com.mapr.maprdb.grpc.RpcError\x12?\n\x10payload_encoding\x18\x02 \x01(\x0e\x32%.com.mapr.maprdb.grpc.PayloadEncoding\x12\x14\n\x0cjson_payload\x18\x03 \x01(\t\"(\n\x12\x43reateTableRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"D\n\x13\x43reateTableResponse\x12-\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1e.com.mapr.maprdb.grpc.RpcError\"(\n\x12\x44\x65leteTableRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"D\n\x13\x44\x65leteTableResponse\x12-\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1e.com.mapr.maprdb.grpc.RpcError\"(\n\x12TableExistsRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"D\n\x13TableExistsResponse\x12-\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1e.com.mapr.maprdb.grpc.RpcError*\x9f\x01\n\tErrorCode\x12\x0c\n\x08NO_ERROR\x10\x00\x12\x1c\n\x18UNKNOWN_PAYLOAD_ENCODING\x10\x01\x12\x15\n\x11\x43LUSTER_NOT_FOUND\x10\x02\x12\x12\n\x0ePATH_NOT_FOUND\x10\x03\x12\x13\n\x0fTABLE_NOT_FOUND\x10\x04\x12\x12\n\x0e\x45NCODING_ERROR\x10\x05\x12\x12\n\x0e\x44\x45\x43ODING_ERROR\x10\x06*$\n\x0fPayloadEncoding\x12\x11\n\rJSON_ENCODING\x10\x00\x32\x8f\x04\n\x0cMapRDbServer\x12\x64\n\x0b\x43reateTable\x12(.com.mapr.maprdb.grpc.CreateTableRequest\x1a).com.mapr.maprdb.grpc.CreateTableResponse\"\x00\x12\x64\n\x0b\x44\x65leteTable\x12(.com.mapr.maprdb.grpc.DeleteTableRequest\x1a).com.mapr.maprdb.grpc.DeleteTableResponse\"\x00\x12\x64\n\x0bTableExists\x12(.com.mapr.maprdb.grpc.TableExistsRequest\x1a).com.mapr.maprdb.grpc.TableExistsResponse\"\x00\x12p\n\x0fInsertOrReplace\x12,.com.mapr.maprdb.grpc.InsertOrReplaceRequest\x1a-.com.mapr.maprdb.grpc.InsertOrReplaceResponse\"\x00\x12[\n\x08\x46indById\x12%.com.mapr.maprdb.grpc.FindByIdRequest\x1a&.com.mapr.maprdb.grpc.FindByIdResponse\"\x00\x42\x1e\n\x1a\x63om.mapr.maprdb.proto.grpcP\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x13maprdb-server.proto\x12\x14\x63om.mapr.maprdb.grpc\"S\n\x08RpcError\x12,\n\x03\x65rr\x18\x01 \x01(\x0e\x32\x1f.com.mapr.maprdb.grpc.ErrorCode\x12\x19\n\x11\x65rror_description\x18\x02 \x01(\t\"\x83\x01\n\x16InsertOrReplaceRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12?\n\x10payload_encoding\x18\x02 \x01(\x0e\x32%.com.mapr.maprdb.grpc.PayloadEncoding\x12\x14\n\x0cjson_payload\x18\x03 \x01(\t\"\x9f\x01\n\x17InsertOrReplaceResponse\x12-\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1e.com.mapr.maprdb.grpc.RpcError\x12?\n\x10payload_encoding\x18\x02 \x01(\x0e\x32%.com.mapr.maprdb.grpc.PayloadEncoding\x12\x14\n\x0cjson_payload\x18\x03 \x01(\t\"|\n\x0f\x46indByIdRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12?\n\x10payload_encoding\x18\x02 \x01(\x0e\x32%.com.mapr.maprdb.grpc.PayloadEncoding\x12\x14\n\x0cjson_payload\x18\x03 \x01(\t\"\x98\x01\n\x10\x46indByIdResponse\x12-\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1e.com.mapr.maprdb.grpc.RpcError\x12?\n\x10payload_encoding\x18\x02 \x01(\x0e\x32%.com.mapr.maprdb.grpc.PayloadEncoding\x12\x14\n\x0cjson_payload\x18\x03 \x01(\t\"(\n\x12\x43reateTableRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"D\n\x13\x43reateTableResponse\x12-\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1e.com.mapr.maprdb.grpc.RpcError\"(\n\x12\x44\x65leteTableRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"D\n\x13\x44\x65leteTableResponse\x12-\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1e.com.mapr.maprdb.grpc.RpcError\"(\n\x12TableExistsRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"D\n\x13TableExistsResponse\x12-\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1e.com.mapr.maprdb.grpc.RpcError*\xd0\x01\n\tErrorCode\x12\x0c\n\x08NO_ERROR\x10\x00\x12\x15\n\x11UNKNOWN_EXCEPTION\x10\n\x12\x1c\n\x18UNKNOWN_PAYLOAD_ENCODING\x10\x14\x12\x15\n\x11\x43LUSTER_NOT_FOUND\x10\x1e\x12\x12\n\x0ePATH_NOT_FOUND\x10(\x12\x13\n\x0fTABLE_NOT_FOUND\x10\x32\x12\x18\n\x14TABLE_ALREADY_EXISTS\x10\x33\x12\x12\n\x0e\x45NCODING_ERROR\x10<\x12\x12\n\x0e\x44\x45\x43ODING_ERROR\x10=*$\n\x0fPayloadEncoding\x12\x11\n\rJSON_ENCODING\x10\x00\x32\x8f\x04\n\x0cMapRDbServer\x12\x64\n\x0b\x43reateTable\x12(.com.mapr.maprdb.grpc.CreateTableRequest\x1a).com.mapr.maprdb.grpc.CreateTableResponse\"\x00\x12\x64\n\x0b\x44\x65leteTable\x12(.com.mapr.maprdb.grpc.DeleteTableRequest\x1a).com.mapr.maprdb.grpc.DeleteTableResponse\"\x00\x12\x64\n\x0bTableExists\x12(.com.mapr.maprdb.grpc.TableExistsRequest\x1a).com.mapr.maprdb.grpc.TableExistsResponse\"\x00\x12p\n\x0fInsertOrReplace\x12,.com.mapr.maprdb.grpc.InsertOrReplaceRequest\x1a-.com.mapr.maprdb.grpc.InsertOrReplaceResponse\"\x00\x12[\n\x08\x46indById\x12%.com.mapr.maprdb.grpc.FindByIdRequest\x1a&.com.mapr.maprdb.grpc.FindByIdResponse\"\x00\x42\x1e\n\x1a\x63om.mapr.maprdb.proto.grpcP\x01\x62\x06proto3')
 )
 
 _ERRORCODE = _descriptor.EnumDescriptor(
@@ -34,34 +34,42 @@ _ERRORCODE = _descriptor.EnumDescriptor(
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='UNKNOWN_PAYLOAD_ENCODING', index=1, number=1,
+      name='UNKNOWN_EXCEPTION', index=1, number=10,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='CLUSTER_NOT_FOUND', index=2, number=2,
+      name='UNKNOWN_PAYLOAD_ENCODING', index=2, number=20,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='PATH_NOT_FOUND', index=3, number=3,
+      name='CLUSTER_NOT_FOUND', index=3, number=30,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TABLE_NOT_FOUND', index=4, number=4,
+      name='PATH_NOT_FOUND', index=4, number=40,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='ENCODING_ERROR', index=5, number=5,
+      name='TABLE_NOT_FOUND', index=5, number=50,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='DECODING_ERROR', index=6, number=6,
+      name='TABLE_ALREADY_EXISTS', index=6, number=51,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='ENCODING_ERROR', index=7, number=60,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='DECODING_ERROR', index=8, number=61,
       options=None,
       type=None),
   ],
   containing_type=None,
   options=None,
   serialized_start=1044,
-  serialized_end=1203,
+  serialized_end=1252,
 )
 _sym_db.RegisterEnumDescriptor(_ERRORCODE)
 
@@ -79,19 +87,21 @@ _PAYLOADENCODING = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1205,
-  serialized_end=1241,
+  serialized_start=1254,
+  serialized_end=1290,
 )
 _sym_db.RegisterEnumDescriptor(_PAYLOADENCODING)
 
 PayloadEncoding = enum_type_wrapper.EnumTypeWrapper(_PAYLOADENCODING)
 NO_ERROR = 0
-UNKNOWN_PAYLOAD_ENCODING = 1
-CLUSTER_NOT_FOUND = 2
-PATH_NOT_FOUND = 3
-TABLE_NOT_FOUND = 4
-ENCODING_ERROR = 5
-DECODING_ERROR = 6
+UNKNOWN_EXCEPTION = 10
+UNKNOWN_PAYLOAD_ENCODING = 20
+CLUSTER_NOT_FOUND = 30
+PATH_NOT_FOUND = 40
+TABLE_NOT_FOUND = 50
+TABLE_ALREADY_EXISTS = 51
+ENCODING_ERROR = 60
+DECODING_ERROR = 61
 JSON_ENCODING = 0
 
 
@@ -611,8 +621,8 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=1244,
-  serialized_end=1771,
+  serialized_start=1293,
+  serialized_end=1820,
   methods=[
   _descriptor.MethodDescriptor(
     name='CreateTable',

@@ -4,7 +4,7 @@ import dateutil.parser
 from mapr.ojai.exceptions import UnsupportedConstructorException
 
 
-class OTime:
+class OTime(object):
 
     __serial_version_uid = 0xaffa9a5dfe3ff863L
     __EPOCH_DATE = datetime.datetime(1970, 1, 1)
