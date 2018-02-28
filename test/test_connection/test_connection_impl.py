@@ -8,8 +8,8 @@ from mapr.ojai.o_types.OTime import OTime
 from mapr.ojai.o_types.OTimestamp import OTimestamp
 from mapr.ojai.proto.gen.maprdb_server_pb2 import CreateTableRequest, TableExistsRequest, ErrorCode
 from mapr.ojai.proto.gen.maprdb_server_pb2_grpc import MapRDbServerStub
-from mapr.ojai.storage.ConnectionImpl import ConnectionImpl
-from mapr.ojai.storage.ConnectionManagerImpl import ConnectionManagerImpl
+from mapr.ojai.storage.OJAIConnection import OJAIConnection
+from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 from mapr.ojai.storage.connection_constants import DRIVER_BASE_URL, SERVICE_PORT
 
 try:
@@ -24,16 +24,16 @@ class ConnectionTest(unittest.TestCase):
         # TODO doesn't work
         # url = str(DRIVER_BASE_URL) + 'localhost:' + str(SERVICE_PORT)
         url = 'localhost:5678'
-        connection = ConnectionImpl(connection_url=url)
-        before_create = connection.is_table_exists(table_path='/test-store1')
+        connection = OJAIConnection(connection_url=url)
+        before_create = connection.is_store_exists(store_path='/test-store1')
         self.assertFalse(before_create)
-        response = connection.create_table(table_path='/test-store1')
+        response = connection.create_store(store_path='/test-store1')
         self.assertTrue(response)
-        after_create = connection.is_table_exists(table_path='/test-store1')
+        after_create = connection.is_store_exists(store_path='/test-store1')
         self.assertTrue(after_create)
-        response_two = connection.create_table(table_path='/test-store1')
+        response_two = connection.create_store(store_path='/test-store1')
         self.assertFalse(response_two)
-        delete_response = connection.delete_table(table_path='/test-store1')
+        delete_response = connection.delete_store(store_path='/test-store1')
         self.assertTrue(delete_response)
 
     def test_get_store_and_insert(self):
@@ -48,16 +48,19 @@ class ConnectionTest(unittest.TestCase):
                        {'_id': 'id08', 'test_int': 51, 'test_str': 'strstr', 'test_dict': {'test_int': 5}},
                        {'_id': 'id09', 'test_int': 51, 'test_str': 'strstr', 'test_list': [5, 6]},
                        {'_id': 'id10', 'test_int': 51, 'test_str': 'strstr', 'test_null': None}]
-        # doc_dict = {'_id': "15", 'test_int': 51, 'test_str': 'strstr'}
+        # doc_dict = {'_id': "15", 'test_int': 51, 'test_str': 'strstr'}¬
         url = 'localhost:5678'
-        connection = ConnectionImpl(connection_url=url)
+        # TODO rename to factory
+        # incapsulate get_connection
+        connection = ConnectionFactory.get_connection(url=url)
 
-        delete_response = connection.delete_table(table_path='/test-store5')
+        # should raise an error if exit is not 0
+        delete_response = connection.delete_store(store_path='/test-store5')
         self.assertTrue(delete_response)
-        before_create = connection.is_table_exists(table_path='/test-store5')
+        before_create = connection.is_store_exists(store_path='/test-store5')
         self.assertFalse(before_create)
         # self.assertTrue(before_create)
-        response = connection.create_table(table_path='/test-store5')
+        response = connection.create_store(store_path='/test-store5')
         self.assertTrue(response)
         document_store = connection.get_store(store_name='/test-store5')
         for doc in dict_stream:
@@ -69,11 +72,11 @@ class ConnectionTest(unittest.TestCase):
 
     def test_find_by_id(self):
         url = 'localhost:5678'
-        connection = ConnectionImpl(connection_url=url)
+        connection = OJAIConnection(connection_url=url)
 
         # delete_response = connection.delete_table(table_path='/test-store6')
         # self.assertTrue(delete_response)
-        before_create = connection.is_table_exists(table_path='/test-store6')
+        before_create = connection.is_store_exists(store_path='/test-store6')
         # self.assertFalse(before_create)
         self.assertTrue(before_create)
         # response = connection.create_table(table_path='/test-store6')

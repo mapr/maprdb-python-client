@@ -1,6 +1,5 @@
 import json
 import re
-
 from copy import deepcopy
 
 import decimal
@@ -386,5 +385,6 @@ class OJAIDocument(Document):
         else:
             return None
 
-    def as_json_str(self):
+    # TODO implement ability to parse dict without OJAI tags
+    def as_json_str(self, with_tags=None):
         return json.dumps(self.__internal_dict, indent=4)

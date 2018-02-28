@@ -3,6 +3,8 @@ from ojai.store.Connection import Connection
 
 from mapr.ojai.exceptions.ClusterNotFoundError import ClusterNotFoundError
 from mapr.ojai.exceptions.PathNotFoundError import PathNotFoundError
+from mapr.ojai.exceptions.StoreAlreadyExistsError import StoreAlreadyExistsError
+from mapr.ojai.exceptions.UnknownServerError import UnknownServerError
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 from mapr.ojai.ojai.OJAIDocumentStore import OJAIDocumentStore
 from mapr.ojai.proto.gen.maprdb_server_pb2 import CreateTableRequest, ErrorCode, TableExistsRequest, \
@@ -10,7 +12,7 @@ from mapr.ojai.proto.gen.maprdb_server_pb2 import CreateTableRequest, ErrorCode,
 from mapr.ojai.proto.gen.maprdb_server_pb2_grpc import MapRDbServerStub
 
 
-class ConnectionImpl(Connection):
+class OJAIConnection(Connection):
 
     def __init__(self, connection_url):
         self.__channel = grpc.insecure_channel(connection_url)
@@ -21,51 +23,48 @@ class ConnectionImpl(Connection):
     def channel(self):
         return self.__channel
 
-    def create_table(self, table_path):
-        self.__validate_table_path(table_path=table_path)
-        response = self.__connection.CreateTable(CreateTableRequest(table_path=table_path))
-        if response.error.err == 0:
-            return True
-        elif response.error.err == 51:
-            return False
-        elif response.error.err == 30:
+    def create_store(self, store_path):
+        self.__validate_store_path(store_path=store_path)
+        response = self.__connection.CreateTable(CreateTableRequest(table_path=store_path))
+        if response.error.err == ErrorCode.Value('NO_ERROR'):
+            return self.get_store(store_name=store_path)
+        elif response.error.err == ErrorCode.Value('TABLE_ALREADY_EXISTS'):
+            raise StoreAlreadyExistsError
+        elif response.error.err == ErrorCode.Value('CLUSTER_NOT_FOUND'):
             raise ClusterNotFoundError
         else:
-            return False
+            raise UnknownServerError
 
-    def is_table_exists(self, table_path):
-        self.__validate_table_path(table_path=table_path)
-        response = self.__connection.TableExists(TableExistsRequest(table_path=table_path))
-        if response.error.err == 0:
+    def is_store_exists(self, store_path):
+        self.__validate_store_path(store_path=store_path)
+        response = self.__connection.TableExists(TableExistsRequest(table_path=store_path))
+        if response.error.err == ErrorCode.Value('NO_ERROR'):
             return True
-        elif response.error.err == 30:
+        elif response.error.err == ErrorCode.Value('CLUSTER_NOT_FOUND'):
             raise ClusterNotFoundError
-        elif response.error.err == 40:
+        elif response.error.err == ErrorCode.Value('PATH_NOT_FOUND'):
             raise PathNotFoundError
-        elif response.error.err == 50:
+        elif response.error.err == ErrorCode.Value('TABLE_NOT_FOUND'):
             return False
         else:
-            print "SOMETHING WRONG"
-            return False
+            raise UnknownServerError
 
-    def delete_table(self, table_path):
-        self.__validate_table_path(table_path=table_path)
-        response = self.__connection.DeleteTable(DeleteTableRequest(table_path=table_path))
-        if response.error.err == 0:
+    def delete_store(self, store_path):
+        self.__validate_store_path(store_path=store_path)
+        response = self.__connection.DeleteTable(DeleteTableRequest(table_path=store_path))
+        if response.error.err == ErrorCode.Value('NO_ERROR'):
             return True
-        elif response.error.err == 30:
+        elif response.error.err == ErrorCode.Value('CLUSTER_NOT_FOUND'):
             raise ClusterNotFoundError
-        elif response.error.err == 40:
+        elif response.error.err == ErrorCode.Value('PATH_NOT_FOUND'):
             raise PathNotFoundError
-        elif response.error.err == 50:
-            # table not found
+        elif response.error.err == ErrorCode.Value('TABLE_NOT_FOUND'):
             return False
         else:
-            print "SOMETHING WRONG"
-            return False
+            raise UnknownServerError
 
-    def __validate_table_path(self, table_path):
-        if not isinstance(table_path, str):
+    def __validate_store_path(self, store_path):
+        if not isinstance(store_path, str):
             raise TypeError
 
     def get_store(self, store_name, options=None):
@@ -96,4 +95,5 @@ class ConnectionImpl(Connection):
         raise NotImplementedError
 
     def close(self):
-        raise NotImplementedError
+        del self.__channel
+        del self.__connection
