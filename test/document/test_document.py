@@ -252,7 +252,7 @@ class DocumentTest(unittest.TestCase):
         self.assertEqual(doc.get_boolean('first.test_bool'), True)
         self.assertEqual(doc.get_boolean('first.test_bool_false'), False)
         self.assertEqual(doc.get_boolean('first.test_invalid'), None)
-        self.assertEqual(doc.get_string('first.test_str'), 'strstr')
+        self.assertEqual(doc.get_str('first.test_str'), 'strstr')
         self.assertEqual(doc.get_dictionary('first.test_dict'), {'a': 1, 'b': 2})
         self.assertEqual(doc.get_dictionary('first.test_dict2'), {})
         self.assertEqual(doc.get_list('first.test_list'), [1, 2, 'str', False, '1979-06-20'])

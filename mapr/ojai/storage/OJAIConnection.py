@@ -26,49 +26,61 @@ class OJAIConnection(Connection):
     def create_store(self, store_path):
         self.__validate_store_path(store_path=store_path)
         response = self.__connection.CreateTable(CreateTableRequest(table_path=store_path))
-        if response.error.err == ErrorCode.Value('NO_ERROR'):
-            return self.get_store(store_name=store_path)
-        elif response.error.err == ErrorCode.Value('TABLE_ALREADY_EXISTS'):
-            raise StoreAlreadyExistsError
-        elif response.error.err == ErrorCode.Value('CLUSTER_NOT_FOUND'):
-            raise ClusterNotFoundError
-        else:
-            raise UnknownServerError
+        if self.__validate_response(response=response):
+            return self.get_store(store_path=store_path)
 
     def is_store_exists(self, store_path):
         self.__validate_store_path(store_path=store_path)
         response = self.__connection.TableExists(TableExistsRequest(table_path=store_path))
-        if response.error.err == ErrorCode.Value('NO_ERROR'):
+
+        if response.error.err_code == ErrorCode.Value('NO_ERROR'):
             return True
-        elif response.error.err == ErrorCode.Value('CLUSTER_NOT_FOUND'):
-            raise ClusterNotFoundError
-        elif response.error.err == ErrorCode.Value('PATH_NOT_FOUND'):
-            raise PathNotFoundError
-        elif response.error.err == ErrorCode.Value('TABLE_NOT_FOUND'):
+        elif response.error.err_code == ErrorCode.Value('CLUSTER_NOT_FOUND'):
+            raise ClusterNotFoundError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('TABLE_ALREADY_EXISTS'):
+            raise StoreAlreadyExistsError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('PATH_NOT_FOUND'):
+            raise PathNotFoundError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('TABLE_NOT_FOUND'):
             return False
         else:
             raise UnknownServerError
+        # if response.error.err == ErrorCode.Value('NO_ERROR'):
+        #     return True
+        # elif response.error.err == ErrorCode.Value('CLUSTER_NOT_FOUND'):
+        #     raise ClusterNotFoundError
+        # elif response.error.err == ErrorCode.Value('PATH_NOT_FOUND'):
+        #     raise PathNotFoundError
+        # elif response.error.err == ErrorCode.Value('TABLE_NOT_FOUND'):
+        #     return False
+        # else:
+        #     raise UnknownServerError
 
     def delete_store(self, store_path):
         self.__validate_store_path(store_path=store_path)
         response = self.__connection.DeleteTable(DeleteTableRequest(table_path=store_path))
-        if response.error.err == ErrorCode.Value('NO_ERROR'):
+        return self.__validate_response(response=response)
+
+    def __validate_response(self, response):
+        if response.error.err_code == ErrorCode.Value('NO_ERROR'):
             return True
-        elif response.error.err == ErrorCode.Value('CLUSTER_NOT_FOUND'):
-            raise ClusterNotFoundError
-        elif response.error.err == ErrorCode.Value('PATH_NOT_FOUND'):
-            raise PathNotFoundError
-        elif response.error.err == ErrorCode.Value('TABLE_NOT_FOUND'):
+        elif response.error.err_code == ErrorCode.Value('CLUSTER_NOT_FOUND'):
+            raise ClusterNotFoundError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('TABLE_ALREADY_EXISTS'):
+            raise StoreAlreadyExistsError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('PATH_NOT_FOUND'):
+            raise PathNotFoundError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('TABLE_NOT_FOUND'):
             return False
         else:
             raise UnknownServerError
 
     def __validate_store_path(self, store_path):
-        if not isinstance(store_path, str):
+        if not isinstance(store_path, (str, unicode)):
             raise TypeError
 
-    def get_store(self, store_name, options=None):
-        return OJAIDocumentStore(url=self.__connection_url, store_path=store_name, connection=self.__connection)
+    def get_store(self, store_path, options=None):
+        return OJAIDocumentStore(url=self.__connection_url, store_path=store_path, connection=self.__connection)
 
     def new_document(self, json_string=None, dictionary=None):
         doc = OJAIDocument()

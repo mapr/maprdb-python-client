@@ -280,7 +280,7 @@ class OJAIDocument(Document):
             pass
         return value
 
-    def get_string(self, field_path):
+    def get_str(self, field_path):
         value = self.get(field_path=field_path)
         if isinstance(value, (str, unicode)):
             return value

@@ -5,7 +5,9 @@ import maprdb_server_pb2 as maprdb__server__pb2
 
 
 class MapRDbServerStub(object):
-  """RPC calls and their Request/Response
+  """=============================================//
+  RPC calls exported from the service    //
+  =============================================//
   """
 
   def __init__(self, channel):
@@ -39,10 +41,17 @@ class MapRDbServerStub(object):
         request_serializer=maprdb__server__pb2.FindByIdRequest.SerializeToString,
         response_deserializer=maprdb__server__pb2.FindByIdResponse.FromString,
         )
+    self.Find = channel.unary_stream(
+        '/com.mapr.maprdb.grpc.MapRDbServer/Find',
+        request_serializer=maprdb__server__pb2.FindRequest.SerializeToString,
+        response_deserializer=maprdb__server__pb2.FindResponse.FromString,
+        )
 
 
 class MapRDbServerServicer(object):
-  """RPC calls and their Request/Response
+  """=============================================//
+  RPC calls exported from the service    //
+  =============================================//
   """
 
   def CreateTable(self, request, context):
@@ -80,6 +89,13 @@ class MapRDbServerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def Find(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_MapRDbServerServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -107,6 +123,11 @@ def add_MapRDbServerServicer_to_server(servicer, server):
           servicer.FindById,
           request_deserializer=maprdb__server__pb2.FindByIdRequest.FromString,
           response_serializer=maprdb__server__pb2.FindByIdResponse.SerializeToString,
+      ),
+      'Find': grpc.unary_stream_rpc_method_handler(
+          servicer.Find,
+          request_deserializer=maprdb__server__pb2.FindRequest.FromString,
+          response_serializer=maprdb__server__pb2.FindResponse.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(

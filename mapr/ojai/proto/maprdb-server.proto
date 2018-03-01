@@ -5,24 +5,9 @@ package com.mapr.maprdb.grpc;
 option java_multiple_files = true;
 option java_package = "com.mapr.maprdb.proto.grpc";
 
-// Common data structures
-enum ErrorCode {
-  NO_ERROR = 0;                    // no error, operation was successful
-  UNKNOWN_EXCEPTION = 10;          // catch all for all undefined errors on server
-  UNKNOWN_PAYLOAD_ENCODING = 20;   // specified payload encoding is not supported
-  CLUSTER_NOT_FOUND = 30;          // specified cluster does not exist
-  PATH_NOT_FOUND = 40;             // parent path of the specified table does not exist
-  TABLE_NOT_FOUND = 50;            // specified table does not exist
-  TABLE_ALREADY_EXISTS = 51;       // specified table already exist
-  ENCODING_ERROR = 60;
-  DECODING_ERROR = 61;
-}
-
-enum PayloadEncoding {
-  JSON_ENCODING = 0;      // Payload is encoded as JSON strings
-}
-
-// RPC calls and their Request/Response
+//=============================================//
+//      RPC calls exported from the service    //
+//=============================================//
 service MapRDbServer {
   // Admin RPCs
   rpc CreateTable (CreateTableRequest) returns (CreateTableResponse) {}
@@ -32,36 +17,69 @@ service MapRDbServer {
   // CRUD RPCs
   rpc InsertOrReplace (InsertOrReplaceRequest) returns (InsertOrReplaceResponse) {}
   rpc FindById (FindByIdRequest) returns (FindByIdResponse) {}
+  rpc Find (FindRequest) returns (stream FindResponse) {}
 }
 
+//=============================================//
+//            Common RPC Messages              //
+//=============================================//
+
+/**
+ * RPC response codes
+ *
+ * TODO: Reorder enum values before release
+ */
+enum ErrorCode {
+  NO_ERROR = 0;                    // no error, operation was successful
+
+  UNKNOWN_EXCEPTION = 10;          // catch all for all undefined errors on server
+  UNKNOWN_PAYLOAD_ENCODING = 20;   // specified payload encoding is not supported
+  CLUSTER_NOT_FOUND = 30;          // specified cluster does not exist
+  PATH_NOT_FOUND = 40;             // parent path of the specified table does not exist
+  TABLE_NOT_FOUND = 50;            // specified table does not exist
+  TABLE_ALREADY_EXISTS = 51;       // specified table already exist
+  DOCUMENT_ALREADY_EXISTS = 52;    // a document with the specified _id already exist in the store
+  DOCUMENT_NOT_FOUND = 53;         // a document with the specified _id wasn't found in the store
+  ENCODING_ERROR = 60;             // an error occurred while encoding an OJAI object.
+  DECODING_ERROR = 61;             // the supplied OJAI object could not be decoded
+  UNRECOGNIZED_INSERT_MODE = 62;   // the specified insert mode was not recognized by this server
+}
+
+/**
+ * Protobuf message that encapsulates RPC operation error, if any
+ * Each RPC response should include RpcError message with `NO_ERROR` indicating success
+ */
 message RpcError {
-  ErrorCode err = 1;
-  string error_description = 2; // NULL if `err` is `NO_ERROR`
+  /**
+   * Error code for the RPC. `NO_ERROR` indicates RPC completed successfully
+   */
+  ErrorCode err_code = 1;
+
+  /**
+   * NULL if `err` is `NO_ERROR`
+   */
+  string error_message = 2;
+
+  /**
+   * NULL if `err` is `NO_ERROR`
+   */
+  string java_stack_trace = 3;
 }
 
-message InsertOrReplaceRequest {
-  string table_path = 1;
-  PayloadEncoding payload_encoding = 2;
-  string json_payload = 3; // contains payload if the payload_encoding is `JSON_ENCODING`
+/**
+ * ENUM indicating the encoding scheme of the OJAI objects in RPC request/response.
+ * Currently only JSON encoding is supported.
+ */
+enum PayloadEncoding {
+  /**
+   * Payload is encoded as JSON string
+   */
+  JSON_ENCODING = 0;
 }
 
-message InsertOrReplaceResponse {
-  RpcError error = 1;
-  PayloadEncoding payload_encoding = 2;
-  string json_payload = 3; // contains payload if the payload_encoding is `JSON_ENCODING`
-}
-
-message FindByIdRequest {
-  string table_path = 1;
-  PayloadEncoding payload_encoding = 2;
-  string json_payload = 3; // contains payload if the payload_encoding is `JSON_ENCODING`
-}
-
-message FindByIdResponse {
-  RpcError error = 1;
-  PayloadEncoding payload_encoding = 2;
-  string json_payload = 3; // contains payload if the payload_encoding is `JSON_ENCODING`
-}
+//=============================================//
+//        RPC Request/Response Messages        //
+//=============================================//
 
 message CreateTableRequest {
   string table_path = 1;
@@ -84,5 +102,94 @@ message TableExistsRequest {
 }
 
 message TableExistsResponse {
-  RpcError error = 1; // `NO_ERROR` if the table exists, `TABLE_NOT_FOUND` otherwise
+  /**
+   * `NO_ERROR` if the table exists, `TABLE_NOT_FOUND` otherwise
+   */
+  RpcError error = 1;
+}
+
+enum InsertMode {
+  /**
+   * Insert this document WHETHER OR NOT a document with the same _id exist in the store
+   */
+  INSERT_OR_REPLACE = 0;
+
+  /**
+   * Insert this document ONLY IF another document with the same _id DOES NOT exist in the store
+   */
+  INSERT = 1;
+
+  /**
+   * Insert this document ONLY IF a document with the same _id EXISTS in the store
+   */
+  REPLACE = 2;
+}
+
+message InsertOrReplaceRequest {
+  string table_path = 1;
+  InsertMode insert_mode = 2;
+  PayloadEncoding payload_encoding = 3;
+
+  /**
+   * Contains JSON encoded OJAI Document if the payload_encoding is `JSON_ENCODING`
+   */
+  string json_document = 10;
+}
+
+message InsertOrReplaceResponse {
+  RpcError error = 1;
+}
+
+message FindByIdRequest {
+  string table_path = 1;
+  PayloadEncoding payload_encoding = 2;
+
+  /**
+   * Contains JSON encoded OJAI Document with "_id" field if the payload_encoding is `JSON_ENCODING`
+   * e.g. {"_id": "user0001"}, or {"_id": {"$binary": "dXNlcjAwMDE="}}
+   */
+  string json_document = 10;
+}
+
+message FindByIdResponse {
+  RpcError error = 1;
+  PayloadEncoding payload_encoding = 2;
+
+  /**
+   * Contains JSON encoded OJAI Document if the payload_encoding is `JSON_ENCODING`
+   */
+  string json_document = 10;
+}
+
+message FindRequest {
+  string table_path = 1;
+  PayloadEncoding payload_encoding = 2;
+  bool include_query_plan = 3;
+
+  /**
+   * Contains JSON encoded OJAI Query if the payload_encoding is `JSON_ENCODING`
+   */
+  string json_query = 10;
+}
+
+/**
+ * Results of Find() RPCs are streamed to the clients, with each FindResponse containing
+ * one OJAI document. If the `include_query_plan` in FindRequest was set to true, the first
+ * FindResponse will contain the query plan instead of OJAI Document
+ */
+message FindResponse {
+  RpcError error = 1;
+  PayloadEncoding payload_encoding = 2;
+
+  oneof data {
+    /**
+     * Contains JSON encoded OJAI QueryPlan if the payload_encoding is `JSON_ENCODING`
+     */
+    string json_query_plan = 10;
+
+    /**
+     * Contains JSON encoded OJAI Document if the payload_encoding is `JSON_ENCODING`
+     */
+    string json_document = 11;
+  }
 }

@@ -12,7 +12,13 @@ from mapr.ojai.o_types.OTimestamp import OTimestamp
 from struct import *
 
 
-class JsonValue(Value):
+# We don't use OJAIValue now.
+# I think we need it when start implementing find methods
+class OJAIValue(Value):
+
+    def get_time_as_long(self):
+        pass
+
     def __init__(self, value_type=None, json_value=None, obj_value=None, bool_value=None):
         # type in ValueType enum
         self.value_type = value_type
@@ -78,7 +84,7 @@ class JsonValue(Value):
         self.check_type(ValueType.DICTIONARY)
         # TODO added get_map implementation after JSONDocument will done
         # TODO Test it
-        from mapr.ojai.ojai import OJAIDocument
+        from mapr.ojai.ojai.OJAIDocument import OJAIDocument
         doc = OJAIDocument(json_value=self)
         return doc
 
@@ -98,7 +104,7 @@ class JsonValue(Value):
         self.check_type(ValueType.ARRAY)
         # TODO added get_map implementation after JSONList will done
         # TODO TEST IT
-        json_list = OJAIList(json_value=self)
+        json_list = OJAIList()
         return json_list
 
     def get_byte(self):
@@ -312,7 +318,7 @@ class JsonValue(Value):
             return self.obj_value.__eq__(other)
         elif isinstance(other, list):
             return self.obj_value.__eq__(other)
-        elif isinstance(other, JsonValue):
+        elif isinstance(other, OJAIValue):
             return self.__eq__(other).get_obj()
         else:
             return False

@@ -2,13 +2,16 @@ from ojai.document.DocumentStore import DocumentStore
 
 from mapr.ojai.exceptions.ClusterNotFoundError import ClusterNotFoundError
 from mapr.ojai.exceptions.DecodingError import DecodingError
+from mapr.ojai.exceptions.DocumentAlreadyExistsError import DocumentAlreadyExistsError
 from mapr.ojai.exceptions.EncodingError import EncodingError
 from mapr.ojai.exceptions.InvalidOJAIDocumentError import InvalidOJAIDocumentError
 from mapr.ojai.exceptions.PathNotFoundError import PathNotFoundError
 from mapr.ojai.exceptions.StoreNotFoundError import StoreNotFoundError
+from mapr.ojai.exceptions.UnknownPayloadEncodingError import UnknownPayloadEncodingError
 from mapr.ojai.exceptions.UnknownServerError import UnknownServerError
 from mapr.ojai.exceptions.UnrecognizedInsertModeError import UnrecognizedInsertModeError
-from mapr.ojai.proto.gen.maprdb_server_pb2 import InsertOrReplaceRequest, PayloadEncoding, FindByIdRequest, ErrorCode
+from mapr.ojai.proto.gen.maprdb_server_pb2 import InsertOrReplaceRequest, PayloadEncoding, FindByIdRequest, ErrorCode, \
+    InsertMode
 
 
 class OJAIDocumentStore(DocumentStore):
@@ -30,9 +33,9 @@ class OJAIDocumentStore(DocumentStore):
         response = self.__connection.FindById(
             FindByIdRequest(table_path=self.__store_path,
                             payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-                            json_payload=_id))
+                            json_document=_id))
 
-        return response.error.err
+        return response.error.err_code
 
     def find(self, query=None, field_paths=None, condition=None, query_string=None):
         pass
@@ -41,10 +44,9 @@ class OJAIDocumentStore(DocumentStore):
         self.__validate_document(doc_to_insert=doc)
         response = self.__connection.InsertOrReplace(
             InsertOrReplaceRequest(table_path=self.__store_path,
-                                   # insert_mode=InsertMode.Value('INSERT_OR_REPLACE'),
+                                   insert_mode=InsertMode.Value('INSERT_OR_REPLACE'),
                                    payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-                                   json_payload=doc.as_json_str()))
-
+                                   json_document=doc.as_json_str()))
         self.__validate_response(response)
 
     def update(self, _id, mutation):
@@ -54,26 +56,24 @@ class OJAIDocumentStore(DocumentStore):
         pass
 
     def insert(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
-        # self.__validate_document(doc_to_insert=doc)
-        # response = self.__connection.InsertOrReplace(
-        #     InsertOrReplaceRequest(table_path=self.__store_path,
-        #                            insert_mode=InsertMode.Value('INSERT'),
-        #                            payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-        #                            json_payload=doc.as_json_str()))
-        #
-        # self.__validate_response(response)
-        raise NotImplementedError
+        self.__validate_document(doc_to_insert=doc)
+        response = self.__connection.InsertOrReplace(
+            InsertOrReplaceRequest(table_path=self.__store_path,
+                                   insert_mode=InsertMode.Value('INSERT'),
+                                   payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
+                                   json_document=doc.as_json_str()))
+
+        self.__validate_response(response)
 
     def replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
-        # self.__validate_document(doc_to_insert=doc)
-        # response = self.__connection.InsertOrReplace(
-        #     InsertOrReplaceRequest(table_path=self.__store_path,
-        #                            insert_mode=InsertMode.Value('REPLACE'),
-        #                            payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-        #                            json_payload=doc.as_json_str()))
-        #
-        # self.__validate_response(response)
-        raise NotImplementedError
+        self.__validate_document(doc_to_insert=doc)
+        response = self.__connection.InsertOrReplace(
+            InsertOrReplaceRequest(table_path=self.__store_path,
+                                   insert_mode=InsertMode.Value('REPLACE'),
+                                   payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
+                                   json_document=doc.as_json_str()))
+
+        self.__validate_response(response)
 
     def increment(self, _id, field, inc):
         pass
@@ -94,25 +94,29 @@ class OJAIDocumentStore(DocumentStore):
         if not isinstance(doc_to_insert, OJAIDocument):
             raise TypeError
 
-        if '_id' in doc_to_insert.as_dictionary() and isinstance(doc_to_insert.as_dictionary()['_id'], str):
+        if '_id' in doc_to_insert.as_dictionary() and isinstance(doc_to_insert.as_dictionary()['_id'], (str, unicode)):
             return True
 
-        raise InvalidOJAIDocumentError
+        raise InvalidOJAIDocumentError(m="Invalid OJAI Document")
 
     def __validate_response(self, response):
-        if response.error.err == ErrorCode.Value('NO_ERROR'):
+        if response.error.err_code == ErrorCode.Value('NO_ERROR'):
             return
-        if response.error.err == ErrorCode.Value('CLUSTER_NOT_FOUND'):
-            raise ClusterNotFoundError
-        elif response.error.err == ErrorCode.Value('PATH_NOT_FOUND'):
-            raise PathNotFoundError
-        elif response.error.err == ErrorCode.Value('TABLE_NOT_FOUND'):
-            raise StoreNotFoundError
-        elif response.error.err == ErrorCode.Value('ENCODING_ERROR'):
-            raise EncodingError
-        elif response.error.err == ErrorCode.Value('DECODING_ERROR'):
-            raise DecodingError
-        elif response.error.err == ErrorCode.Value('UNRECOGNIZED_INSERT_MODE'):
-            raise UnrecognizedInsertModeError
-        elif response.error.err == ErrorCode.Value('UNKNOWN_EXCEPTION'):
-            raise UnknownServerError
+        if response.error.err_code == ErrorCode.Value('CLUSTER_NOT_FOUND'):
+            raise ClusterNotFoundError(m=response.error.error_message)
+        if response.error.err_code == ErrorCode.Value('UNKNOWN_PAYLOAD_ENCODING'):
+            raise UnknownPayloadEncodingError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('PATH_NOT_FOUND'):
+            raise PathNotFoundError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('TABLE_NOT_FOUND'):
+            raise StoreNotFoundError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('DOCUMENT_ALREADY_EXISTS'):
+            raise DocumentAlreadyExistsError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('ENCODING_ERROR'):
+            raise EncodingError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('DECODING_ERROR'):
+            raise DecodingError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('UNRECOGNIZED_INSERT_MODE'):
+            raise UnrecognizedInsertModeError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('UNKNOWN_EXCEPTION'):
+            raise UnknownServerError('Check server logs.')
