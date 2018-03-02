@@ -1,0 +1,25 @@
+1) Update or install maven 3.5.x++
+sudo yum remove maven
+sudo wget http://apache.cp.if.ua/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz
+tar -xzvf apache-maven-3.5.2-bin.tar.gz
+mv apache-maven-3.5.2 maven
+sudo vi /etc/profile.d/maven.sh
+insert into maven.sh
+""
+    export M2_HOME=/home/mapr/maven
+    export PATH=${M2_HOME}/bin:${PATH}
+""
+source /etc/profile.d/maven.sh
+
+2) clone service repo
+git clone https://github.com/mapr/maprdb-grpc-service.git
+3) checkout on dev branch
+cd maprdb-grpc-service/
+git checkout dev
+4) build project
+mvn clean install -DskipTests
+5)launch service
+cd launcher/
+mvn exec:java -Dexec.mainClass="com.mapr.data.service.Launcher"
+
+

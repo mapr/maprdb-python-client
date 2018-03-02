@@ -45,16 +45,6 @@ class OJAIConnection(Connection):
             return False
         else:
             raise UnknownServerError
-        # if response.error.err == ErrorCode.Value('NO_ERROR'):
-        #     return True
-        # elif response.error.err == ErrorCode.Value('CLUSTER_NOT_FOUND'):
-        #     raise ClusterNotFoundError
-        # elif response.error.err == ErrorCode.Value('PATH_NOT_FOUND'):
-        #     raise PathNotFoundError
-        # elif response.error.err == ErrorCode.Value('TABLE_NOT_FOUND'):
-        #     return False
-        # else:
-        #     raise UnknownServerError
 
     def delete_store(self, store_path):
         self.__validate_store_path(store_path=store_path)
