@@ -20,15 +20,3 @@ If some issue occurs with setuptools, use command:
 If you want to add created package locally in your project, copy dist/maprdb_python_client* to your project
 and in virtual env execute:
 ```pip install maprdb_python_client-0.1-py2-none-any.whl```
-
-
-
-Done.
-
-Now you able to use the public API.
-
-Example:
-```
-from ojai.document.Document import Document
-class JsonDocument(Document):
-```
