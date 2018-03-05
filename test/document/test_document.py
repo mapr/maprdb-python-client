@@ -124,13 +124,15 @@ class DocumentTest(unittest.TestCase):
     def test_doc_set_dict(self):
         test_dict = {'field_one': 12, 'field_two': 14}
         doc = OJAIDocument().set('test_dict', test_dict)
-        self.assertEqual(doc.as_dictionary(), {'test_dict': test_dict})
+        self.assertEqual(doc.as_dictionary(), {'test_dict': {'field_one': {'$numberLong': 12},
+                                                             'field_two': {'$numberLong': 14}}})
         doc.set_id(50)
-        self.assertEqual(doc.as_dictionary(), {'_id': 50, 'test_dict': test_dict})
+        self.assertEqual(doc.as_dictionary(), {'_id': 50, 'test_dict': {'field_one': {'$numberLong': 12},
+                                                             'field_two': {'$numberLong': 14}}})
         doc.set('test_dict.insert', 90)
         self.assertEqual(doc.as_dictionary(), {'_id': 50,
-                                               'test_dict': {'field_one': 12,
-                                                             'field_two': 14,
+                                               'test_dict': {'field_one': {'$numberLong': 12},
+                                                             'field_two': {'$numberLong': 14},
                                                              'insert': {'$numberLong': 90}}})
 
     def test_doc_set_byte_array(self):
@@ -253,7 +255,7 @@ class DocumentTest(unittest.TestCase):
         self.assertEqual(doc.get_boolean('first.test_bool_false'), False)
         self.assertEqual(doc.get_boolean('first.test_invalid'), None)
         self.assertEqual(doc.get_str('first.test_str'), 'strstr')
-        self.assertEqual(doc.get_dictionary('first.test_dict'), {'a': 1, 'b': 2})
+        self.assertEqual(doc.get_dictionary('first.test_dict'), {'a': {'$numberLong': 1}, 'b': {'$numberLong': 2}})
         self.assertEqual(doc.get_dictionary('first.test_dict2'), {})
         self.assertEqual(doc.get_list('first.test_list'), [1, 2, 'str', False, '1979-06-20'])
         self.assertEqual(doc.get_binary('first.test_binary'), '\x13\x00\x00\x00\x08\x00')
@@ -273,3 +275,39 @@ class DocumentTest(unittest.TestCase):
         # doc = OJAIDocument().set('test_list', [1, {'dict_list': [{'b': 55}]}])
         # print doc.as_dictionary()
         # print doc.as_json_str()
+
+
+    # def test_test(self):
+    #     doc = OJAIDocument().set('a.b.c', 1).set('a.b.d', 2).set('a.k.m', 3).set('a.k.c', 4)
+    #     payment = {"payment_method": "card",
+    #                "name": "visa",
+    #                "card_info": {
+    #                    "number": "1234 1234 1234 1234",
+    #                    # "exp_date": ODate(date=ODate.parse("2022-10-24")),
+    #                    "exp_date": ODate(year=2022, month=10, day_of_month=24),
+    #                    "cvv": 123}
+    #                }
+    #
+    #     doc.set('payment', payment)
+    #     print(doc.as_dictionary())
+    #
+    #
+    #
+    # def test_date(self):
+    #     t = ODate.parse("2022-10-24")
+    #     # print(t)
+    #     # print(t.get_year())
+    #     # print(t.get_month())
+    #     # print(t.get_day_of_month())
+    #     # print(type(t))
+    #     payment = {"payment_method": "card",
+    #                "name": "visa",
+    #                "card_info": {
+    #                    "number": "1234 1234 1234 1234",
+    #                    "exp_date": ODate(date=ODate.parse("2022-10-24")),
+    #                    "cvv": 123}
+    #                }
+    #
+    #
+    #
+    #     print(payment)

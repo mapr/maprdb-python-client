@@ -7,7 +7,7 @@ from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 connection = ConnectionFactory.get_connection(url="localhost:5678")
 
 # Get a store and assign it as a DocumentStore object
-store = connection.create_store(store_path="/sample_store2")
+store = connection.get_store(store_path="/sample_store1")
 
 # Json string or json dictionary
 json_dict = {"_id": "id002",
@@ -18,8 +18,6 @@ json_dict = {"_id": "id002",
                  "city": "Gotham"}
              }
 
-
-# TODO Add ability to create
 # Json string or json dictionary
 payment = {"payment_method": "card",
            "name": "visa",
@@ -33,7 +31,7 @@ payment = {"payment_method": "card",
 new_document = connection.new_document(dictionary=json_dict)
 # Add nested dictionary into document
 new_document.set(field_path='payment', value=payment)
-# Insert new document into the store
+# Insert or replace new document into the store
 store.insert_or_replace(doc=new_document)
 
 # close

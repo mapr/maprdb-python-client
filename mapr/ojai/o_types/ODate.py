@@ -1,7 +1,7 @@
 import datetime
 import dateutil.parser
 
-from mapr.ojai.exceptions import UnsupportedConstructorException
+from mapr.ojai.exceptions.UnsupportedConstructorException import UnsupportedConstructorException
 
 
 class ODate(object):
@@ -15,10 +15,14 @@ class ODate(object):
             self.__date = datetime.datetime(year, month, day_of_month)
             self.__days_since_epoch = (self.__date - self.__EPOCH_DATE).days
         elif date is not None:
-            if type(date) is not datetime.datetime:
-                raise TypeError("date should be datetime.date type or comparable to it")
-            self.__date = date
-            self.__days_since_epoch = (self.__date - self.__EPOCH_DATE).days
+            if isinstance(date, ODate):
+                self.__date = datetime.datetime(date.get_year(), date.get_month(), date.get_day_of_month())
+                self.__days_since_epoch = (self.__date - self.__EPOCH_DATE).days
+            else:
+                if type(date) is not datetime.datetime:
+                    raise TypeError("date should be datetime.date type or comparable to it")
+                self.__date = date
+                self.__days_since_epoch = (self.__date - self.__EPOCH_DATE).days
         elif epoch is not None:
             self.__date = datetime.datetime.fromtimestamp(epoch)
             self.__days_since_epoch = (self.__date - self.__EPOCH_DATE).days

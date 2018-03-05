@@ -1,3 +1,5 @@
+import json
+
 from ojai.document.DocumentStore import DocumentStore
 
 from mapr.ojai.exceptions.ClusterNotFoundError import ClusterNotFoundError
@@ -41,12 +43,22 @@ class OJAIDocumentStore(DocumentStore):
         pass
 
     def insert_or_replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
-        self.__validate_document(doc_to_insert=doc)
-        response = self.__connection.InsertOrReplace(
-            InsertOrReplaceRequest(table_path=self.__store_path,
-                                   insert_mode=InsertMode.Value('INSERT_OR_REPLACE'),
-                                   payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-                                   json_document=doc.as_json_str()))
+        if doc is not None:
+            self.__validate_document(doc_to_insert=doc)
+            response = self.__connection.InsertOrReplace(
+                InsertOrReplaceRequest(table_path=self.__store_path,
+                                       insert_mode=InsertMode.Value('INSERT_OR_REPLACE'),
+                                       payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
+                                       json_document=doc.as_json_str()))
+        elif json_dictionary is not None:
+            self.__validate_dict(json_dictionary)
+            response = self.__connection.InsertOrReplace(
+                InsertOrReplaceRequest(table_path=self.__store_path,
+                                       insert_mode=InsertMode.Value('INSERT_OR_REPLACE'),
+                                       payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
+                                       json_document=json.dumps(json_dictionary, indent=4)))
+        else:
+            raise AttributeError
         self.__validate_response(response)
 
     def update(self, _id, mutation):
@@ -98,6 +110,15 @@ class OJAIDocumentStore(DocumentStore):
             return True
 
         raise InvalidOJAIDocumentError(m="Invalid OJAI Document")
+
+    def __validate_dict(self, dict_to_insert):
+        if not isinstance(dict_to_insert, dict):
+            raise TypeError
+
+        if '_id' in dict_to_insert and isinstance(dict_to_insert['_id'], (str, unicode)):
+            return True
+
+        raise InvalidOJAIDocumentError(m="Invalid dictionary")
 
     def __validate_response(self, response):
         if response.error.err_code == ErrorCode.Value('NO_ERROR'):

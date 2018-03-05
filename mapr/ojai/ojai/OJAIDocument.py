@@ -9,6 +9,7 @@ from mapr.ojai.o_types.ODate import ODate
 from mapr.ojai.o_types.OInterval import OInterval
 from mapr.ojai.o_types.OTime import OTime
 from mapr.ojai.o_types.OTimestamp import OTimestamp
+from mapr.ojai.ojai.OJAIDict import OJAIDict
 from mapr.ojai.ojai.OJAIList import OJAIList
 
 
@@ -137,6 +138,9 @@ class OJAIDocument(Document):
 
         return tmp_dict
 
+    def parse_dict(self, dictionary):
+        raise NotImplementedError
+
     def as_dictionary(self):
         return self.__internal_dict
 
@@ -208,6 +212,7 @@ class OJAIDocument(Document):
                                                                               oja_type='$binary'))
 
     def __set_dict(self, field_path, value):
+        value = OJAIDict.parse_dict(value)
         self.__internal_dict = self.__merge_two_dicts(self.__internal_dict,
                                                       self.__parse_field_path(field_path=field_path,
                                                                               value=value))
