@@ -1,10 +1,10 @@
 1. Now it builds only for python 2.7 or higher. Check your python version
     python --version
-2. Check that pip installed or install pip:
-    pip -V
-https://packaging.python.org/guides/installing-using-linux-tools/
-centos as example:
-    sudo yum install python-pip
+2. Check that you have installed pip by running "pip -V".
+If you have not installed pip, see https://packaging.python.org/guides/installing-using-linux-tools/.
+For example, to install pip on CentOS, run:
+
+sudo yum install python-pip
 3. clone python client repo
 git clone https://github.com/mapr/maprdb-python-client.git
 cd maprdb-python-client/
@@ -14,11 +14,11 @@ git checkout dev
 sudo pip install ojai_python_api-0.1-py2-none-any.whl
 sudo pip install aenum grpcio grpcio-tools python-dateutil
 
-5. Write your own insert or launch examples in examples/ dir
+5. Write your own insert or launch the examples in examples/ dir
 cd examples/
 python Sample.py
 python Sample2.py
 
-and check result in MapR-DB
+and check the result in MapR-DB
 
 

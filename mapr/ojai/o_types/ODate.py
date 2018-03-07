@@ -5,7 +5,6 @@ from mapr.ojai.exceptions.UnsupportedConstructorException import UnsupportedCons
 
 
 class ODate(object):
-    serial_version_uid = 0xaffa9a5dfe3ff863L
 
     __EPOCH_DATE = datetime.datetime(1970, 1, 1)
     __START_OF_DAY = datetime.time(hour=0, minute=0, second=0)

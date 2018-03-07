@@ -5,8 +5,6 @@ from mapr.ojai.o_types import constants
 class OInterval(object):
     """An immutable class which encapsulates a time interval."""
 
-    __SERIAL_VERSION_UID = 0x228372f2047c1511L
-
     __APPROX_DAYS_IN_YEAR = ((365 * 4) + 1)/4.0
 
     __APPROX_DAYS_IN_MONTH = __APPROX_DAYS_IN_YEAR / 12

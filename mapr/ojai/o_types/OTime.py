@@ -6,7 +6,6 @@ from mapr.ojai.exceptions import UnsupportedConstructorException
 
 class OTime(object):
 
-    __serial_version_uid = 0xaffa9a5dfe3ff863L
     __EPOCH_DATE = datetime.datetime(1970, 1, 1)
 
     def __init__(self, timestamp=None, hour_of_day=None, minutes=None,

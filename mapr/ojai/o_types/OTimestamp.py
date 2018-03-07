@@ -1,5 +1,4 @@
 import datetime
-from time import timezone
 
 import dateutil.parser
 
@@ -7,7 +6,6 @@ from mapr.ojai.exceptions.UnsupportedConstructorException import UnsupportedCons
 
 
 class OTimestamp(object):
-    __serial_version_uid = 0x3800c3b7b7f0e008L
     __epoch = datetime.datetime.utcfromtimestamp(0)
     # TODO Is UTC_CHRONOLOGY must return current time in UTC time zone? and must be created only once with instance?
     __UTC_CHRONOLOGY = datetime.datetime.utcfromtimestamp(0)
