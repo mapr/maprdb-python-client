@@ -1,6 +1,6 @@
 from mapr.ojai.ojai import OJAIDocument
 
-from mapr.ojai.ojai.JsonDocumentStream import JsonDocumentStream
+from mapr.ojai.ojai.OJAIDocumentStream import JsonDocumentStream
 from mapr.ojai.ojai.JsonOptions import Options
 
 

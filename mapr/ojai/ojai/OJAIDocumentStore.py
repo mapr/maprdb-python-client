@@ -12,8 +12,9 @@ from mapr.ojai.exceptions.StoreNotFoundError import StoreNotFoundError
 from mapr.ojai.exceptions.UnknownPayloadEncodingError import UnknownPayloadEncodingError
 from mapr.ojai.exceptions.UnknownServerError import UnknownServerError
 from mapr.ojai.exceptions.UnrecognizedInsertModeError import UnrecognizedInsertModeError
+from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 from mapr.ojai.proto.gen.maprdb_server_pb2 import InsertOrReplaceRequest, PayloadEncoding, FindByIdRequest, ErrorCode, \
-    InsertMode
+    InsertMode, FindRequest
 
 
 class OJAIDocumentStore(DocumentStore):
@@ -32,15 +33,39 @@ class OJAIDocumentStore(DocumentStore):
     def find_by_id(self, _id, field_paths=None, condition=None):
         if not isinstance(_id, (str, unicode)):
             raise TypeError
-        response = self.__connection.FindById(
-            FindByIdRequest(table_path=self.__store_path,
-                            payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-                            json_document=_id))
+        doc = OJAIDocument().set_id(_id=_id)
+        request = FindByIdRequest(table_path=self.__store_path,
+                                  payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
+                                  json_document=doc.as_json_str())
 
-        return response.error.err_code
+        if request.WhichOneof('data') == 'json_document'\
+                and request.payload_encoding == PayloadEncoding.Value('JSON_ENCODING'):
+            response = self.__connection.FindById(request)
+        else:
+            raise UnknownPayloadEncodingError(m='Invalid find_by_id params')
+
+        from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator
+        return OJAIDocumentCreator.create_document(json_string=response.json_document)
 
     def find(self, query=None, field_paths=None, condition=None, query_string=None):
-        pass
+        if query_string is not None and query is not None:
+            raise AttributeError
+        if query_string is not None:
+            request = FindRequest(table_path=self.__store_path,
+                                  payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
+                                  include_query_plan=False,
+                                  json_query=query_string)
+        elif query is not None:
+            raise NotImplementedError
+        else:
+            raise TypeError
+
+        response = self.__connection.Find(request)
+        self.__validate_response(response=response)
+
+        # TODO Query and DocumentStream required
+        raise NotImplementedError
+
 
     def insert_or_replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
         if doc is not None:
@@ -59,7 +84,7 @@ class OJAIDocumentStore(DocumentStore):
                                        json_document=json.dumps(json_dictionary, indent=4)))
         else:
             raise AttributeError
-        self.__validate_response(response)
+        self.__validate_response(response=response)
 
     def update(self, _id, mutation):
         pass
@@ -121,6 +146,8 @@ class OJAIDocumentStore(DocumentStore):
         raise InvalidOJAIDocumentError(m="Invalid dictionary")
 
     def __validate_response(self, response):
+        print response.error.err_code
+        print response.error.error_message
         if response.error.err_code == ErrorCode.Value('NO_ERROR'):
             return
         if response.error.err_code == ErrorCode.Value('CLUSTER_NOT_FOUND'):

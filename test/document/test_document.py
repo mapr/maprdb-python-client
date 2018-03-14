@@ -63,9 +63,12 @@ class DocumentTest(unittest.TestCase):
                                                                millis_of_second=12)).set_id('121212')
         doc3 = OJAIDocument().set('test_timestamp', OTimestamp(date=datetime(year=1970, month=12, day=12, hour=12,
                                                                              minute=12, second=12))).set_id('121212')
-        self.assertEqual(doc1.as_dictionary(), {'_id': '121212', 'test_timestamp': {'$date': '1970-12-12T19:12:12Z'}})
-        self.assertEqual(doc2.as_dictionary(), {'_id': '121212', 'test_timestamp': {'$date': '1970-12-12T12:12:12Z'}})
-        self.assertEqual(doc3.as_dictionary(), {'_id': '121212', 'test_timestamp': {'$date': '1970-12-12T12:12:12Z'}})
+        self.assertEqual(doc1.as_dictionary(), {'_id': '121212',
+                                                'test_timestamp': {'$date': '1970-12-12T19:12:12.000000Z'}})
+        self.assertEqual(doc2.as_dictionary(), {'_id': '121212',
+                                                'test_timestamp': {'$date': '1970-12-12T12:12:12.012000Z'}})
+        self.assertEqual(doc3.as_dictionary(), {'_id': '121212',
+                                                'test_timestamp': {'$date': '1970-12-12T12:12:12.000000Z'}})
 
     def test_doc_set_interval(self):
         doc = OJAIDocument() \
@@ -79,7 +82,7 @@ class DocumentTest(unittest.TestCase):
         self.assertEqual(doc.as_dictionary(), {'test_interval': {'$interval': 172800000},
                                                '_id': 121212,
                                                'test_int': {'$numberLong': 123},
-                                               'test_timestamp': {'$date': '1970-12-12T19:12:12Z'},
+                                               'test_timestamp': {'$date': '1970-12-12T19:12:12.000000Z'},
                                                'test_float': {'$numberFloat': 11.1}})
 
     def test_doc_set_int(self):
@@ -151,7 +154,8 @@ class DocumentTest(unittest.TestCase):
         self.assertEqual(doc.as_dictionary(), {'test_int_again': {'$numberLong': 55},
                                                'internal_doc': {'_id': 121212,
                                                                 'test_int': {'$numberLong': 123},
-                                                                'test_timestamp': {'$date': '1970-12-12T19:12:12Z'},
+                                                                'test_timestamp':
+                                                                    {'$date': '1970-12-12T19:12:12.000000Z'},
                                                                 'test_float': {'$numberFloat': 11.1}}})
 
     def test_doc_set_none(self):
@@ -166,7 +170,7 @@ class DocumentTest(unittest.TestCase):
             .set('test_float', 11.1)
         self.assertEqual(doc.as_dictionary(), {'_id': 121212,
                                                'test_int': {'$numberLong': 123},
-                                               'test_timestamp': {'$date': '1970-12-12T19:12:12Z'},
+                                               'test_timestamp': {'$date': '1970-12-12T19:12:12.000000Z'},
                                                'test_float': {'$numberFloat': 11.1}})
         doc.delete('test_timestamp')
         self.assertEqual(doc.as_dictionary(), {'_id': 121212,
@@ -183,14 +187,14 @@ class DocumentTest(unittest.TestCase):
 
         self.assertEqual(doc.as_dictionary(), {'_id': 121212,
                                                'test_int': {'$numberLong': 123},
-                                               'first': {'test_timestamp': {'$date': '1970-12-12T19:12:12Z'},
+                                               'first': {'test_timestamp': {'$date': '1970-12-12T19:12:12.000000Z'},
                                                          'test_int': {'$numberLong': 1235}},
                                                'test_float': {'$numberFloat': 11.1}})
 
         doc.delete('first.test_int')
         self.assertEqual(doc.as_dictionary(), {'_id': 121212,
                                                'test_int': {'$numberLong': 123},
-                                               'first': {'test_timestamp': {'$date': '1970-12-12T19:12:12Z'}},
+                                               'first': {'test_timestamp': {'$date': '1970-12-12T19:12:12.000000Z'}},
                                                'test_float': {'$numberFloat': 11.1}})
         doc.delete('first.test_timestamp')
         self.assertEqual(doc.as_dictionary(), {'_id': 121212,
@@ -249,7 +253,7 @@ class DocumentTest(unittest.TestCase):
         self.assertEqual(doc.get_float('first.test_float'), 123456789.123)
         self.assertEqual(doc.get_time('first.test_time').time_to_str(), '12:12:12')
         self.assertEqual(doc.get_interval('first.test_interval').time_duration, 172800000)
-        self.assertEqual(doc.get_timestamp('first.test_timestamp').__str__(), '1970-12-12T19:12:12Z')
+        self.assertEqual(doc.get_timestamp('first.test_timestamp').__str__(), '1970-12-12T19:12:12.000000Z')
         self.assertEqual(doc.get_date('first.test_date').to_date_str(), '1979-06-19')
         self.assertEqual(doc.get_boolean('first.test_bool'), True)
         self.assertEqual(doc.get_boolean('first.test_bool_false'), False)

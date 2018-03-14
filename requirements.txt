@@ -1,6 +1,0 @@
-aenum==2.0.10
-grpcio==1.9.1
-grpcio-tools==1.9.1
-ojai-python-api==0.1
-python-dateutil==2.6.1
-regex==2018.2.8

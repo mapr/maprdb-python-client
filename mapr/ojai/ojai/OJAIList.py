@@ -17,8 +17,11 @@ class OJAIList(list):
                     if isinstance(v, list):
                         ojai_list.append({k: OJAIList.set_list(v)})
                     else:
-                        internal_value = dump_document.set('dump', v).as_dictionary()['dump']
-                        ojai_list.append({k: internal_value})
+                        if k in ['$numberLong', '$numberFloat']:
+                            ojai_list.append({k: v})
+                        else:
+                            internal_value = dump_document.set('dump', v).as_dictionary()['dump']
+                            ojai_list.append({k: internal_value})
             else:
                 ojai_list.append(dump_document.set('dump', elem).as_dictionary()['dump'])
             dump_document.clear()

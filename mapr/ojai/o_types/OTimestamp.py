@@ -8,7 +8,8 @@ from mapr.ojai.exceptions.UnsupportedConstructorException import UnsupportedCons
 class OTimestamp(object):
     __epoch = datetime.datetime.utcfromtimestamp(0)
     # TODO Is UTC_CHRONOLOGY must return current time in UTC time zone? and must be created only once with instance?
-    __UTC_CHRONOLOGY = datetime.datetime.utcfromtimestamp(0)
+    # __UTC_CHRONOLOGY = datetime.datetime.utcfromtimestamp(0)
+    __UTC_CHRONOLOGY = datetime.datetime(1970, 1, 1, 0, 0, 0, 000)
 
     """ Two types of OTimestamp init:
         First params set:
@@ -75,6 +76,8 @@ class OTimestamp(object):
     def __get_date_time(self):
         if self.__date_time is None:
             self.__date_time = self.__UTC_CHRONOLOGY + datetime.timedelta(milliseconds=self.millis_since_epoch)
+            # from dateutil.relativedelta import relativedelta
+            # self.__date_time = self.__UTC_CHRONOLOGY + relativedelta(microsecond=self.millis_since_epoch)
         return self.date_time
 
     # Create datetime object from millis since epoch
@@ -98,7 +101,7 @@ class OTimestamp(object):
 
     def __str__(self):
         # return self.to_str('%Y-%m-%d %H:%M:%S')
-        return self.to_str('%Y-%m-%dT%H:%M:%SZ')
+        return self.to_str('%Y-%m-%dT%H:%M:%S.%fZ')
 
     def __cmp__(self, other):
         if type(other) is not self or type(other) is not type(datetime.datetime):

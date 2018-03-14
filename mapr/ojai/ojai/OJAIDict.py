@@ -9,7 +9,11 @@ class OJAIDict(dict):
         ojai_dict = {}
 
         for k, v in value.iteritems():
-            ojai_dict[k] = dump_document.set('dump', v).as_dictionary()['dump']
+            # this if statement needs for case, when we parsed a dictionary from data access service
+            if k in ['$numberLong', '$numberFloat']:
+                ojai_dict[k] = v
+            else:
+                ojai_dict[k] = dump_document.set('dump', v).as_dictionary()['dump']
             dump_document.clear()
 
         return ojai_dict

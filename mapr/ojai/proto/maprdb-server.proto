@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package com.mapr.maprdb.grpc;
+package com.mapr.db.grpc;
 
 option java_multiple_files = true;
-option java_package = "com.mapr.maprdb.proto.grpc";
+option java_package = "com.mapr.db.proto.grpc";
 
 //=============================================//
 //      RPC calls exported from the service    //
@@ -25,29 +25,76 @@ service MapRDbServer {
 //=============================================//
 
 /**
- * RPC response codes
+ * RPC response error codes. POSIX error codes are used where appropriate.
  *
- * TODO: Reorder enum values before release
+ * Extended error codes, those that can not be mapped to a POSIX error code, begins at 256.
  */
 enum ErrorCode {
-  NO_ERROR = 0;                    // no error, operation was successful
+  /**
+   * No error, operation completed successfully.
+   */
+  NO_ERROR = 0;
 
-  UNKNOWN_EXCEPTION = 10;          // catch all for all undefined errors on server
-  UNKNOWN_PAYLOAD_ENCODING = 20;   // specified payload encoding is not supported
-  CLUSTER_NOT_FOUND = 30;          // specified cluster does not exist
-  PATH_NOT_FOUND = 40;             // parent path of the specified table does not exist
-  TABLE_NOT_FOUND = 50;            // specified table does not exist
-  TABLE_ALREADY_EXISTS = 51;       // specified table already exist
-  DOCUMENT_ALREADY_EXISTS = 52;    // a document with the specified _id already exist in the store
-  DOCUMENT_NOT_FOUND = 53;         // a document with the specified _id wasn't found in the store
-  ENCODING_ERROR = 60;             // an error occurred while encoding an OJAI object.
-  DECODING_ERROR = 61;             // the supplied OJAI object could not be decoded
-  UNRECOGNIZED_INSERT_MODE = 62;   // the specified insert mode was not recognized by this server
+  /**
+   * Specified table does not exist
+   */
+  TABLE_NOT_FOUND = 2;
+
+  /**
+   * An I/O error occurred on the server(s)
+   */
+  IO_ERROR = 5;
+
+  /**
+   * The operation resulted in server(s) running out of memory
+   */
+  OUT_OF_MEMORY = 12;
+
+  /**
+   * User does not have sufficient permission to execute the operation.
+   */
+  ACCESS_DENIED = 13;
+
+  /**
+   * The specified table already exists.
+   */
+  TABLE_ALREADY_EXISTS = 17;
+
+  /**
+   * One or more request parameter was invalid.
+   * This error code should be used whenever a request parameter was unrecognized or outside a valid domain.
+   * For example, an unrecognized enum value was supplied for InsertMode.
+   */
+  INVALID_ARGUMENT = 22;
+
+  /**
+   * Requested operation is not supported by this server.
+   * This error code should be used if a known, valid operation is not supported by the current service.
+   */
+  UNSUPPORTED_OPERATION = 38;
+
+  /**
+   * Catch-all for all undefined errors on server.
+   */
+  UNKNOWN_ERROR = 256;
+
+  //
+  // Extended error codes.
+  //
+  // TODO: renumber the error codes before release
+  //
+  UNKNOWN_PAYLOAD_ENCODING = 260;   // specified payload encoding is not supported
+  CLUSTER_NOT_FOUND = 270;          // specified cluster does not exist
+  PATH_NOT_FOUND = 271;             // parent path of the specified table does not exist
+  DOCUMENT_ALREADY_EXISTS = 280;    // a document with the specified _id already exist in the store
+  DOCUMENT_NOT_FOUND = 281;         // a document with the specified _id wasn't found in the store
+  ENCODING_ERROR = 290;             // an error occurred while encoding an OJAI object
+  DECODING_ERROR = 291;             // the supplied OJAI object could not be decoded
 }
 
 /**
- * Protobuf message that encapsulates RPC operation error, if any
- * Each RPC response should include RpcError message with `NO_ERROR` indicating success
+ * Protobuf message that encapsulates RPC operation error, if any.
+ * Each RPC response should include RpcError message, with `NO_ERROR` indicating success
  */
 message RpcError {
   /**
@@ -72,9 +119,14 @@ message RpcError {
  */
 enum PayloadEncoding {
   /**
+   * Invalid, unknown encoding
+   */
+  UNKNOWN_ENCODING = 0;
+
+  /**
    * Payload is encoded as JSON string
    */
-  JSON_ENCODING = 0;
+  JSON_ENCODING = 1;
 }
 
 //=============================================//
@@ -86,6 +138,10 @@ message CreateTableRequest {
 }
 
 message CreateTableResponse {
+  /**
+   * `NO_ERROR` - if the table was created successfully,
+   * `TABLE_ALREADY_EXISTS` - if a table with the same path already exists
+   */
   RpcError error = 1;
 }
 
@@ -94,6 +150,10 @@ message DeleteTableRequest {
 }
 
 message DeleteTableResponse {
+  /**
+   * `NO_ERROR` - if the table exists
+   * `TABLE_NOT_FOUND` - if the table does not exist
+   */
   RpcError error = 1;
 }
 
@@ -103,26 +163,32 @@ message TableExistsRequest {
 
 message TableExistsResponse {
   /**
-   * `NO_ERROR` if the table exists, `TABLE_NOT_FOUND` otherwise
+   * `NO_ERROR` - if the table exists
+   * `TABLE_NOT_FOUND` - if the table does not exist
    */
   RpcError error = 1;
 }
 
 enum InsertMode {
   /**
+   * Invalid, unknown mode
+   */
+  UNKNOWN_MODE = 0;
+
+  /**
    * Insert this document WHETHER OR NOT a document with the same _id exist in the store
    */
-  INSERT_OR_REPLACE = 0;
+  INSERT_OR_REPLACE = 1;
 
   /**
    * Insert this document ONLY IF another document with the same _id DOES NOT exist in the store
    */
-  INSERT = 1;
+  INSERT = 2;
 
   /**
    * Insert this document ONLY IF a document with the same _id EXISTS in the store
    */
-  REPLACE = 2;
+  REPLACE = 3;
 }
 
 message InsertOrReplaceRequest {
@@ -130,10 +196,12 @@ message InsertOrReplaceRequest {
   InsertMode insert_mode = 2;
   PayloadEncoding payload_encoding = 3;
 
-  /**
-   * Contains JSON encoded OJAI Document if the payload_encoding is `JSON_ENCODING`
-   */
-  string json_document = 10;
+  oneof data {
+    /**
+     * Contains JSON encoded OJAI Document if the payload_encoding is `JSON_ENCODING`
+     */
+    string json_document = 10;
+  }
 }
 
 message InsertOrReplaceResponse {
@@ -144,21 +212,25 @@ message FindByIdRequest {
   string table_path = 1;
   PayloadEncoding payload_encoding = 2;
 
-  /**
-   * Contains JSON encoded OJAI Document with "_id" field if the payload_encoding is `JSON_ENCODING`
-   * e.g. {"_id": "user0001"}, or {"_id": {"$binary": "dXNlcjAwMDE="}}
-   */
-  string json_document = 10;
+  oneof data {
+    /**
+     * Contains JSON encoded OJAI Document with "_id" field if the payload_encoding is `JSON_ENCODING`
+     * e.g. {"_id": "user0001"}, or {"_id": {"$binary": "dXNlcjAwMDE="}}
+     */
+    string json_document = 10;
+  }
 }
 
 message FindByIdResponse {
   RpcError error = 1;
   PayloadEncoding payload_encoding = 2;
 
-  /**
-   * Contains JSON encoded OJAI Document if the payload_encoding is `JSON_ENCODING`
-   */
-  string json_document = 10;
+  oneof data {
+    /**
+     * Contains JSON encoded OJAI Document if the payload_encoding is `JSON_ENCODING`
+     */
+    string json_document = 10;
+  }
 }
 
 message FindRequest {
@@ -166,10 +238,12 @@ message FindRequest {
   PayloadEncoding payload_encoding = 2;
   bool include_query_plan = 3;
 
-  /**
-   * Contains JSON encoded OJAI Query if the payload_encoding is `JSON_ENCODING`
-   */
-  string json_query = 10;
+  oneof data {
+    /**
+     * Contains JSON encoded OJAI Query if the payload_encoding is `JSON_ENCODING`
+     */
+    string json_query = 10;
+  }
 }
 
 /**

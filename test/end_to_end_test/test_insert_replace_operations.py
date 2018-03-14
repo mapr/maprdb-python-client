@@ -19,21 +19,7 @@ except ImportError:
     import unittest
 
 
-class ConnectionTest(unittest.TestCase):
-
-    def test_connection(self):
-        # TODO doesn't work
-        # url = str(DRIVER_BASE_URL) + 'localhost:' + str(SERVICE_PORT)
-        url = 'localhost:5678'
-        connection = OJAIConnection(connection_url=url)
-        before_create = connection.is_store_exists(store_path='/test-store1')
-        self.assertFalse(before_create)
-        store = connection.create_store(store_path='/test-store1')
-        self.assertTrue(isinstance(store, OJAIDocumentStore))
-        after_create = connection.is_store_exists(store_path='/test-store1')
-        self.assertTrue(after_create)
-        delete_response = connection.delete_store(store_path='/test-store1')
-        self.assertTrue(delete_response)
+class InsertOrReplaceTest(unittest.TestCase):
 
     def test_insert_or_replace(self):
         dict_stream = [{'_id': "id01", 'test_int': 51, 'test_str': 'strstr'},
@@ -60,13 +46,14 @@ class ConnectionTest(unittest.TestCase):
         self.assertTrue(isinstance(document_store, OJAIDocumentStore))
         for doc in dict_stream:
             document = connection.new_document(dictionary=doc)
-            print('Insert document with ID: ' + str(document.get_id()))
+            # print('Insert document with ID: ' + str(document.get_id()))
             document_store.insert_or_replace(doc=document)
 
     def test_insert(self):
         dict_stream = [{'_id': "id001", 'test_int': 51, 'test_str': 'strstr'},
                        {'_id': 'id002', 'mystr': 'str', 'test_int': 51, 'test_str': 'strstr'},
-                       {'_id': 'id003', 'test_int': 51, 'test_otime': OTime(timestamp=1518689532), 'test_str': 'strstr'},
+                       {'_id': 'id003', 'test_int': 51, 'test_otime': OTime(timestamp=1518689532),
+                        'test_str': 'strstr'},
                        {'_id': 'id004', 'test_int': 51, 'test_timestamp': OTimestamp(millis_since_epoch=29877132000),
                         'test_str': 'strstr'},
                        {'_id': 'id005', 'test_int': 51, 'test_bool': True, 'test_str': 'strstr'},
@@ -89,7 +76,7 @@ class ConnectionTest(unittest.TestCase):
         self.assertTrue(isinstance(document_store, OJAIDocumentStore))
         for doc in dict_stream:
             document = connection.new_document(dictionary=doc)
-            print('Insert document with ID: ' + str(document.get_id()))
+            # print('Insert document with ID: ' + str(document.get_id()))
             document_store.insert(doc=document)
         #
         drop_store = connection.delete_store(store_path='/test-store6')
@@ -97,27 +84,30 @@ class ConnectionTest(unittest.TestCase):
 
     def test_replace(self):
         dict_stream = [{'_id': "id001", 'test_int': 51, 'test_str': 'strstr'},
-                      {'_id': 'id002', 'mystr': 'str', 'test_int': 51, 'test_str': 'strstr'},
-                      {'_id': 'id003', 'test_int': 51, 'test_otime': OTime(timestamp=1518689532), 'test_str': 'strstr'},
-                      {'_id': 'id004', 'test_int': 51, 'test_timestamp': OTimestamp(millis_since_epoch=29877132000),
-                       'test_str': 'strstr'},
-                      {'_id': 'id005', 'test_int': 51, 'test_bool': True, 'test_str': 'strstr'},
-                      {'_id': 'id006', 'test_int': 51, 'test_str': 'strstr'},
-                      {'_id': 'id007', 'test_int': 51, 'test_str': 'strstr'},
-                      {'_id': 'id008', 'test_int': 51, 'test_str': 'strstr', 'test_dict': {'test_int': 5}},
-                      {'_id': 'id009', 'test_int': 51, 'test_str': 'strstr', 'test_list': [5, 6]},
-                      {'_id': 'id010', 'test_int': 51, 'test_str': 'strstr', 'test_null': None}]
-        dict_stream_replace = [{'_id': "id001", 'test_int': 52, 'test_str': 'strstr'},
                        {'_id': 'id002', 'mystr': 'str', 'test_int': 51, 'test_str': 'strstr'},
-                       {'_id': 'id003', 'test_int': 52, 'test_otime': OTime(timestamp=1518689532), 'test_str': 'strstr'},
-                       {'_id': 'id004', 'test_int': 52, 'test_timestamp': OTimestamp(millis_since_epoch=29877132000),
+                       {'_id': 'id003', 'test_int': 51, 'test_otime': OTime(timestamp=1518689532),
                         'test_str': 'strstr'},
-                       {'_id': 'id005', 'test_int': 52, 'test_bool': True, 'test_str': 'strstr'},
-                       {'_id': 'id006', 'test_int': 52, 'test_str': 'strstr'},
-                       {'_id': 'id007', 'test_int': 52, 'test_str': 'strstr'},
-                       {'_id': 'id008', 'test_int': 52, 'test_str': 'strstr', 'test_dict': {'test_int': 5}},
-                       {'_id': 'id009', 'test_int': 52, 'test_str': 'strstr', 'test_list': [5, 6]},
-                       {'_id': 'id010', 'test_int': 52, 'test_str': 'strstr', 'test_null': None}]
+                       {'_id': 'id004', 'test_int': 51, 'test_timestamp': OTimestamp(millis_since_epoch=29877132000),
+                        'test_str': 'strstr'},
+                       {'_id': 'id005', 'test_int': 51, 'test_bool': True, 'test_str': 'strstr'},
+                       {'_id': 'id006', 'test_int': 51, 'test_str': 'strstr'},
+                       {'_id': 'id007', 'test_int': 51, 'test_str': 'strstr'},
+                       {'_id': 'id008', 'test_int': 51, 'test_str': 'strstr', 'test_dict': {'test_int': 5}},
+                       {'_id': 'id009', 'test_int': 51, 'test_str': 'strstr', 'test_list': [5, 6]},
+                       {'_id': 'id010', 'test_int': 51, 'test_str': 'strstr', 'test_null': None}]
+        dict_stream_replace = [{'_id': "id001", 'test_int': 52, 'test_str': 'strstr'},
+                               {'_id': 'id002', 'mystr': 'str', 'test_int': 51, 'test_str': 'strstr'},
+                               {'_id': 'id003', 'test_int': 52, 'test_otime': OTime(timestamp=1518689532),
+                                'test_str': 'strstr'},
+                               {'_id': 'id004', 'test_int': 52,
+                                'test_timestamp': OTimestamp(millis_since_epoch=29877132000),
+                                'test_str': 'strstr'},
+                               {'_id': 'id005', 'test_int': 52, 'test_bool': True, 'test_str': 'strstr'},
+                               {'_id': 'id006', 'test_int': 52, 'test_str': 'strstr'},
+                               {'_id': 'id007', 'test_int': 52, 'test_str': 'strstr'},
+                               {'_id': 'id008', 'test_int': 52, 'test_str': 'strstr', 'test_dict': {'test_int': 5}},
+                               {'_id': 'id009', 'test_int': 52, 'test_str': 'strstr', 'test_list': [5, 6]},
+                               {'_id': 'id010', 'test_int': 52, 'test_str': 'strstr', 'test_null': None}]
 
         url = 'localhost:5678'
         connection = ConnectionFactory.get_connection(url=url)
@@ -132,12 +122,12 @@ class ConnectionTest(unittest.TestCase):
         self.assertTrue(isinstance(document_store, OJAIDocumentStore))
         for doc in dict_stream:
             document = connection.new_document(dictionary=doc)
-            print('Insert document with ID: ' + str(document.get_id()))
+            # print('Insert document with ID: ' + str(document.get_id()))
             document_store.insert(doc=document)
 
         for doc in dict_stream_replace:
             document = connection.new_document(dictionary=doc)
-            print('Insert document with ID: ' + str(document.get_id()))
+            # print('Insert document with ID: ' + str(document.get_id()))
             document_store.replace(doc=document)
 
         drop_store = connection.delete_store(store_path='/test-store7')
@@ -146,7 +136,7 @@ class ConnectionTest(unittest.TestCase):
     def test_nested_doc_insert(self):
         nested_doc0 = OJAIDocument().set('nested_int0', 11).set('nested_str0', 'strstr')
         nested_doc = OJAIDocument().set('nested_int', 11).set('nested_str', 'strstr').set('nested_doc', nested_doc0)
-        doc = OJAIDocument().set('test_list', [1, 2, 3, 4, False, 'mystr', [{}, {}, [7, 8, 9, nested_doc]]])\
+        doc = OJAIDocument().set('test_list', [1, 2, 3, 4, False, 'mystr', [{}, {}, [7, 8, 9, nested_doc]]]) \
             .set_id('testid001')
         url = 'localhost:5678'
         connection = ConnectionFactory.get_connection(url=url)
@@ -177,7 +167,7 @@ class ConnectionTest(unittest.TestCase):
 
 if __name__ == '__main__':
 
-    test_classes_to_run = [ConnectionTest]
+    test_classes_to_run = [InsertOrReplaceTest]
     loader = unittest.TestLoader()
     suites_list = []
     for test_class in test_classes_to_run:
