@@ -7,6 +7,8 @@ from mapr.ojai.exceptions.StoreAlreadyExistsError import StoreAlreadyExistsError
 from mapr.ojai.exceptions.UnknownServerError import UnknownServerError
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 from mapr.ojai.ojai.OJAIDocumentStore import OJAIDocumentStore
+from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
+from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
 from mapr.ojai.proto.gen.maprdb_server_pb2 import CreateTableRequest, ErrorCode, TableExistsRequest, \
     InsertOrReplaceRequest, DeleteTableRequest
 from mapr.ojai.proto.gen.maprdb_server_pb2_grpc import MapRDbServerStub
@@ -91,10 +93,10 @@ class OJAIConnection(Connection):
         raise NotImplementedError
 
     def new_condition(self):
-        raise NotImplementedError
+        return OJAIQueryCondition()
 
     def new_query(self, query_json=None):
-        raise NotImplementedError
+        return OJAIQuery()
 
     def close(self):
         del self.__channel

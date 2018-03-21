@@ -5,10 +5,10 @@ from ojai.values.Value import Value, ValueType
 
 from mapr.ojai.exceptions import UnsupportedConstructorException
 from mapr.ojai.ojai.OJAIList import OJAIList
-from mapr.ojai.o_types.ODate import ODate
-from mapr.ojai.o_types.OInterval import OInterval
-from mapr.ojai.o_types.OTime import OTime
-from mapr.ojai.o_types.OTimestamp import OTimestamp
+from ojai.o_types.ODate import ODate
+from ojai.o_types.OInterval import OInterval
+from ojai.o_types.OTime import OTime
+from ojai.o_types.OTimestamp import OTimestamp
 from struct import *
 
 

@@ -1,17 +1,11 @@
 #!/usr/bin/env python
 from __future__ import unicode_literals
 
-import grpc
-
-from mapr.ojai.o_types.OTime import OTime
-from mapr.ojai.o_types.OTimestamp import OTimestamp
+from ojai.o_types.OTime import OTime
+from ojai.o_types.OTimestamp import OTimestamp
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 from mapr.ojai.ojai.OJAIDocumentStore import OJAIDocumentStore
-from mapr.ojai.proto.gen.maprdb_server_pb2 import CreateTableRequest, TableExistsRequest, ErrorCode
-from mapr.ojai.proto.gen.maprdb_server_pb2_grpc import MapRDbServerStub
-from mapr.ojai.storage.OJAIConnection import OJAIConnection
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
-from mapr.ojai.storage.connection_constants import DRIVER_BASE_URL, SERVICE_PORT
 
 try:
     import unittest2 as unittest

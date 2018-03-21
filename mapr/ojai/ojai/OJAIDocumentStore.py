@@ -13,6 +13,9 @@ from mapr.ojai.exceptions.UnknownPayloadEncodingError import UnknownPayloadEncod
 from mapr.ojai.exceptions.UnknownServerError import UnknownServerError
 from mapr.ojai.exceptions.UnrecognizedInsertModeError import UnrecognizedInsertModeError
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
+from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator
+from mapr.ojai.ojai.OJAIDocumentStream import OJAIDocumentStream
+from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
 from mapr.ojai.proto.gen.maprdb_server_pb2 import InsertOrReplaceRequest, PayloadEncoding, FindByIdRequest, ErrorCode, \
     InsertMode, FindRequest
 
@@ -48,24 +51,36 @@ class OJAIDocumentStore(DocumentStore):
         return OJAIDocumentCreator.create_document(json_string=response.json_document)
 
     def find(self, query=None, field_paths=None, condition=None, query_string=None):
-        if query_string is not None and query is not None:
+
+        if not any([query, query_string, field_paths, condition]):
+            # TODO for empty find call
+            request = FindRequest(table_path=self.__store_path,
+                                  payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
+                                  include_query_plan=False,
+                                  json_query='{}')
+        elif query_string is not None and query is not None:
             raise AttributeError
-        if query_string is not None:
+        elif query_string is not None:
             request = FindRequest(table_path=self.__store_path,
                                   payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
                                   include_query_plan=False,
                                   json_query=query_string)
-        elif query is not None:
-            raise NotImplementedError
+        elif query is not None and isinstance(query, OJAIQuery):
+            request = FindRequest(table_path=self.__store_path,
+                                  payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
+                                  include_query_plan=False,
+                                  json_query=query.to_json_str())
         else:
             raise TypeError
 
         response = self.__connection.Find(request)
-        self.__validate_response(response=response)
+        self.__validate_response(response)
 
-        # TODO Query and DocumentStream required
-        raise NotImplementedError
+        # TODO what to do with payload_encoding in response
+        # ++ why we need json_query_plan and examples
 
+        return OJAIDocumentStream(input_stream=map(lambda doc_string: OJAIDocumentCreator.create_document(doc_string),
+                                                   response.json_document))
 
     def insert_or_replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
         if doc is not None:
@@ -124,7 +139,8 @@ class OJAIDocumentStore(DocumentStore):
     def check_and_replace(self, _id, condition, doc):
         pass
 
-    def __validate_document(self, doc_to_insert):
+    @staticmethod
+    def __validate_document(doc_to_insert):
         from mapr.ojai.ojai.OJAIDocument import OJAIDocument
         if doc_to_insert is None:
             raise InvalidOJAIDocumentError
@@ -136,7 +152,8 @@ class OJAIDocumentStore(DocumentStore):
 
         raise InvalidOJAIDocumentError(m="Invalid OJAI Document")
 
-    def __validate_dict(self, dict_to_insert):
+    @staticmethod
+    def __validate_dict(dict_to_insert):
         if not isinstance(dict_to_insert, dict):
             raise TypeError
 
@@ -145,7 +162,8 @@ class OJAIDocumentStore(DocumentStore):
 
         raise InvalidOJAIDocumentError(m="Invalid dictionary")
 
-    def __validate_response(self, response):
+    @staticmethod
+    def __validate_response(response):
         print response.error.err_code
         print response.error.error_message
         if response.error.err_code == ErrorCode.Value('NO_ERROR'):

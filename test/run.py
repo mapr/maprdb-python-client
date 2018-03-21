@@ -1,9 +1,7 @@
 from test.document.test_document import DocumentTest
+from test.document.test_documentstream import DocumentStreamTest
 from test.ojaitest.test_jsonvalue import JsonValueTest
-from test.o_types_test.test_odate import ODateTest
-from test.o_types_test.test_ointerval import OIntervalTest
-from test.o_types_test.test_otime import OTimeTest
-from test.o_types_test.test_otimestamp import OTimestampTest
+from test.query_test.test_query import QueryTest
 from test.values.test_type import ValueTypeTest
 
 try:
@@ -14,12 +12,10 @@ except ImportError:
 if __name__ == '__main__':
 
     test_classes_to_run = [JsonValueTest,
-                           ODateTest,
-                           OTimeTest,
-                           OIntervalTest,
-                           OTimestampTest,
                            ValueTypeTest,
-                           DocumentTest]
+                           DocumentTest,
+                           QueryTest,
+                           DocumentStreamTest]
 
     loader = unittest.TestLoader()
 

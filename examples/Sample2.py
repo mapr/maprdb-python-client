@@ -1,5 +1,5 @@
 """Following example works with Python Client"""
-from mapr.ojai.o_types.ODate import ODate
+from ojai.o_types.ODate import ODate
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
 """Create a connection, get store, insert new document into store"""

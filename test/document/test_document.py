@@ -4,11 +4,11 @@ from datetime import datetime
 
 from decimal import Decimal
 
-from mapr.ojai.o_types.OInterval import OInterval
+from ojai.o_types.OInterval import OInterval
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
-from mapr.ojai.o_types.ODate import ODate
-from mapr.ojai.o_types.OTime import OTime
-from mapr.ojai.o_types.OTimestamp import OTimestamp
+from ojai.o_types.ODate import ODate
+from ojai.o_types.OTime import OTime
+from ojai.o_types.OTimestamp import OTimestamp
 
 try:
     import unittest2 as unittest

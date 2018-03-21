@@ -1,18 +1,16 @@
 from aenum import Enum
 
-class OJAIQueryCondition(Enum):
-    # A non-existing value of unknown type and quantity.
-    LESS = 1
 
-    # A boolean value.
-    LESS_OR_EQUAL = 2
+class QueryOp(Enum):
 
-    # Character sequence.
-    EQUAL = 3
+    LESS = "$lt"
 
-    # Bytes represent as string
-    NOT_EQUAL = 4
+    LESS_OR_EQUAL = "$le"
 
-    # Integer
-    GREATER_OR_EQUAL = 5
-    GREATER = 5
+    EQUAL = "$eq"
+
+    NOT_EQUAL = "$ne"
+
+    GREATER_OR_EQUAL = "$ge"
+
+    GREATER = "$gt"

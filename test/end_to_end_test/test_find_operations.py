@@ -3,9 +3,9 @@ from __future__ import unicode_literals
 
 import grpc
 
-from mapr.ojai.o_types.ODate import ODate
-from mapr.ojai.o_types.OTime import OTime
-from mapr.ojai.o_types.OTimestamp import OTimestamp
+from ojai.o_types.ODate import ODate
+from ojai.o_types.OTime import OTime
+from ojai.o_types.OTimestamp import OTimestamp
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 from mapr.ojai.ojai.OJAIDocumentStore import OJAIDocumentStore
 from mapr.ojai.proto.gen.maprdb_server_pb2 import CreateTableRequest, TableExistsRequest, ErrorCode

@@ -5,10 +5,10 @@ from copy import deepcopy
 import decimal
 from ojai.document.Document import Document
 
-from mapr.ojai.o_types.ODate import ODate
-from mapr.ojai.o_types.OInterval import OInterval
-from mapr.ojai.o_types.OTime import OTime
-from mapr.ojai.o_types.OTimestamp import OTimestamp
+from ojai.o_types.ODate import ODate
+from ojai.o_types.OInterval import OInterval
+from ojai.o_types.OTime import OTime
+from ojai.o_types.OTimestamp import OTimestamp
 from mapr.ojai.ojai.OJAIDict import OJAIDict
 from mapr.ojai.ojai.OJAIList import OJAIList
 
@@ -81,7 +81,7 @@ class OJAIDocument(Document):
             self.__set_array(field_path=field_path, values=value)
         elif isinstance(value, OJAIDocument):
             self.__set_document(field_path=field_path, value=value)
-        elif isinstance(value, str):
+        elif isinstance(value, (unicode, str)):
             self.__set_str(field_path=field_path, value=value)
         elif value is None:
             self.__set_none(field_path=field_path)
@@ -99,6 +99,25 @@ class OJAIDocument(Document):
         for k, v in dict2.iteritems():
             if k in merged_dict and isinstance(merged_dict[k], dict):
                 merged_dict[k] = self.__merge_two_dicts(merged_dict[k], v)
+            elif k in merged_dict and isinstance(merged_dict[k], list):
+                swap = False
+                for dict_element in merged_dict[k]:
+                    for elem_k in dict_element:
+                        if isinstance(v, list):
+                            for item in v:
+                                if elem_k in item:
+                                    index = merged_dict[k].index(dict_element)
+                                    merged_dict[k].remove(dict_element)
+                                    merged_dict[k].insert(index, item)
+                                    swap = True
+                        else:
+                            if elem_k in v:
+                                index = merged_dict[k].index(dict_element)
+                                merged_dict[k].remove(dict_element)
+                                merged_dict[k].insert(index, v)
+                                swap = True
+                if not swap:
+                    merged_dict[k].append(v)
             else:
                 merged_dict[k] = deepcopy(v)
         return merged_dict

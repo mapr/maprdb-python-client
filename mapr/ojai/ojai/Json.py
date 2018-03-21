@@ -1,6 +1,6 @@
 from mapr.ojai.ojai import OJAIDocument
 
-from mapr.ojai.ojai.OJAIDocumentStream import JsonDocumentStream
+from mapr.ojai.ojai.OJAIDocumentStream import OJAIDocumentStream
 from mapr.ojai.ojai.JsonOptions import Options
 
 
@@ -51,11 +51,9 @@ class Json:
                             fs=None, path=None):
         # TODO
         if fs is None and path is None:
-            return JsonDocumentStream(input_stream=input_stream,
-                                      field_path_type_map=field_path_type_map,
-                                      event_delegate=event_delegate)
+            return OJAIDocumentStream(input_stream=input_stream)
         elif fs is not None and path is not None:
-            return JsonDocumentStream.new_document_stream(fs=fs, path=path,
+            return OJAIDocumentStream.new_document_stream(fs=fs, path=path,
                                                           field_path_type_map=field_path_type_map,
                                                           event_delegate=event_delegate)
         else:
