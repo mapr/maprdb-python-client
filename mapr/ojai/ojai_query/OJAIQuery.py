@@ -71,10 +71,15 @@ class OJAIQuery(Query):
         return self
 
     def where(self, condition):
-        if not isinstance(condition, OJAIQueryCondition) and not isinstance(condition, dict):
+        if not isinstance(condition, (OJAIQueryCondition, dict)):
             raise TypeError("Condition type must be OJAIQueryCondition or dict.")
-        self.__query_dict = self.__merge_two_dicts(self.__query_dict,
-                                                   {Operations.WHERE: condition.as_dictionary()})
+
+        if isinstance(condition, OJAIQueryCondition):
+            self.__query_dict = self.__merge_two_dicts(self.__query_dict,
+                                                       {Operations.WHERE: condition.as_dictionary()})
+        else:
+            self.__query_dict = self.__merge_two_dicts(self.__query_dict,
+                                                       {Operations.WHERE: condition})
         return self
 
     def order_by(self, field_paths, order='asc'):
@@ -88,14 +93,14 @@ class OJAIQuery(Query):
         return self
 
     def offset(self, offset):
-        if not isinstance(offset, (int, long)) or offset < 0:
+        if not isinstance(offset, (int, long)) or offset < 0 or isinstance(offset, bool):
             raise TypeError
         self.__query_dict = self.__merge_two_dicts(self.__query_dict, {Operations.OFFSET: offset})
 
         return self
 
     def limit(self, limit):
-        if not isinstance(limit, (int, long)) or limit < 0:
+        if not isinstance(limit, (int, long)) or limit < 0 or isinstance(limit, bool):
             raise TypeError
         self.__query_dict = self.__merge_two_dicts(self.__query_dict, {Operations.LIMIT: limit})
 

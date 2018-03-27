@@ -34,14 +34,14 @@ class QueryTest(unittest.TestCase):
     def test_multiple_and(self):
         qc = OJAIQueryCondition() \
             .and_() \
-            .and_() \
-            .is_(field_path='age', op=QueryOp.GREATER_OR_EQUAL, value=18) \
-            .is_(field_path='city', op=QueryOp.EQUAL, value='London') \
-            .close() \
-            .and_() \
-            .is_(field_path='age', op=QueryOp.GREATER_OR_EQUAL, value=22) \
-            .is_(field_path='city', op=QueryOp.EQUAL, value='NY') \
-            .close() \
+                .and_() \
+                    .is_(field_path='age', op=QueryOp.GREATER_OR_EQUAL, value=18) \
+                    .is_(field_path='city', op=QueryOp.EQUAL, value='London') \
+                .close() \
+                .and_() \
+                    .is_(field_path='age', op=QueryOp.GREATER_OR_EQUAL, value=22) \
+                    .is_(field_path='city', op=QueryOp.EQUAL, value='NY') \
+                .close() \
             .close()
 
         qc.build()
@@ -90,7 +90,6 @@ class QueryTest(unittest.TestCase):
             .and_() \
             .is_(field_path='age', op=QueryOp.GREATER_OR_EQUAL, value=18) \
             .is_(field_path='city', op=QueryOp.EQUAL, value='London').close().close().close().build()
-
 
         self.assertEqual(qc.as_dictionary(), {'$and': [
             {'$ne': {u'card': u'visa'}},
@@ -215,6 +214,18 @@ class QueryTest(unittest.TestCase):
         query = OJAIQuery().build()
         self.assertEqual(query.query_dict(), {})
         self.assertEqual(query.to_json_str(), '{}')
+
+    def test_limit_bool(self):
+        with self.assertRaises(TypeError):
+            query = OJAIQuery().limit(True).build()
+
+    def test_offset_bool(self):
+        with self.assertRaises(TypeError):
+            query = OJAIQuery().offset(True).build()
+
+    def test_where_dict(self):
+        query = OJAIQuery().where({'$ne': {'name': 'Joh'}}).build()
+        self.assertEqual({'$where': {'$ne': {'name': 'Joh'}}}, query.query_dict())
 
 
 

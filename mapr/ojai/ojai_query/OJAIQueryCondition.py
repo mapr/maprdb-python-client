@@ -120,19 +120,19 @@ class OJAIQueryCondition(QueryCondition):
                     continue
 
             if token in ['$and', '$or']:
-                self.__query_dict = self.__merge_two_dicts(self.__query_dict, self.statement(tokens, token))
+                self.__query_dict = self.__merge_two_dicts(self.__query_dict, self.build_block(tokens, token))
             elif isinstance(token, dict):
                 self.__query_dict = self.__merge_two_dicts(self.__query_dict, token)
             elif token == ';' and tokens:
                 raise ConditionNotClosedError("All statement in condition must be closed.")
         return self.__query_dict
 
-    def statement(self, tokens, op):
+    def build_block(self, tokens, op):
         statement_list = []
         while tokens:
             token = tokens.popleft()
             if token in ['$and', '$or']:
-                statement_list.append(self.statement(tokens, token))
+                statement_list.append(self.build_block(tokens, token))
             elif token == ';':
                 return {op: statement_list}
             else:
