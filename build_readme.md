@@ -1,4 +1,4 @@
-Repository for python OJAI client support for MapR-DB
+### Instruction how to build the package ###
 
 Steps to execute:
 1. The Python OJAI client builds with only Python 2.7 or higher. Check your Python version by running:
@@ -21,12 +21,3 @@ If you encounter issues installing setuptools, run the following command:
 If you want to add the package you have created locally in your project, copy dist/maprdb_python_client* to your project.
 To add the package in your virtual environment, run:
 ```pip install maprdb_python_client-0.1-py2-none-any.whl```
-
-
-After you have completed these steps, you can use the public API.
-
-Example:
-```
-from ojai.document.Document import Document
-class JsonDocument(Document):
-```
