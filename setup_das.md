@@ -17,7 +17,7 @@
 **Install service.**
 1) Clone data access service repo from github:
  `git clone https://github.com/mapr/maprdb-grpc-service.git` and 
- `cd maprdb-gric-service`
+ `cd maprdb-grpc-service`
 2) Update root pom.xml file (**in case if you not in US office**)
     ```<repositories>
             <repository>
