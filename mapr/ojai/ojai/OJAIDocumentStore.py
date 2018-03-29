@@ -33,7 +33,7 @@ class OJAIDocumentStore(DocumentStore):
     def flush(self):
         pass
 
-    def find_by_id(self, _id, field_paths=None, condition=None):
+    def find_by_id(self, _id, field_paths=None, condition=None, as_object=False):
         if not isinstance(_id, (str, unicode)):
             raise TypeError
         doc = OJAIDocument().set_id(_id=_id)
@@ -48,9 +48,12 @@ class OJAIDocumentStore(DocumentStore):
             raise UnknownPayloadEncodingError(m='Invalid find_by_id params')
 
         from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator
-        return OJAIDocumentCreator.create_document(json_string=response.json_document)
+        if as_object:
+            return OJAIDocumentCreator.create_document(json_string=response.json_document)
+        else:
+            return json.loads(response.json_document)
 
-    def find(self, query=None, field_paths=None, condition=None, query_string=None):
+    def find(self, query=None, field_paths=None, condition=None, query_string=None, as_object=False):
 
         if not any([query, query_string, field_paths, condition]):
             # TODO for empty find call
@@ -79,8 +82,13 @@ class OJAIDocumentStore(DocumentStore):
         # TODO what to do with payload_encoding in response
         # ++ why we need json_query_plan and examples
 
-        return OJAIDocumentStream(input_stream=map(lambda doc_string: OJAIDocumentCreator.create_document(doc_string),
-                                                   response.json_document))
+        if as_object:
+            return OJAIDocumentStream(input_stream=map(lambda doc_string:
+                                                       OJAIDocumentCreator.create_document(doc_string),
+                                                       response.json_document))
+        else:
+            return map(lambda doc_string: json.loads(doc_string),
+                       response.json_document)
 
     def insert_or_replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
         if doc is not None:
