@@ -33,7 +33,7 @@ class OJAIDocumentStore(DocumentStore):
     def flush(self):
         pass
 
-    def find_by_id(self, _id, field_paths=None, condition=None, as_object=False):
+    def find_by_id(self, _id, field_paths=None, condition=None, results_as_document=False):
         if not isinstance(_id, (str, unicode)):
             raise TypeError
         doc = OJAIDocument().set_id(_id=_id)
@@ -41,40 +41,35 @@ class OJAIDocumentStore(DocumentStore):
                                   payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
                                   json_document=doc.as_json_str())
 
-        if request.WhichOneof('data') == 'json_document'\
+        if request.WhichOneof('data') == 'json_document' \
                 and request.payload_encoding == PayloadEncoding.Value('JSON_ENCODING'):
             response = self.__connection.FindById(request)
         else:
             raise UnknownPayloadEncodingError(m='Invalid find_by_id params')
 
         from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator
-        if as_object:
+        if results_as_document:
             return OJAIDocumentCreator.create_document(json_string=response.json_document)
         else:
             return json.loads(response.json_document)
 
-    def find(self, query=None, field_paths=None, condition=None, query_string=None, as_object=False):
-
-        if not any([query, query_string, field_paths, condition]):
+    def find(self, query=None, results_as_document=False):
+        if query is None:
             # TODO for empty find call
-            request = FindRequest(table_path=self.__store_path,
-                                  payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-                                  include_query_plan=False,
-                                  json_query='{}')
-        elif query_string is not None and query is not None:
-            raise AttributeError
-        elif query_string is not None:
-            request = FindRequest(table_path=self.__store_path,
-                                  payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-                                  include_query_plan=False,
-                                  json_query=query_string)
-        elif query is not None and isinstance(query, OJAIQuery):
-            request = FindRequest(table_path=self.__store_path,
-                                  payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-                                  include_query_plan=False,
-                                  json_query=query.to_json_str())
+            query_str = '{}'
+        elif isinstance(query, str):
+            query_str = query
+        elif isinstance(query, OJAIQuery):
+            query_str = query.to_json_str()
+        elif isinstance(query, dict):
+            query_str = json.dumps(query)
         else:
             raise TypeError
+
+        request = FindRequest(table_path=self.__store_path,
+                              payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
+                              include_query_plan=False,
+                              json_query=query_str)
 
         response = self.__connection.Find(request)
         self.__validate_response(response)
@@ -82,7 +77,7 @@ class OJAIDocumentStore(DocumentStore):
         # TODO what to do with payload_encoding in response
         # ++ why we need json_query_plan and examples
 
-        if as_object:
+        if results_as_document:
             return OJAIDocumentStream(input_stream=map(lambda doc_string:
                                                        OJAIDocumentCreator.create_document(doc_string),
                                                        response.json_document))
@@ -90,24 +85,38 @@ class OJAIDocumentStore(DocumentStore):
             return map(lambda doc_string: json.loads(doc_string),
                        response.json_document)
 
-    def insert_or_replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
-        if doc is not None:
-            self.__validate_document(doc_to_insert=doc)
+    def __evaluate_doc_stream(self, doc_stream, operation_type):
+        for doc in doc_stream:
+            self.__validate_dict(doc.as_dictionary())
+            doc_str = doc.as_json_str()
             response = self.__connection.InsertOrReplace(
                 InsertOrReplaceRequest(table_path=self.__store_path,
-                                       insert_mode=InsertMode.Value('INSERT_OR_REPLACE'),
+                                       insert_mode=InsertMode.Value(operation_type),
                                        payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-                                       json_document=doc.as_json_str()))
-        elif json_dictionary is not None:
-            self.__validate_dict(json_dictionary)
-            response = self.__connection.InsertOrReplace(
-                InsertOrReplaceRequest(table_path=self.__store_path,
-                                       insert_mode=InsertMode.Value('INSERT_OR_REPLACE'),
-                                       payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-                                       json_document=json.dumps(json_dictionary, indent=4)))
-        else:
-            raise AttributeError
+                                       json_document=doc_str))
+            self.__validate_response(response=response)
+
+    def __evaluate_doc(self, doc_str, operation_type):
+        response = self.__connection.InsertOrReplace(
+            InsertOrReplaceRequest(table_path=self.__store_path,
+                                   insert_mode=InsertMode.Value(operation_type),
+                                   payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
+                                   json_document=doc_str))
         self.__validate_response(response=response)
+
+    def insert_or_replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
+        if doc_stream is None:
+            if doc is not None:
+                self.__validate_dict(doc.as_dictionary())
+                doc_str = doc.as_json_str()
+            elif json_dictionary is not None:
+                self.__validate_dict(json_dictionary)
+                doc_str = json.dumps(json_dictionary)
+            else:
+                raise AttributeError
+            self.__evaluate_doc(doc_str=doc_str, operation_type='INSERT_OR_REPLACE')
+        else:
+            self.__evaluate_doc_stream(doc_stream, 'INSERT_OR_REPLACE')
 
     def update(self, _id, mutation):
         pass
@@ -116,24 +125,32 @@ class OJAIDocumentStore(DocumentStore):
         pass
 
     def insert(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
-        self.__validate_document(doc_to_insert=doc)
-        response = self.__connection.InsertOrReplace(
-            InsertOrReplaceRequest(table_path=self.__store_path,
-                                   insert_mode=InsertMode.Value('INSERT'),
-                                   payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-                                   json_document=doc.as_json_str()))
-
-        self.__validate_response(response)
+        if doc_stream is None:
+            if doc is not None:
+                self.__validate_dict(doc.as_dictionary())
+                doc_str = doc.as_json_str()
+            elif json_dictionary is not None:
+                self.__validate_dict(json_dictionary)
+                doc_str = json.dumps(json_dictionary)
+            else:
+                raise AttributeError
+            self.__evaluate_doc(doc_str=doc_str, operation_type='INSERT')
+        else:
+            self.__evaluate_doc_stream(doc_stream, 'INSERT')
 
     def replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
-        self.__validate_document(doc_to_insert=doc)
-        response = self.__connection.InsertOrReplace(
-            InsertOrReplaceRequest(table_path=self.__store_path,
-                                   insert_mode=InsertMode.Value('REPLACE'),
-                                   payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-                                   json_document=doc.as_json_str()))
-
-        self.__validate_response(response)
+        if doc_stream is None:
+            if doc is not None:
+                self.__validate_dict(doc.as_dictionary())
+                doc_str = doc.as_json_str()
+            elif json_dictionary is not None:
+                self.__validate_dict(json_dictionary)
+                doc_str = json.dumps(json_dictionary)
+            else:
+                raise AttributeError
+            self.__evaluate_doc(doc_str=doc_str, operation_type='REPLACE')
+        else:
+            self.__evaluate_doc_stream(doc_stream, 'REPLACE')
 
     def increment(self, _id, field, inc):
         pass
