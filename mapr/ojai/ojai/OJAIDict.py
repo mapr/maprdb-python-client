@@ -3,11 +3,14 @@ class OJAIDict(dict):
         super(OJAIDict, self).__init__()
 
     @staticmethod
-    def parse_dict(value):
-        from mapr.ojai.ojai.OJAIDocument import OJAIDocument
-        dump_document = OJAIDocument()
+    def parse_dict(value, tags=False):
+        if tags:
+            from mapr.ojai.ojai.OJAITagsBuilder import OJAITagsBuilder
+            dump_document = OJAITagsBuilder()
+        else:
+            from mapr.ojai.ojai.OJAIDocument import OJAIDocument
+            dump_document = OJAIDocument()
         ojai_dict = {}
-
         for k, v in value.iteritems():
             # this if statement needs for case, when we parsed a dictionary from data access service
             if k in ['$numberLong', '$numberFloat']:

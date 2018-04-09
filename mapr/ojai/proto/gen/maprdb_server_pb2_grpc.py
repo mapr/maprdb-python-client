@@ -17,32 +17,32 @@ class MapRDbServerStub(object):
       channel: A grpc.Channel.
     """
     self.CreateTable = channel.unary_unary(
-        '/com.mapr.db.grpc.MapRDbServer/CreateTable',
+        '/com.mapr.data.db.MapRDbServer/CreateTable',
         request_serializer=maprdb__server__pb2.CreateTableRequest.SerializeToString,
         response_deserializer=maprdb__server__pb2.CreateTableResponse.FromString,
         )
     self.DeleteTable = channel.unary_unary(
-        '/com.mapr.db.grpc.MapRDbServer/DeleteTable',
+        '/com.mapr.data.db.MapRDbServer/DeleteTable',
         request_serializer=maprdb__server__pb2.DeleteTableRequest.SerializeToString,
         response_deserializer=maprdb__server__pb2.DeleteTableResponse.FromString,
         )
     self.TableExists = channel.unary_unary(
-        '/com.mapr.db.grpc.MapRDbServer/TableExists',
+        '/com.mapr.data.db.MapRDbServer/TableExists',
         request_serializer=maprdb__server__pb2.TableExistsRequest.SerializeToString,
         response_deserializer=maprdb__server__pb2.TableExistsResponse.FromString,
         )
     self.InsertOrReplace = channel.unary_unary(
-        '/com.mapr.db.grpc.MapRDbServer/InsertOrReplace',
+        '/com.mapr.data.db.MapRDbServer/InsertOrReplace',
         request_serializer=maprdb__server__pb2.InsertOrReplaceRequest.SerializeToString,
         response_deserializer=maprdb__server__pb2.InsertOrReplaceResponse.FromString,
         )
     self.FindById = channel.unary_unary(
-        '/com.mapr.db.grpc.MapRDbServer/FindById',
+        '/com.mapr.data.db.MapRDbServer/FindById',
         request_serializer=maprdb__server__pb2.FindByIdRequest.SerializeToString,
         response_deserializer=maprdb__server__pb2.FindByIdResponse.FromString,
         )
     self.Find = channel.unary_stream(
-        '/com.mapr.db.grpc.MapRDbServer/Find',
+        '/com.mapr.data.db.MapRDbServer/Find',
         request_serializer=maprdb__server__pb2.FindRequest.SerializeToString,
         response_deserializer=maprdb__server__pb2.FindResponse.FromString,
         )
@@ -131,5 +131,5 @@ def add_MapRDbServerServicer_to_server(servicer, server):
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
-      'com.mapr.db.grpc.MapRDbServer', rpc_method_handlers)
+      'com.mapr.data.db.MapRDbServer', rpc_method_handlers)
   server.add_generic_rpc_handlers((generic_handler,))

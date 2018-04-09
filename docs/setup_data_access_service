@@ -50,3 +50,32 @@ Add into maven settings .m2/settings.xml
     <activeProfile>cvmirror</activeProfile>
   </activeProfiles>
 </settings>
+
+======================
+or in pom.xml
+
+<repositories>
+    <repository>
+      <id>mapr-artifactory</id>
+      <url>http://artifactory.devops.lab/artifactory/maven-mapr-central/</url>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+    </repository>
+<repository>
+                        <id>mapr-releases</id>
+                        <url>http://repository.mapr.com/maven/</url>
+                        <snapshots><enabled>false</enabled></snapshots>
+                        <releases><enabled>true</enabled></releases>
+                </repository>
+                <repository>
+                        <id>repository_cv</id>
+                        <name>Private MapR repo for CyberVision</name>
+                        <url>http://23.21.204.176/nexus/content/groups/mapr-public/</url>
+                        <releases>
+                                <enabled>true</enabled>
+                        </releases>
+                        <snapshots>
+                                <enabled>true</enabled>
+                        </snapshots>
+                </repository>
+  </repositories>

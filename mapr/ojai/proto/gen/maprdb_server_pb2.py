@@ -18,14 +18,14 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='maprdb-server.proto',
-  package='com.mapr.db.grpc',
+  package='com.mapr.data.db',
   syntax='proto3',
-  serialized_pb=_b('\n\x13maprdb-server.proto\x12\x10\x63om.mapr.db.grpc\"j\n\x08RpcError\x12-\n\x08\x65rr_code\x18\x01 \x01(\x0e\x32\x1b.com.mapr.db.grpc.ErrorCode\x12\x15\n\rerror_message\x18\x02 \x01(\t\x12\x18\n\x10java_stack_trace\x18\x03 \x01(\t\"(\n\x12\x43reateTableRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13\x43reateTableResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.db.grpc.RpcError\"(\n\x12\x44\x65leteTableRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13\x44\x65leteTableResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.db.grpc.RpcError\"(\n\x12TableExistsRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13TableExistsResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.db.grpc.RpcError\"\xbd\x01\n\x16InsertOrReplaceRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12\x31\n\x0binsert_mode\x18\x02 \x01(\x0e\x32\x1c.com.mapr.db.grpc.InsertMode\x12;\n\x10payload_encoding\x18\x03 \x01(\x0e\x32!.com.mapr.db.grpc.PayloadEncoding\x12\x17\n\rjson_document\x18\n \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"D\n\x17InsertOrReplaceResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.db.grpc.RpcError\"\x83\x01\n\x0f\x46indByIdRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.db.grpc.PayloadEncoding\x12\x17\n\rjson_document\x18\n \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\x9b\x01\n\x10\x46indByIdResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.db.grpc.RpcError\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.db.grpc.PayloadEncoding\x12\x17\n\rjson_document\x18\n \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\x98\x01\n\x0b\x46indRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.db.grpc.PayloadEncoding\x12\x1a\n\x12include_query_plan\x18\x03 \x01(\x08\x12\x14\n\njson_query\x18\n \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\xb2\x01\n\x0c\x46indResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.db.grpc.RpcError\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.db.grpc.PayloadEncoding\x12\x19\n\x0fjson_query_plan\x18\n \x01(\tH\x00\x12\x17\n\rjson_document\x18\x0b \x01(\tH\x00\x42\x06\n\x04\x64\x61ta*\xee\x02\n\tErrorCode\x12\x0c\n\x08NO_ERROR\x10\x00\x12\x13\n\x0fTABLE_NOT_FOUND\x10\x02\x12\x0c\n\x08IO_ERROR\x10\x05\x12\x11\n\rOUT_OF_MEMORY\x10\x0c\x12\x11\n\rACCESS_DENIED\x10\r\x12\x18\n\x14TABLE_ALREADY_EXISTS\x10\x11\x12\x14\n\x10INVALID_ARGUMENT\x10\x16\x12\x19\n\x15UNSUPPORTED_OPERATION\x10&\x12\x12\n\rUNKNOWN_ERROR\x10\x80\x02\x12\x1d\n\x18UNKNOWN_PAYLOAD_ENCODING\x10\x84\x02\x12\x16\n\x11\x43LUSTER_NOT_FOUND\x10\x8e\x02\x12\x13\n\x0ePATH_NOT_FOUND\x10\x8f\x02\x12\x1c\n\x17\x44OCUMENT_ALREADY_EXISTS\x10\x98\x02\x12\x17\n\x12\x44OCUMENT_NOT_FOUND\x10\x99\x02\x12\x13\n\x0e\x45NCODING_ERROR\x10\xa2\x02\x12\x13\n\x0e\x44\x45\x43ODING_ERROR\x10\xa3\x02*:\n\x0fPayloadEncoding\x12\x14\n\x10UNKNOWN_ENCODING\x10\x00\x12\x11\n\rJSON_ENCODING\x10\x01*N\n\nInsertMode\x12\x10\n\x0cUNKNOWN_MODE\x10\x00\x12\x15\n\x11INSERT_OR_REPLACE\x10\x01\x12\n\n\x06INSERT\x10\x02\x12\x0b\n\x07REPLACE\x10\x03\x32\xb2\x04\n\x0cMapRDbServer\x12\\\n\x0b\x43reateTable\x12$.com.mapr.db.grpc.CreateTableRequest\x1a%.com.mapr.db.grpc.CreateTableResponse\"\x00\x12\\\n\x0b\x44\x65leteTable\x12$.com.mapr.db.grpc.DeleteTableRequest\x1a%.com.mapr.db.grpc.DeleteTableResponse\"\x00\x12\\\n\x0bTableExists\x12$.com.mapr.db.grpc.TableExistsRequest\x1a%.com.mapr.db.grpc.TableExistsResponse\"\x00\x12h\n\x0fInsertOrReplace\x12(.com.mapr.db.grpc.InsertOrReplaceRequest\x1a).com.mapr.db.grpc.InsertOrReplaceResponse\"\x00\x12S\n\x08\x46indById\x12!.com.mapr.db.grpc.FindByIdRequest\x1a\".com.mapr.db.grpc.FindByIdResponse\"\x00\x12I\n\x04\x46ind\x12\x1d.com.mapr.db.grpc.FindRequest\x1a\x1e.com.mapr.db.grpc.FindResponse\"\x00\x30\x01\x42\x1a\n\x16\x63om.mapr.db.proto.grpcP\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x13maprdb-server.proto\x12\x10\x63om.mapr.data.db\"j\n\x08RpcError\x12-\n\x08\x65rr_code\x18\x01 \x01(\x0e\x32\x1b.com.mapr.data.db.ErrorCode\x12\x15\n\rerror_message\x18\x02 \x01(\t\x12\x18\n\x10java_stack_trace\x18\x03 \x01(\t\"(\n\x12\x43reateTableRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13\x43reateTableResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"(\n\x12\x44\x65leteTableRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13\x44\x65leteTableResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"(\n\x12TableExistsRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13TableExistsResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"\xbd\x01\n\x16InsertOrReplaceRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12\x31\n\x0binsert_mode\x18\x02 \x01(\x0e\x32\x1c.com.mapr.data.db.InsertMode\x12;\n\x10payload_encoding\x18\x03 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x17\n\rjson_document\x18\n \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"D\n\x17InsertOrReplaceResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"\x83\x01\n\x0f\x46indByIdRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x17\n\rjson_document\x18\n \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\x9b\x01\n\x10\x46indByIdResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x17\n\rjson_document\x18\n \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\x98\x01\n\x0b\x46indRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x1a\n\x12include_query_plan\x18\x03 \x01(\x08\x12\x14\n\njson_query\x18\n \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\xc9\x01\n\x0c\x46indResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x30\n\x04type\x18\x03 \x01(\x0e\x32\".com.mapr.data.db.FindResponseType\x12\x17\n\rjson_response\x18\x0b \x01(\tH\x00\x42\x06\n\x04\x64\x61ta*\xee\x02\n\tErrorCode\x12\x0c\n\x08NO_ERROR\x10\x00\x12\x13\n\x0fTABLE_NOT_FOUND\x10\x02\x12\x0c\n\x08IO_ERROR\x10\x05\x12\x11\n\rOUT_OF_MEMORY\x10\x0c\x12\x11\n\rACCESS_DENIED\x10\r\x12\x18\n\x14TABLE_ALREADY_EXISTS\x10\x11\x12\x14\n\x10INVALID_ARGUMENT\x10\x16\x12\x19\n\x15UNSUPPORTED_OPERATION\x10&\x12\x12\n\rUNKNOWN_ERROR\x10\x80\x02\x12\x1d\n\x18UNKNOWN_PAYLOAD_ENCODING\x10\x84\x02\x12\x16\n\x11\x43LUSTER_NOT_FOUND\x10\x8e\x02\x12\x13\n\x0ePATH_NOT_FOUND\x10\x8f\x02\x12\x1c\n\x17\x44OCUMENT_ALREADY_EXISTS\x10\x98\x02\x12\x17\n\x12\x44OCUMENT_NOT_FOUND\x10\x99\x02\x12\x13\n\x0e\x45NCODING_ERROR\x10\xa2\x02\x12\x13\n\x0e\x44\x45\x43ODING_ERROR\x10\xa3\x02*:\n\x0fPayloadEncoding\x12\x14\n\x10UNKNOWN_ENCODING\x10\x00\x12\x11\n\rJSON_ENCODING\x10\x01*N\n\nInsertMode\x12\x10\n\x0cUNKNOWN_MODE\x10\x00\x12\x15\n\x11INSERT_OR_REPLACE\x10\x01\x12\n\n\x06INSERT\x10\x02\x12\x0b\n\x07REPLACE\x10\x03*I\n\x10\x46indResponseType\x12\x10\n\x0cUNKNOWN_TYPE\x10\x00\x12\x13\n\x0fRESULT_DOCUMENT\x10\x01\x12\x0e\n\nQUERY_PLAN\x10\x02\x32\xb2\x04\n\x0cMapRDbServer\x12\\\n\x0b\x43reateTable\x12$.com.mapr.data.db.CreateTableRequest\x1a%.com.mapr.data.db.CreateTableResponse\"\x00\x12\\\n\x0b\x44\x65leteTable\x12$.com.mapr.data.db.DeleteTableRequest\x1a%.com.mapr.data.db.DeleteTableResponse\"\x00\x12\\\n\x0bTableExists\x12$.com.mapr.data.db.TableExistsRequest\x1a%.com.mapr.data.db.TableExistsResponse\"\x00\x12h\n\x0fInsertOrReplace\x12(.com.mapr.data.db.InsertOrReplaceRequest\x1a).com.mapr.data.db.InsertOrReplaceResponse\"\x00\x12S\n\x08\x46indById\x12!.com.mapr.data.db.FindByIdRequest\x1a\".com.mapr.data.db.FindByIdResponse\"\x00\x12I\n\x04\x46ind\x12\x1d.com.mapr.data.db.FindRequest\x1a\x1e.com.mapr.data.db.FindResponse\"\x00\x30\x01\x42\x1a\n\x16\x63om.mapr.data.db.protoP\x01\x62\x06proto3')
 )
 
 _ERRORCODE = _descriptor.EnumDescriptor(
   name='ErrorCode',
-  full_name='com.mapr.db.grpc.ErrorCode',
+  full_name='com.mapr.data.db.ErrorCode',
   filename=None,
   file=DESCRIPTOR,
   values=[
@@ -96,15 +96,15 @@ _ERRORCODE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1364,
-  serialized_end=1730,
+  serialized_start=1387,
+  serialized_end=1753,
 )
 _sym_db.RegisterEnumDescriptor(_ERRORCODE)
 
 ErrorCode = enum_type_wrapper.EnumTypeWrapper(_ERRORCODE)
 _PAYLOADENCODING = _descriptor.EnumDescriptor(
   name='PayloadEncoding',
-  full_name='com.mapr.db.grpc.PayloadEncoding',
+  full_name='com.mapr.data.db.PayloadEncoding',
   filename=None,
   file=DESCRIPTOR,
   values=[
@@ -119,15 +119,15 @@ _PAYLOADENCODING = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1732,
-  serialized_end=1790,
+  serialized_start=1755,
+  serialized_end=1813,
 )
 _sym_db.RegisterEnumDescriptor(_PAYLOADENCODING)
 
 PayloadEncoding = enum_type_wrapper.EnumTypeWrapper(_PAYLOADENCODING)
 _INSERTMODE = _descriptor.EnumDescriptor(
   name='InsertMode',
-  full_name='com.mapr.db.grpc.InsertMode',
+  full_name='com.mapr.data.db.InsertMode',
   filename=None,
   file=DESCRIPTOR,
   values=[
@@ -150,12 +150,39 @@ _INSERTMODE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1792,
-  serialized_end=1870,
+  serialized_start=1815,
+  serialized_end=1893,
 )
 _sym_db.RegisterEnumDescriptor(_INSERTMODE)
 
 InsertMode = enum_type_wrapper.EnumTypeWrapper(_INSERTMODE)
+_FINDRESPONSETYPE = _descriptor.EnumDescriptor(
+  name='FindResponseType',
+  full_name='com.mapr.data.db.FindResponseType',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='UNKNOWN_TYPE', index=0, number=0,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='RESULT_DOCUMENT', index=1, number=1,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='QUERY_PLAN', index=2, number=2,
+      options=None,
+      type=None),
+  ],
+  containing_type=None,
+  options=None,
+  serialized_start=1895,
+  serialized_end=1968,
+)
+_sym_db.RegisterEnumDescriptor(_FINDRESPONSETYPE)
+
+FindResponseType = enum_type_wrapper.EnumTypeWrapper(_FINDRESPONSETYPE)
 NO_ERROR = 0
 TABLE_NOT_FOUND = 2
 IO_ERROR = 5
@@ -178,32 +205,35 @@ UNKNOWN_MODE = 0
 INSERT_OR_REPLACE = 1
 INSERT = 2
 REPLACE = 3
+UNKNOWN_TYPE = 0
+RESULT_DOCUMENT = 1
+QUERY_PLAN = 2
 
 
 
 _RPCERROR = _descriptor.Descriptor(
   name='RpcError',
-  full_name='com.mapr.db.grpc.RpcError',
+  full_name='com.mapr.data.db.RpcError',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='err_code', full_name='com.mapr.db.grpc.RpcError.err_code', index=0,
+      name='err_code', full_name='com.mapr.data.db.RpcError.err_code', index=0,
       number=1, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='error_message', full_name='com.mapr.db.grpc.RpcError.error_message', index=1,
+      name='error_message', full_name='com.mapr.data.db.RpcError.error_message', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='java_stack_trace', full_name='com.mapr.db.grpc.RpcError.java_stack_trace', index=2,
+      name='java_stack_trace', full_name='com.mapr.data.db.RpcError.java_stack_trace', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -228,13 +258,13 @@ _RPCERROR = _descriptor.Descriptor(
 
 _CREATETABLEREQUEST = _descriptor.Descriptor(
   name='CreateTableRequest',
-  full_name='com.mapr.db.grpc.CreateTableRequest',
+  full_name='com.mapr.data.db.CreateTableRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='table_path', full_name='com.mapr.db.grpc.CreateTableRequest.table_path', index=0,
+      name='table_path', full_name='com.mapr.data.db.CreateTableRequest.table_path', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -259,13 +289,13 @@ _CREATETABLEREQUEST = _descriptor.Descriptor(
 
 _CREATETABLERESPONSE = _descriptor.Descriptor(
   name='CreateTableResponse',
-  full_name='com.mapr.db.grpc.CreateTableResponse',
+  full_name='com.mapr.data.db.CreateTableResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='error', full_name='com.mapr.db.grpc.CreateTableResponse.error', index=0,
+      name='error', full_name='com.mapr.data.db.CreateTableResponse.error', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -290,13 +320,13 @@ _CREATETABLERESPONSE = _descriptor.Descriptor(
 
 _DELETETABLEREQUEST = _descriptor.Descriptor(
   name='DeleteTableRequest',
-  full_name='com.mapr.db.grpc.DeleteTableRequest',
+  full_name='com.mapr.data.db.DeleteTableRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='table_path', full_name='com.mapr.db.grpc.DeleteTableRequest.table_path', index=0,
+      name='table_path', full_name='com.mapr.data.db.DeleteTableRequest.table_path', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -321,13 +351,13 @@ _DELETETABLEREQUEST = _descriptor.Descriptor(
 
 _DELETETABLERESPONSE = _descriptor.Descriptor(
   name='DeleteTableResponse',
-  full_name='com.mapr.db.grpc.DeleteTableResponse',
+  full_name='com.mapr.data.db.DeleteTableResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='error', full_name='com.mapr.db.grpc.DeleteTableResponse.error', index=0,
+      name='error', full_name='com.mapr.data.db.DeleteTableResponse.error', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -352,13 +382,13 @@ _DELETETABLERESPONSE = _descriptor.Descriptor(
 
 _TABLEEXISTSREQUEST = _descriptor.Descriptor(
   name='TableExistsRequest',
-  full_name='com.mapr.db.grpc.TableExistsRequest',
+  full_name='com.mapr.data.db.TableExistsRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='table_path', full_name='com.mapr.db.grpc.TableExistsRequest.table_path', index=0,
+      name='table_path', full_name='com.mapr.data.db.TableExistsRequest.table_path', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -383,13 +413,13 @@ _TABLEEXISTSREQUEST = _descriptor.Descriptor(
 
 _TABLEEXISTSRESPONSE = _descriptor.Descriptor(
   name='TableExistsResponse',
-  full_name='com.mapr.db.grpc.TableExistsResponse',
+  full_name='com.mapr.data.db.TableExistsResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='error', full_name='com.mapr.db.grpc.TableExistsResponse.error', index=0,
+      name='error', full_name='com.mapr.data.db.TableExistsResponse.error', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -414,34 +444,34 @@ _TABLEEXISTSRESPONSE = _descriptor.Descriptor(
 
 _INSERTORREPLACEREQUEST = _descriptor.Descriptor(
   name='InsertOrReplaceRequest',
-  full_name='com.mapr.db.grpc.InsertOrReplaceRequest',
+  full_name='com.mapr.data.db.InsertOrReplaceRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='table_path', full_name='com.mapr.db.grpc.InsertOrReplaceRequest.table_path', index=0,
+      name='table_path', full_name='com.mapr.data.db.InsertOrReplaceRequest.table_path', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='insert_mode', full_name='com.mapr.db.grpc.InsertOrReplaceRequest.insert_mode', index=1,
+      name='insert_mode', full_name='com.mapr.data.db.InsertOrReplaceRequest.insert_mode', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='payload_encoding', full_name='com.mapr.db.grpc.InsertOrReplaceRequest.payload_encoding', index=2,
+      name='payload_encoding', full_name='com.mapr.data.db.InsertOrReplaceRequest.payload_encoding', index=2,
       number=3, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='json_document', full_name='com.mapr.db.grpc.InsertOrReplaceRequest.json_document', index=3,
+      name='json_document', full_name='com.mapr.data.db.InsertOrReplaceRequest.json_document', index=3,
       number=10, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -459,7 +489,7 @@ _INSERTORREPLACEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
-      name='data', full_name='com.mapr.db.grpc.InsertOrReplaceRequest.data',
+      name='data', full_name='com.mapr.data.db.InsertOrReplaceRequest.data',
       index=0, containing_type=None, fields=[]),
   ],
   serialized_start=474,
@@ -469,13 +499,13 @@ _INSERTORREPLACEREQUEST = _descriptor.Descriptor(
 
 _INSERTORREPLACERESPONSE = _descriptor.Descriptor(
   name='InsertOrReplaceResponse',
-  full_name='com.mapr.db.grpc.InsertOrReplaceResponse',
+  full_name='com.mapr.data.db.InsertOrReplaceResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='error', full_name='com.mapr.db.grpc.InsertOrReplaceResponse.error', index=0,
+      name='error', full_name='com.mapr.data.db.InsertOrReplaceResponse.error', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -500,27 +530,27 @@ _INSERTORREPLACERESPONSE = _descriptor.Descriptor(
 
 _FINDBYIDREQUEST = _descriptor.Descriptor(
   name='FindByIdRequest',
-  full_name='com.mapr.db.grpc.FindByIdRequest',
+  full_name='com.mapr.data.db.FindByIdRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='table_path', full_name='com.mapr.db.grpc.FindByIdRequest.table_path', index=0,
+      name='table_path', full_name='com.mapr.data.db.FindByIdRequest.table_path', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='payload_encoding', full_name='com.mapr.db.grpc.FindByIdRequest.payload_encoding', index=1,
+      name='payload_encoding', full_name='com.mapr.data.db.FindByIdRequest.payload_encoding', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='json_document', full_name='com.mapr.db.grpc.FindByIdRequest.json_document', index=2,
+      name='json_document', full_name='com.mapr.data.db.FindByIdRequest.json_document', index=2,
       number=10, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -538,7 +568,7 @@ _FINDBYIDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
-      name='data', full_name='com.mapr.db.grpc.FindByIdRequest.data',
+      name='data', full_name='com.mapr.data.db.FindByIdRequest.data',
       index=0, containing_type=None, fields=[]),
   ],
   serialized_start=736,
@@ -548,27 +578,27 @@ _FINDBYIDREQUEST = _descriptor.Descriptor(
 
 _FINDBYIDRESPONSE = _descriptor.Descriptor(
   name='FindByIdResponse',
-  full_name='com.mapr.db.grpc.FindByIdResponse',
+  full_name='com.mapr.data.db.FindByIdResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='error', full_name='com.mapr.db.grpc.FindByIdResponse.error', index=0,
+      name='error', full_name='com.mapr.data.db.FindByIdResponse.error', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='payload_encoding', full_name='com.mapr.db.grpc.FindByIdResponse.payload_encoding', index=1,
+      name='payload_encoding', full_name='com.mapr.data.db.FindByIdResponse.payload_encoding', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='json_document', full_name='com.mapr.db.grpc.FindByIdResponse.json_document', index=2,
+      name='json_document', full_name='com.mapr.data.db.FindByIdResponse.json_document', index=2,
       number=10, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -586,7 +616,7 @@ _FINDBYIDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
-      name='data', full_name='com.mapr.db.grpc.FindByIdResponse.data',
+      name='data', full_name='com.mapr.data.db.FindByIdResponse.data',
       index=0, containing_type=None, fields=[]),
   ],
   serialized_start=870,
@@ -596,34 +626,34 @@ _FINDBYIDRESPONSE = _descriptor.Descriptor(
 
 _FINDREQUEST = _descriptor.Descriptor(
   name='FindRequest',
-  full_name='com.mapr.db.grpc.FindRequest',
+  full_name='com.mapr.data.db.FindRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='table_path', full_name='com.mapr.db.grpc.FindRequest.table_path', index=0,
+      name='table_path', full_name='com.mapr.data.db.FindRequest.table_path', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='payload_encoding', full_name='com.mapr.db.grpc.FindRequest.payload_encoding', index=1,
+      name='payload_encoding', full_name='com.mapr.data.db.FindRequest.payload_encoding', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='include_query_plan', full_name='com.mapr.db.grpc.FindRequest.include_query_plan', index=2,
+      name='include_query_plan', full_name='com.mapr.data.db.FindRequest.include_query_plan', index=2,
       number=3, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='json_query', full_name='com.mapr.db.grpc.FindRequest.json_query', index=3,
+      name='json_query', full_name='com.mapr.data.db.FindRequest.json_query', index=3,
       number=10, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -641,7 +671,7 @@ _FINDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
-      name='data', full_name='com.mapr.db.grpc.FindRequest.data',
+      name='data', full_name='com.mapr.data.db.FindRequest.data',
       index=0, containing_type=None, fields=[]),
   ],
   serialized_start=1028,
@@ -651,34 +681,34 @@ _FINDREQUEST = _descriptor.Descriptor(
 
 _FINDRESPONSE = _descriptor.Descriptor(
   name='FindResponse',
-  full_name='com.mapr.db.grpc.FindResponse',
+  full_name='com.mapr.data.db.FindResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='error', full_name='com.mapr.db.grpc.FindResponse.error', index=0,
+      name='error', full_name='com.mapr.data.db.FindResponse.error', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='payload_encoding', full_name='com.mapr.db.grpc.FindResponse.payload_encoding', index=1,
+      name='payload_encoding', full_name='com.mapr.data.db.FindResponse.payload_encoding', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='json_query_plan', full_name='com.mapr.db.grpc.FindResponse.json_query_plan', index=2,
-      number=10, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      name='type', full_name='com.mapr.data.db.FindResponse.type', index=2,
+      number=3, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='json_document', full_name='com.mapr.db.grpc.FindResponse.json_document', index=3,
+      name='json_response', full_name='com.mapr.data.db.FindResponse.json_response', index=3,
       number=11, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -696,11 +726,11 @@ _FINDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
-      name='data', full_name='com.mapr.db.grpc.FindResponse.data',
+      name='data', full_name='com.mapr.data.db.FindResponse.data',
       index=0, containing_type=None, fields=[]),
   ],
   serialized_start=1183,
-  serialized_end=1361,
+  serialized_end=1384,
 )
 
 _RPCERROR.fields_by_name['err_code'].enum_type = _ERRORCODE
@@ -728,12 +758,10 @@ _FINDREQUEST.oneofs_by_name['data'].fields.append(
 _FINDREQUEST.fields_by_name['json_query'].containing_oneof = _FINDREQUEST.oneofs_by_name['data']
 _FINDRESPONSE.fields_by_name['error'].message_type = _RPCERROR
 _FINDRESPONSE.fields_by_name['payload_encoding'].enum_type = _PAYLOADENCODING
+_FINDRESPONSE.fields_by_name['type'].enum_type = _FINDRESPONSETYPE
 _FINDRESPONSE.oneofs_by_name['data'].fields.append(
-  _FINDRESPONSE.fields_by_name['json_query_plan'])
-_FINDRESPONSE.fields_by_name['json_query_plan'].containing_oneof = _FINDRESPONSE.oneofs_by_name['data']
-_FINDRESPONSE.oneofs_by_name['data'].fields.append(
-  _FINDRESPONSE.fields_by_name['json_document'])
-_FINDRESPONSE.fields_by_name['json_document'].containing_oneof = _FINDRESPONSE.oneofs_by_name['data']
+  _FINDRESPONSE.fields_by_name['json_response'])
+_FINDRESPONSE.fields_by_name['json_response'].containing_oneof = _FINDRESPONSE.oneofs_by_name['data']
 DESCRIPTOR.message_types_by_name['RpcError'] = _RPCERROR
 DESCRIPTOR.message_types_by_name['CreateTableRequest'] = _CREATETABLEREQUEST
 DESCRIPTOR.message_types_by_name['CreateTableResponse'] = _CREATETABLERESPONSE
@@ -750,115 +778,116 @@ DESCRIPTOR.message_types_by_name['FindResponse'] = _FINDRESPONSE
 DESCRIPTOR.enum_types_by_name['ErrorCode'] = _ERRORCODE
 DESCRIPTOR.enum_types_by_name['PayloadEncoding'] = _PAYLOADENCODING
 DESCRIPTOR.enum_types_by_name['InsertMode'] = _INSERTMODE
+DESCRIPTOR.enum_types_by_name['FindResponseType'] = _FINDRESPONSETYPE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 RpcError = _reflection.GeneratedProtocolMessageType('RpcError', (_message.Message,), dict(
   DESCRIPTOR = _RPCERROR,
   __module__ = 'maprdb_server_pb2'
-  # @@protoc_insertion_point(class_scope:com.mapr.db.grpc.RpcError)
+  # @@protoc_insertion_point(class_scope:com.mapr.data.db.RpcError)
   ))
 _sym_db.RegisterMessage(RpcError)
 
 CreateTableRequest = _reflection.GeneratedProtocolMessageType('CreateTableRequest', (_message.Message,), dict(
   DESCRIPTOR = _CREATETABLEREQUEST,
   __module__ = 'maprdb_server_pb2'
-  # @@protoc_insertion_point(class_scope:com.mapr.db.grpc.CreateTableRequest)
+  # @@protoc_insertion_point(class_scope:com.mapr.data.db.CreateTableRequest)
   ))
 _sym_db.RegisterMessage(CreateTableRequest)
 
 CreateTableResponse = _reflection.GeneratedProtocolMessageType('CreateTableResponse', (_message.Message,), dict(
   DESCRIPTOR = _CREATETABLERESPONSE,
   __module__ = 'maprdb_server_pb2'
-  # @@protoc_insertion_point(class_scope:com.mapr.db.grpc.CreateTableResponse)
+  # @@protoc_insertion_point(class_scope:com.mapr.data.db.CreateTableResponse)
   ))
 _sym_db.RegisterMessage(CreateTableResponse)
 
 DeleteTableRequest = _reflection.GeneratedProtocolMessageType('DeleteTableRequest', (_message.Message,), dict(
   DESCRIPTOR = _DELETETABLEREQUEST,
   __module__ = 'maprdb_server_pb2'
-  # @@protoc_insertion_point(class_scope:com.mapr.db.grpc.DeleteTableRequest)
+  # @@protoc_insertion_point(class_scope:com.mapr.data.db.DeleteTableRequest)
   ))
 _sym_db.RegisterMessage(DeleteTableRequest)
 
 DeleteTableResponse = _reflection.GeneratedProtocolMessageType('DeleteTableResponse', (_message.Message,), dict(
   DESCRIPTOR = _DELETETABLERESPONSE,
   __module__ = 'maprdb_server_pb2'
-  # @@protoc_insertion_point(class_scope:com.mapr.db.grpc.DeleteTableResponse)
+  # @@protoc_insertion_point(class_scope:com.mapr.data.db.DeleteTableResponse)
   ))
 _sym_db.RegisterMessage(DeleteTableResponse)
 
 TableExistsRequest = _reflection.GeneratedProtocolMessageType('TableExistsRequest', (_message.Message,), dict(
   DESCRIPTOR = _TABLEEXISTSREQUEST,
   __module__ = 'maprdb_server_pb2'
-  # @@protoc_insertion_point(class_scope:com.mapr.db.grpc.TableExistsRequest)
+  # @@protoc_insertion_point(class_scope:com.mapr.data.db.TableExistsRequest)
   ))
 _sym_db.RegisterMessage(TableExistsRequest)
 
 TableExistsResponse = _reflection.GeneratedProtocolMessageType('TableExistsResponse', (_message.Message,), dict(
   DESCRIPTOR = _TABLEEXISTSRESPONSE,
   __module__ = 'maprdb_server_pb2'
-  # @@protoc_insertion_point(class_scope:com.mapr.db.grpc.TableExistsResponse)
+  # @@protoc_insertion_point(class_scope:com.mapr.data.db.TableExistsResponse)
   ))
 _sym_db.RegisterMessage(TableExistsResponse)
 
 InsertOrReplaceRequest = _reflection.GeneratedProtocolMessageType('InsertOrReplaceRequest', (_message.Message,), dict(
   DESCRIPTOR = _INSERTORREPLACEREQUEST,
   __module__ = 'maprdb_server_pb2'
-  # @@protoc_insertion_point(class_scope:com.mapr.db.grpc.InsertOrReplaceRequest)
+  # @@protoc_insertion_point(class_scope:com.mapr.data.db.InsertOrReplaceRequest)
   ))
 _sym_db.RegisterMessage(InsertOrReplaceRequest)
 
 InsertOrReplaceResponse = _reflection.GeneratedProtocolMessageType('InsertOrReplaceResponse', (_message.Message,), dict(
   DESCRIPTOR = _INSERTORREPLACERESPONSE,
   __module__ = 'maprdb_server_pb2'
-  # @@protoc_insertion_point(class_scope:com.mapr.db.grpc.InsertOrReplaceResponse)
+  # @@protoc_insertion_point(class_scope:com.mapr.data.db.InsertOrReplaceResponse)
   ))
 _sym_db.RegisterMessage(InsertOrReplaceResponse)
 
 FindByIdRequest = _reflection.GeneratedProtocolMessageType('FindByIdRequest', (_message.Message,), dict(
   DESCRIPTOR = _FINDBYIDREQUEST,
   __module__ = 'maprdb_server_pb2'
-  # @@protoc_insertion_point(class_scope:com.mapr.db.grpc.FindByIdRequest)
+  # @@protoc_insertion_point(class_scope:com.mapr.data.db.FindByIdRequest)
   ))
 _sym_db.RegisterMessage(FindByIdRequest)
 
 FindByIdResponse = _reflection.GeneratedProtocolMessageType('FindByIdResponse', (_message.Message,), dict(
   DESCRIPTOR = _FINDBYIDRESPONSE,
   __module__ = 'maprdb_server_pb2'
-  # @@protoc_insertion_point(class_scope:com.mapr.db.grpc.FindByIdResponse)
+  # @@protoc_insertion_point(class_scope:com.mapr.data.db.FindByIdResponse)
   ))
 _sym_db.RegisterMessage(FindByIdResponse)
 
 FindRequest = _reflection.GeneratedProtocolMessageType('FindRequest', (_message.Message,), dict(
   DESCRIPTOR = _FINDREQUEST,
   __module__ = 'maprdb_server_pb2'
-  # @@protoc_insertion_point(class_scope:com.mapr.db.grpc.FindRequest)
+  # @@protoc_insertion_point(class_scope:com.mapr.data.db.FindRequest)
   ))
 _sym_db.RegisterMessage(FindRequest)
 
 FindResponse = _reflection.GeneratedProtocolMessageType('FindResponse', (_message.Message,), dict(
   DESCRIPTOR = _FINDRESPONSE,
   __module__ = 'maprdb_server_pb2'
-  # @@protoc_insertion_point(class_scope:com.mapr.db.grpc.FindResponse)
+  # @@protoc_insertion_point(class_scope:com.mapr.data.db.FindResponse)
   ))
 _sym_db.RegisterMessage(FindResponse)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\026com.mapr.db.proto.grpcP\001'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\026com.mapr.data.db.protoP\001'))
 
 _MAPRDBSERVER = _descriptor.ServiceDescriptor(
   name='MapRDbServer',
-  full_name='com.mapr.db.grpc.MapRDbServer',
+  full_name='com.mapr.data.db.MapRDbServer',
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=1873,
-  serialized_end=2435,
+  serialized_start=1971,
+  serialized_end=2533,
   methods=[
   _descriptor.MethodDescriptor(
     name='CreateTable',
-    full_name='com.mapr.db.grpc.MapRDbServer.CreateTable',
+    full_name='com.mapr.data.db.MapRDbServer.CreateTable',
     index=0,
     containing_service=None,
     input_type=_CREATETABLEREQUEST,
@@ -867,7 +896,7 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='DeleteTable',
-    full_name='com.mapr.db.grpc.MapRDbServer.DeleteTable',
+    full_name='com.mapr.data.db.MapRDbServer.DeleteTable',
     index=1,
     containing_service=None,
     input_type=_DELETETABLEREQUEST,
@@ -876,7 +905,7 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='TableExists',
-    full_name='com.mapr.db.grpc.MapRDbServer.TableExists',
+    full_name='com.mapr.data.db.MapRDbServer.TableExists',
     index=2,
     containing_service=None,
     input_type=_TABLEEXISTSREQUEST,
@@ -885,7 +914,7 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='InsertOrReplace',
-    full_name='com.mapr.db.grpc.MapRDbServer.InsertOrReplace',
+    full_name='com.mapr.data.db.MapRDbServer.InsertOrReplace',
     index=3,
     containing_service=None,
     input_type=_INSERTORREPLACEREQUEST,
@@ -894,7 +923,7 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='FindById',
-    full_name='com.mapr.db.grpc.MapRDbServer.FindById',
+    full_name='com.mapr.data.db.MapRDbServer.FindById',
     index=4,
     containing_service=None,
     input_type=_FINDBYIDREQUEST,
@@ -903,7 +932,7 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='Find',
-    full_name='com.mapr.db.grpc.MapRDbServer.Find',
+    full_name='com.mapr.data.db.MapRDbServer.Find',
     index=5,
     containing_service=None,
     input_type=_FINDREQUEST,
