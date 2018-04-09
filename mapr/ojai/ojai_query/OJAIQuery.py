@@ -14,6 +14,28 @@ class OJAIQuery(Query):
         self.__query_dict = {}
         self.__is_build = False
 
+    def __merge_list_value(self, merged_dict, k, v):
+        working_dict = merged_dict
+        swap = False
+        for dict_element in working_dict[k]:
+            for elem_k in dict_element:
+                if isinstance(v, list):
+                    for item in v:
+                        if elem_k in item:
+                            index = working_dict[k].index(dict_element)
+                            working_dict[k].remove(dict_element)
+                            working_dict[k].insert(index, item)
+                            swap = True
+                else:
+                    if elem_k in v:
+                        index = working_dict[k].index(dict_element)
+                        working_dict[k].remove(dict_element)
+                        working_dict[k].insert(index, v)
+                        swap = True
+        if not swap:
+            working_dict[k].append(v)
+        return working_dict
+
     def __merge_two_dicts(self, dict1, dict2):
         """Function merge two dictionaries into one without data loss"""
         if not isinstance(dict2, dict):
@@ -23,24 +45,7 @@ class OJAIQuery(Query):
             if k in merged_dict and isinstance(merged_dict[k], dict):
                 merged_dict[k] = self.__merge_two_dicts(merged_dict[k], v)
             elif k in merged_dict and isinstance(merged_dict[k], list):
-                swap = False
-                for dict_element in merged_dict[k]:
-                    for elem_k in dict_element:
-                        if isinstance(v, list):
-                            for item in v:
-                                if elem_k in item:
-                                    index = merged_dict[k].index(dict_element)
-                                    merged_dict[k].remove(dict_element)
-                                    merged_dict[k].insert(index, item)
-                                    swap = True
-                        else:
-                            if elem_k in v:
-                                index = merged_dict[k].index(dict_element)
-                                merged_dict[k].remove(dict_element)
-                                merged_dict[k].insert(index, v)
-                                swap = True
-                if not swap:
-                    merged_dict[k].append(v)
+                merged_dict = self.__merge_list_value(merged_dict=merged_dict, k=k, v=v)
             else:
                 merged_dict[k] = deepcopy(v)
         return merged_dict
@@ -71,19 +76,28 @@ class OJAIQuery(Query):
         return self
 
     def where(self, condition):
-        if not isinstance(condition, (OJAIQueryCondition, dict)):
+        if not isinstance(condition, (OJAIQueryCondition, dict, str, unicode)):
             raise TypeError("Condition type must be OJAIQueryCondition or dict.")
 
         if isinstance(condition, OJAIQueryCondition):
+            if condition.is_empty():
+                raise AttributeError("Condition can't be empty.")
             self.__query_dict = self.__merge_two_dicts(self.__query_dict,
                                                        {Operations.WHERE: condition.as_dictionary()})
+        elif isinstance(condition, (str, unicode)):
+            if not condition:
+                raise AttributeError("Condition can't be empty.")
+            self.__query_dict = self.__merge_two_dicts(self.__query_dict,
+                                                       {Operations.WHERE: json.loads(condition)})
         else:
+            if not condition:
+                raise AttributeError("Condition can't be empty.")
             self.__query_dict = self.__merge_two_dicts(self.__query_dict,
                                                        {Operations.WHERE: condition})
         return self
 
     def order_by(self, field_paths, order='asc'):
-        if not isinstance(field_paths, (str, unicode, list)):
+        if not isinstance(field_paths, (str, unicode, list)) or not field_paths:
             raise TypeError()
         self.__query_dict = self.__merge_two_dicts(self.__query_dict,
                                                    {Operations.ORDER_BY:
@@ -112,7 +126,7 @@ class OJAIQuery(Query):
 
     def to_json_str(self):
         if self.__is_build:
-            return json.dumps(self.__query_dict, indent=4)
+            return json.dumps(self.__query_dict)
         else:
             raise QueryNotBuildError('Build query with help of build() method.')
 

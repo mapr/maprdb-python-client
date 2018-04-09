@@ -34,14 +34,14 @@ class QueryTest(unittest.TestCase):
     def test_multiple_and(self):
         qc = OJAIQueryCondition() \
             .and_() \
-                .and_() \
-                    .is_(field_path='age', op=QueryOp.GREATER_OR_EQUAL, value=18) \
-                    .is_(field_path='city', op=QueryOp.EQUAL, value='London') \
-                .close() \
-                .and_() \
-                    .is_(field_path='age', op=QueryOp.GREATER_OR_EQUAL, value=22) \
-                    .is_(field_path='city', op=QueryOp.EQUAL, value='NY') \
-                .close() \
+            .and_() \
+            .is_(field_path='age', op=QueryOp.GREATER_OR_EQUAL, value=18) \
+            .is_(field_path='city', op=QueryOp.EQUAL, value='London') \
+            .close() \
+            .and_() \
+            .is_(field_path='age', op=QueryOp.GREATER_OR_EQUAL, value=22) \
+            .is_(field_path='city', op=QueryOp.EQUAL, value='NY') \
+            .close() \
             .close()
 
         qc.build()
@@ -56,17 +56,17 @@ class QueryTest(unittest.TestCase):
         ]})
 
     def test_and_with_separate_is(self):
-        qc = OJAIQueryCondition()\
+        qc = OJAIQueryCondition() \
             .and_() \
             .and_() \
             .is_(field_path='age', op=QueryOp.GREATER_OR_EQUAL, value=18) \
-            .is_(field_path='city', op=QueryOp.EQUAL, value='London')\
-            .close()\
-            .and_()\
-            .is_(field_path='age', op=QueryOp.GREATER_OR_EQUAL, value=22)\
-            .is_(field_path='city', op=QueryOp.EQUAL, value='NY')\
-            .close()\
-            .is_('card', QueryOp.EQUAL, 'visa')\
+            .is_(field_path='city', op=QueryOp.EQUAL, value='London') \
+            .close() \
+            .and_() \
+            .is_(field_path='age', op=QueryOp.GREATER_OR_EQUAL, value=22) \
+            .is_(field_path='city', op=QueryOp.EQUAL, value='NY') \
+            .close() \
+            .is_('card', QueryOp.EQUAL, 'visa') \
             .close()
 
         qc.build()
@@ -156,6 +156,16 @@ class QueryTest(unittest.TestCase):
                                                   ]}
                                               ]}})
 
+    def test_query_check_existing_condition(self):
+        qc = OJAIQueryCondition().is_('age', QueryOp.GREATER_OR_EQUAL, 55).is_('age', QueryOp.GREATER_OR_EQUAL, 18)\
+            .close().build()
+        self.assertEqual(qc.as_dictionary(), {'$ge': {'age': 18}})
+
+    def test_query_condition_multiple_is(self):
+        qc = OJAIQueryCondition().is_('age', QueryOp.GREATER_OR_EQUAL, 55).is_('age', QueryOp.NOT_EQUAL, 18) \
+            .close().build()
+        self.assertEqual(qc.as_dictionary(), {'$ge': {'age': 55}, '$ne': {'age': 18}})
+
     def test_in_condition(self):
         qc = OJAIQueryCondition().in_('age', [20, 21, 22, 23, 24, 25]).close().build()
 
@@ -200,12 +210,6 @@ class QueryTest(unittest.TestCase):
 
         self.assertEqual(query2.query_dict(), {'$orderby': [{'name': 'asc'}, {'age': 'asc'}]})
 
-        query2.order_by(['name', 'age'], 'desc').build()
-
-        self.assertEqual(query2.query_dict(), {'$orderby': [{'name': 'desc'}, {'age': 'desc'}]})
-        query2.order_by('name', 'asc')
-        self.assertEqual(query2.query_dict(), {'$orderby': [{'name': 'asc'}, {'age': 'desc'}]})
-
         query3 = OJAIQuery().order_by(['address.city', 'address.postal_code'], 'desc').build()
 
         self.assertEqual(query3.query_dict(), {'$orderby': [{'address.city': 'desc'}, {'address.postal_code': 'desc'}]})
@@ -227,8 +231,30 @@ class QueryTest(unittest.TestCase):
         query = OJAIQuery().where({'$ne': {'name': 'Joh'}}).build()
         self.assertEqual({'$where': {'$ne': {'name': 'Joh'}}}, query.query_dict())
 
+    def test_where_json_str(self):
+        query = OJAIQuery().where("{\"$eq\": {\"address.zipCode\": 95196}}").build()
+        self.assertEqual({'$where': {'$eq': {'address.zipCode': 95196}}}, query.query_dict())
 
+    def test_where_json_str_format(self):
+        query = OJAIQuery().where("{\"$eq\": {\"address.zipCode\": 95196}}").build()
+        self.assertEqual('{"$where": {"$eq": {"address.zipCode": 95196}}}', query.to_json_str())
 
+    def test_empty_where(self):
+        with self.assertRaises(AttributeError):
+            query = OJAIQuery().where({}).build()
 
+        with self.assertRaises(AttributeError):
+            query = OJAIQuery().where('').build()
 
+        with self.assertRaises(AttributeError):
+            query = OJAIQuery().where(u'').build()
 
+        with self.assertRaises(AttributeError):
+            query = OJAIQuery().where(OJAIQueryCondition().build()).build()
+
+    def test_order_by_empty(self):
+        with self.assertRaises(TypeError):
+            query = OJAIQuery().order_by([]).build()
+
+        with self.assertRaises(TypeError):
+            query = OJAIQuery().order_by('').build()
