@@ -35,8 +35,9 @@ class FindTest(unittest.TestCase):
         query = OJAIQuery().select(['_id', 'test_int', 'test_str', 'test_dict', 'test_list', 'test_null']).build()
 
         self.assertTrue(connection.is_store_exists('/find-test-store1'))
-        doc = document_store.find(query).iterator()
-        self.assertEqual(doc[0], document.as_dictionary())
+        doc_stream = document_store.find(query).iterator()
+        for doc in doc_stream:
+            self.assertEqual(doc, document.as_dictionary())
 
     def test_find_on_empty_table(self):
         url = 'localhost:5678'
@@ -49,9 +50,13 @@ class FindTest(unittest.TestCase):
 
         query = OJAIQuery().select(['_id', 'test_int', 'test_str', 'test_dict', 'test_list', 'test_null']).build()
 
-        self.assertTrue(connection.is_store_exists('/find-test-store1'))
-        doc = document_store.find(query).iterator()
-        self.assertEqual(doc, [])
+        self.assertTrue(connection.is_store_exists('/find-test-store2'))
+        doc_stream = document_store.find(query).iterator()
+        size = 0
+        for doc in doc_stream:
+            size += 1
+            print(doc)
+        self.assertEqual(size, 0)
 
     def test_find_table_not_found(self):
         url = 'localhost:5678'
@@ -61,9 +66,10 @@ class FindTest(unittest.TestCase):
 
         query = OJAIQuery().select(['_id', 'test_int', 'test_str', 'test_dict', 'test_list', 'test_null']).build()
 
-        self.assertTrue(connection.is_store_exists('/find-test-store1'))
+        self.assertFalse(connection.is_store_exists('/find-test-store3'))
         with self.assertRaises(StoreNotFoundError):
-            doc = document_store.find(query)
+            for doc in document_store.find(query).iterator():
+                print(doc)
 
     def test_find_multiple_records(self):
         url = 'localhost:5678'
@@ -87,8 +93,10 @@ class FindTest(unittest.TestCase):
         query = OJAIQuery().select(['_id', 'test_int', 'test_str', 'test_dict', 'test_list', 'test_null']).build()
         doc_stream = document_store.find(query).iterator()
 
-        for i in range(len(document_list)):
-            self.assertEqual(doc_stream[i], document_list[i].as_dictionary())
+        index = 0
+        for doc in doc_stream:
+            self.assertEqual(doc, document_list[index].as_dictionary())
+            index += 1
 
     def test_find_with_condition(self):
         url = 'localhost:5678'
@@ -114,8 +122,11 @@ class FindTest(unittest.TestCase):
                    .is_('test_int', QueryOp.LESS_OR_EQUAL, 6).close().close().build()).build()
         doc_stream = document_store.find(query).iterator()
 
-        for i in range(len(doc_stream)):
-            self.assertEqual(doc_stream[i], document_list[i].as_dictionary())
+        index = 0
+        for doc in doc_stream:
+            self.assertEqual(doc, document_list[index].as_dictionary())
+            index += 1
+
 
     def test_find_all(self):
         url = 'localhost:5678'
@@ -127,9 +138,10 @@ class FindTest(unittest.TestCase):
             document_store = connection.create_store(store_path='/find-test-store4')
 
         doc_stream = document_store.find().iterator()
-        self.assertEqual(len(doc_stream), 9)
-
-
+        stream_size = 0
+        for doc in doc_stream:
+            stream_size += 1
+        self.assertEqual(stream_size, 9)
 
 
 if __name__ == '__main__':

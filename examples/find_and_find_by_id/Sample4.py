@@ -5,7 +5,7 @@ from mapr.ojai.ojai_query.QueryOp import QueryOp
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
 """Create a connection, get store, insert new document into store"""
-# create a connection using path:user@password
+# create a connection
 connection = ConnectionFactory.get_connection(url="localhost:5678")
 
 # Get a store and assign it as a DocumentStore object
@@ -22,6 +22,7 @@ query_condition = OJAIQueryCondition()\
 
 query = OJAIQuery().select(['address']).where(query_condition).build()
 
-doc_stream = document_store.find(query).iterator()
+doc_stream = document_store.find(query, results_as_document=True, include_query_plan=True).iterator()
 
-print(doc_stream)
+for doc in doc_stream:
+    print(doc.as_dictionary())
