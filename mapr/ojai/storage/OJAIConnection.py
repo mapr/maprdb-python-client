@@ -1,3 +1,5 @@
+import json
+
 import grpc
 from ojai.store.Connection import Connection
 
@@ -78,12 +80,11 @@ class OJAIConnection(Connection):
         doc = OJAIDocument()
 
         if dictionary is not None:
-            for k, v in dictionary.iteritems():
-                doc.set(k, v)
+            doc.from_dict(dictionary)
+            # for k, v in dictionary.iteritems():
+            #     doc.set(k, v)
         elif json_string is not None:
-            # TODO
-            print("TODO")
-            pass
+            doc.from_dict(json.loads(json_string))
         else:
             raise AttributeError
 

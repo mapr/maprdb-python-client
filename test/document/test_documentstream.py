@@ -38,7 +38,7 @@ class DocumentStreamTest(unittest.TestCase):
                               .set_id('id0' + str(i))
                               .set('name', 'Jhon' + str(i))
                               .set('address.city', 'LA')
-                              .set('address.street', 'street' + str(i)).as_json_str())
+                              .set('address.street', 'street' + str(i)).as_json_str(with_tags=False))
 
         doc_stream = OJAIDocumentStream(input_stream=
                                         map(lambda doc_string: OJAIDocumentCreator.create_document(doc_string),

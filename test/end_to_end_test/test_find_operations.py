@@ -1,18 +1,11 @@
 #!/usr/bin/env python
 from __future__ import unicode_literals
 
-import grpc
-
-from ojai.o_types.ODate import ODate
-from ojai.o_types.OTime import OTime
-from ojai.o_types.OTimestamp import OTimestamp
-from mapr.ojai.ojai.OJAIDocument import OJAIDocument
-from mapr.ojai.ojai.OJAIDocumentStore import OJAIDocumentStore
-from mapr.ojai.proto.gen.maprdb_server_pb2 import CreateTableRequest, TableExistsRequest, ErrorCode
-from mapr.ojai.proto.gen.maprdb_server_pb2_grpc import MapRDbServerStub
-from mapr.ojai.storage.OJAIConnection import OJAIConnection
+from mapr.ojai.exceptions.StoreNotFoundError import StoreNotFoundError
+from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
+from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
+from mapr.ojai.ojai_query.QueryOp import QueryOp
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
-from mapr.ojai.storage.connection_constants import DRIVER_BASE_URL, SERVICE_PORT
 
 try:
     import unittest2 as unittest
@@ -22,7 +15,7 @@ except ImportError:
 
 class FindTest(unittest.TestCase):
 
-    def test_find_by_id(self):
+    def test_simple_find(self):
         url = 'localhost:5678'
         connection = ConnectionFactory.get_connection(url=url)
 
@@ -35,73 +28,108 @@ class FindTest(unittest.TestCase):
                                                        'test_str': 'strstr',
                                                        'test_dict': {'test_int': 5},
                                                        'test_list': [5, 6],
-                                                       'test_null': None,
-                                                       'test_otime': OTime(timestamp=1518689532)})
+                                                       'test_null': None})
 
         document_store.insert_or_replace(doc=document)
 
+        query = OJAIQuery().select(['_id', 'test_int', 'test_str', 'test_dict', 'test_list', 'test_null']).build()
+
         self.assertTrue(connection.is_store_exists('/find-test-store1'))
-        doc = document_store.find_by_id('id008', as_object=True)
+        doc = document_store.find(query).iterator()
+        self.assertEqual(doc[0], document.as_dictionary())
 
-        self.assertEqual(doc.as_dictionary(), document.as_dictionary())
-
-    def test_insert_find_large_doc(self):
-        document = OJAIDocument().set_id("121212") \
-            .set('test_int', 123) \
-            .set('first.test_int', 1235) \
-            .set('first.test_long', 123456789) \
-            .set('first.test_time', OTime(timestamp=1518689532)) \
-            .set('first.test_date', ODate(days_since_epoch=3456)) \
-            .set('first.test_bool', True) \
-            .set('first.test_bool_false', False) \
-            .set('first.test_invalid', ODate(days_since_epoch=3457)) \
-            .set('first.test_str', 'strstr') \
-            .set('first.test_dict', {'a': 1, 'b': 2}) \
-            .set('first.test_dict2', {}) \
-            .set('first.test_list', [1, 2, 'str', False, ODate(days_since_epoch=3457)]) \
-
+    def test_find_on_empty_table(self):
         url = 'localhost:5678'
         connection = ConnectionFactory.get_connection(url=url)
 
-        if connection.is_store_exists(store_path='/find-test-store1'):
-            document_store = connection.get_store(store_path='/find-test-store1')
+        if connection.is_store_exists(store_path='/find-test-store2'):
+            document_store = connection.get_store(store_path='/find-test-store2')
         else:
-            document_store = connection.create_store(store_path='/find-test-store1')
+            document_store = connection.create_store(store_path='/find-test-store2')
 
-        document_store.insert_or_replace(doc=document)
+        query = OJAIQuery().select(['_id', 'test_int', 'test_str', 'test_dict', 'test_list', 'test_null']).build()
 
         self.assertTrue(connection.is_store_exists('/find-test-store1'))
-        doc = document_store.find_by_id('121212', as_object=True)
+        doc = document_store.find(query).iterator()
+        self.assertEqual(doc, [])
 
-        self.assertEqual(doc.as_dictionary(), document.as_dictionary())
-
-    def test_find_by_id_as_dict(self):
+    def test_find_table_not_found(self):
         url = 'localhost:5678'
         connection = ConnectionFactory.get_connection(url=url)
 
-        if connection.is_store_exists(store_path='/find-test-store1'):
-            document_store = connection.get_store(store_path='/find-test-store1')
-        else:
-            document_store = connection.create_store(store_path='/find-test-store1')
+        document_store = connection.get_store(store_path='/find-test-store3')
+
+        query = OJAIQuery().select(['_id', 'test_int', 'test_str', 'test_dict', 'test_list', 'test_null']).build()
 
         self.assertTrue(connection.is_store_exists('/find-test-store1'))
-        doc = document_store.find_by_id('121212')
+        with self.assertRaises(StoreNotFoundError):
+            doc = document_store.find(query)
 
-        document = OJAIDocument().set_id("121212") \
-            .set('test_int', 123) \
-            .set('first.test_int', 1235) \
-            .set('first.test_long', 123456789) \
-            .set('first.test_time', OTime(timestamp=1518689532)) \
-            .set('first.test_date', ODate(days_since_epoch=3456)) \
-            .set('first.test_bool', True) \
-            .set('first.test_bool_false', False) \
-            .set('first.test_invalid', ODate(days_since_epoch=3457)) \
-            .set('first.test_str', 'strstr') \
-            .set('first.test_dict', {'a': 1, 'b': 2}) \
-            .set('first.test_dict2', {}) \
-            .set('first.test_list', [1, 2, 'str', False, ODate(days_since_epoch=3457)])
+    def test_find_multiple_records(self):
+        url = 'localhost:5678'
+        connection = ConnectionFactory.get_connection(url=url)
 
-        self.assertEqual(doc, document.as_dictionary())
+        if connection.is_store_exists(store_path='/find-test-store4'):
+            document_store = connection.get_store(store_path='/find-test-store4')
+        else:
+            document_store = connection.create_store(store_path='/find-test-store4')
+        document_list = []
+
+        for i in range(1, 10):
+            document_list.append(connection.new_document(dictionary={'_id': 'id00%s' % i,
+                                                                     'test_int': i,
+                                                                     'test_str': 'strstr',
+                                                                     'test_dict': {'test_int': i},
+                                                                     'test_list': [5, 6],
+                                                                     'test_null': None}))
+
+        document_store.insert_or_replace(doc_stream=document_list)
+        query = OJAIQuery().select(['_id', 'test_int', 'test_str', 'test_dict', 'test_list', 'test_null']).build()
+        doc_stream = document_store.find(query).iterator()
+
+        for i in range(len(document_list)):
+            self.assertEqual(doc_stream[i], document_list[i].as_dictionary())
+
+    def test_find_with_condition(self):
+        url = 'localhost:5678'
+        connection = ConnectionFactory.get_connection(url=url)
+        document_list = []
+        for i in range(3, 7):
+            document_list.append(connection.new_document(dictionary={'_id': 'id00%s' % i,
+                                                                     'test_int': i,
+                                                                     'test_str': 'strstr',
+                                                                     'test_dict': {'test_int': i},
+                                                                     'test_list': [5, 6],
+                                                                     'test_null': None}))
+
+        if connection.is_store_exists(store_path='/find-test-store4'):
+            document_store = connection.get_store(store_path='/find-test-store4')
+        else:
+            document_store = connection.create_store(store_path='/find-test-store4')
+
+        query = OJAIQuery().select(['_id', 'test_int', 'test_str', 'test_dict', 'test_list', 'test_null']) \
+            .where(OJAIQueryCondition()
+                   .and_()
+                   .is_('test_int', QueryOp.GREATER_OR_EQUAL, 3)
+                   .is_('test_int', QueryOp.LESS_OR_EQUAL, 6).close().close().build()).build()
+        doc_stream = document_store.find(query).iterator()
+
+        for i in range(len(doc_stream)):
+            self.assertEqual(doc_stream[i], document_list[i].as_dictionary())
+
+    def test_find_all(self):
+        url = 'localhost:5678'
+        connection = ConnectionFactory.get_connection(url=url)
+
+        if connection.is_store_exists(store_path='/find-test-store4'):
+            document_store = connection.get_store(store_path='/find-test-store4')
+        else:
+            document_store = connection.create_store(store_path='/find-test-store4')
+
+        doc_stream = document_store.find().iterator()
+        self.assertEqual(len(doc_stream), 9)
+
+
 
 
 if __name__ == '__main__':

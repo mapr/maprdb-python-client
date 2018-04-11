@@ -128,8 +128,7 @@ class InsertOrReplaceTest(unittest.TestCase):
         self.assertTrue(drop_store)
 
     def test_nested_doc_insert(self):
-        nested_doc0 = OJAIDocument().set('nested_int0', 11).set('nested_str0', 'strstr')
-        nested_doc = OJAIDocument().set('nested_int', 11).set('nested_str', 'strstr').set('nested_doc', nested_doc0)
+        nested_doc = OJAIDocument().set('nested_int', 11).set('nested_str', 'strstr')
         doc = OJAIDocument().set('test_list', [1, 2, 3, 4, False, 'mystr', [{}, {}, [7, 8, 9, nested_doc]]]) \
             .set_id('testid001')
         url = 'localhost:5678'
@@ -143,21 +142,6 @@ class InsertOrReplaceTest(unittest.TestCase):
         self.assertTrue(isinstance(document_store, OJAIDocumentStore))
 
         document_store.insert_or_replace(doc=doc)
-
-    # def test_find_by_id(self):
-    #     url = 'localhost:5678'
-    #     connection = OJAIConnection(connection_url=url)
-    #
-    #     # delete_response = connection.delete_table(table_path='/test-store6')
-    #     # self.assertTrue(delete_response)
-    #     before_create = connection.is_store_exists(store_path='/test-store6')
-    #     # self.assertFalse(before_create)
-    #     self.assertTrue(before_create)
-    #     # response = connection.create_table(table_path='/test-store6')
-    #     # self.assertTrue(response)
-    #     document_store = connection.get_store(store_name='/test-store6')
-    #     doc = document_store.find_by_id(_id='id06')
-
 
 if __name__ == '__main__':
 

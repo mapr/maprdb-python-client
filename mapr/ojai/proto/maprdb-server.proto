@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package com.mapr.db.grpc;
+package com.mapr.data.db;
 
 option java_multiple_files = true;
-option java_package = "com.mapr.db.proto.grpc";
+option java_package = "com.mapr.data.db.proto";
 
 //=============================================//
 //      RPC calls exported from the service    //
@@ -214,15 +214,42 @@ message FindByIdRequest {
 
   oneof data {
     /**
-     * Contains JSON encoded OJAI Document with "_id" field if the payload_encoding is `JSON_ENCODING`
-     * e.g. {"_id": "user0001"}, or {"_id": {"$binary": "dXNlcjAwMDE="}}
+     * Contains JSON encoded OJAI document if the payload_encoding is `JSON_ENCODING`.<p/>
+     * <b>Schema of the OJAI document:</b>
+     * <pre>
+     * {
+     *    "_id": &lt;id_value>,
+     *    "$condition": { &lt;ojai_condition_in_json_format> },
+     *    "$select": [ &lt;list_of_field_paths> ]
+     * }
+     * </pre>
+     * The document MUST contain the "_id" field.<p/>
+     * <b>Examples:</b><p/>
+     * <pre>
+     * {
+     *    "_id": "user0001"
+     * }
+     * </pre>
+     * <i>or</i>,
+     * <pre>
+     * {
+     *    "_id": { "$binary": "dXNlcjAwMDE="} },
+     *    "$condition": { "$eq": {"address.zip": 95111} },
+     *    "$select": [ "name", "address.phone" ]
+     * }
+     * </pre>
      */
     string json_document = 10;
   }
 }
 
 message FindByIdResponse {
+  /**
+   * `NO_ERROR` - if a document with the specified `_id` was found
+   * `DOCUMENT_NOT_FOUND` - if the document with the specified `_id` does not exist
+   */
   RpcError error = 1;
+
   PayloadEncoding payload_encoding = 2;
 
   oneof data {
@@ -246,6 +273,23 @@ message FindRequest {
   }
 }
 
+enum FindResponseType {
+  /**
+   * Invalid, unknown type
+   */
+  UNKNOWN_TYPE = 0;
+
+  /**
+   * Indicates that the current response contains a QueryResult Document
+   */
+  RESULT_DOCUMENT = 1;
+
+  /**
+   * Indicates that the current response contains a Query plan
+   */
+  QUERY_PLAN = 2;
+}
+
 /**
  * Results of Find() RPCs are streamed to the clients, with each FindResponse containing
  * one OJAI document. If the `include_query_plan` in FindRequest was set to true, the first
@@ -255,15 +299,15 @@ message FindResponse {
   RpcError error = 1;
   PayloadEncoding payload_encoding = 2;
 
+  /**
+   * Indicates the type of this response
+   */
+  FindResponseType type = 3;
+
   oneof data {
     /**
-     * Contains JSON encoded OJAI QueryPlan if the payload_encoding is `JSON_ENCODING`
+     * Contains JSON encoded response if the payload_encoding is `JSON_ENCODING`
      */
-    string json_query_plan = 10;
-
-    /**
-     * Contains JSON encoded OJAI Document if the payload_encoding is `JSON_ENCODING`
-     */
-    string json_document = 11;
+    string json_response = 11;
   }
 }

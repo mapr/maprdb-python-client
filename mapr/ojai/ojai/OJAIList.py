@@ -3,14 +3,21 @@ class OJAIList(list):
         super(OJAIList, self).__init__()
 
     @staticmethod
-    def set_list(value):
+    def set_list(value, tags=False):
+        from mapr.ojai.ojai.OJAITagsBuilder import OJAITagsBuilder
         ojai_list = []
-        from mapr.ojai.ojai.OJAIDocument import OJAIDocument
-        dump_document = OJAIDocument()
+        if tags:
+            dump_document = OJAITagsBuilder()
+        else:
+            from mapr.ojai.ojai.OJAIDocument import OJAIDocument
+            dump_document = OJAIDocument()
 
         for elem in value:
             if isinstance(elem, list):
-                nested_list = OJAIList.set_list(elem)
+                if isinstance(dump_document, OJAITagsBuilder):
+                    nested_list = OJAIList.set_list(elem, tags=True)
+                else:
+                    nested_list = OJAIList.set_list(elem)
                 ojai_list.append(nested_list)
             elif isinstance(elem, dict) and bool(elem):
                 for k, v in elem.iteritems():
