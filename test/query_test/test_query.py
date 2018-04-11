@@ -157,7 +157,7 @@ class QueryTest(unittest.TestCase):
                                               ]}})
 
     def test_query_check_existing_condition(self):
-        qc = OJAIQueryCondition().is_('age', QueryOp.GREATER_OR_EQUAL, 55).is_('age', QueryOp.GREATER_OR_EQUAL, 18)\
+        qc = OJAIQueryCondition().is_('age', QueryOp.GREATER_OR_EQUAL, 55).is_('age', QueryOp.GREATER_OR_EQUAL, 18) \
             .close().build()
         self.assertEqual(qc.as_dictionary(), {'$ge': {'age': 18}})
 
@@ -195,7 +195,7 @@ class QueryTest(unittest.TestCase):
         qc = OJAIQueryCondition()
         self.assertTrue(qc.is_empty())
 
-        qc.is_('name', QueryOp.EQUAL, 'Doe') .close()
+        qc.is_('name', QueryOp.EQUAL, 'Doe').close()
         self.assertTrue(qc.is_empty())
 
         qc.build()

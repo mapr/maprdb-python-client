@@ -67,7 +67,15 @@ class FindByIdTest(unittest.TestCase):
         self.assertTrue(connection.is_store_exists('/find-by-id-test-store1'))
         doc = document_store.find_by_id('121212', results_as_document=True)
 
-        self.assertEqual(doc.as_json_str(), document.as_json_str())
+        self.assertEqual(doc.as_json_str(), '{"_id": "121212", "test_int": {"$numberLong": 123}, "first": {'
+                                            '"test_invalid": {"$dateDay": "1979-06-20"}, "test_time": {"$time": '
+                                            '"10:12:12"}, "test_bool_false": false, "test_list": [{"$numberLong": 1}, '
+                                            '{"$numberLong": 2}, "str", false, {"$dateDay": "1979-06-20"}], '
+                                            '"test_long": {"$numberLong": 123456789}, "test_dict2": {}, "test_dict": '
+                                            '{"a": {"$numberLong": 1}, "b": {"$numberLong": 2}}, "test_bool": true, '
+                                            '"test_date": {"$dateDay": "1979-06-19"}, "test_str": "strstr", '
+                                            '"test_int": {"$numberLong": 1235}}}')
+        self.assertEqual(doc.as_dictionary(), document.as_dictionary())
 
     def test_find_by_id_as_dict(self):
         url = 'localhost:5678'

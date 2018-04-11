@@ -4,8 +4,8 @@ from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
 from mapr.ojai.ojai_query.QueryOp import QueryOp
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
-"""Create a connection, get store, insert new document into store"""
-# create a connection using path:user@password
+"""Create a connection, get store, find document in store"""
+# create a connection
 connection = ConnectionFactory.get_connection(url="localhost:5678")
 
 # Get a store and assign it as a DocumentStore object
@@ -14,9 +14,19 @@ if connection.is_store_exists(store_path='/find_sample_store1'):
 else:
     document_store = connection.create_store(store_path='/find_sample_store1')
 
-query = OJAIQuery().select(['address']).where(OJAIQueryCondition().and_().is_('age', QueryOp.GREATER_OR_EQUAL, 26)
-                                              .is_('age', QueryOp.LESS_OR_EQUAL, 35).close().close().build()).build()
+print("Create find request with query as a dictionary.")
+query_result = document_store.find(
+    {'$select': ['*'], '$where': {'$and': [{'$ge': {u'age': 26}}, {'$le': {u'age': 35}}]}},
+    include_query_plan=False, results_as_document=False)
 
-doc_stream = document_store.find(query).iterator()
+print(query_result.get_query_plan())
+for d in query_result.iterator():
+    print(d)
 
-print(doc_stream)
+print("Create find request with query as a OJAIQuery object")
+query = OJAIQuery().select(['*']).where(OJAIQueryCondition().and_().is_('age', QueryOp.GREATER_OR_EQUAL, 26)
+                                        .is_('age', QueryOp.LESS_OR_EQUAL, 35).close().close().build()).build()
+query_result = document_store.find(query, include_query_plan=True, results_as_document=False)
+query_result.get_query_plan()
+for d in query_result.iterator():
+    print(d)

@@ -147,8 +147,6 @@ class DocumentTest(unittest.TestCase):
     def test_byte_array(self):
         b = self.set_random_bytearray()
         doc = OJAIDocument().set('b_array', b)
-        print(doc.as_dictionary())
-        print(doc.as_json_str())
 
     def test_doc_set_list(self):
         nested_doc = OJAIDocument().set('nested_int', 11).set('nested_str', 'strstr')
@@ -218,3 +216,9 @@ class DocumentTest(unittest.TestCase):
         self.assertEqual(doc.as_dictionary(), {'_id': '121212',
                                                'test_int': 12.2,
                                                'test_float': 11.1})
+
+    def test_get_bytearray(self):
+        b = bytearray([0x13, 0x00, 0x00, 0x00, 0x08, 0x00])
+        doc = OJAIDocument()
+        doc.set('f1', b)
+        self.assertEqual(doc.get_binary('f1'), b)
