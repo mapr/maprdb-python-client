@@ -13,8 +13,6 @@ from mapr.ojai.exceptions.UnknownPayloadEncodingError import UnknownPayloadEncod
 from mapr.ojai.exceptions.UnknownServerError import UnknownServerError
 from mapr.ojai.exceptions.UnrecognizedInsertModeError import UnrecognizedInsertModeError
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
-from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator
-from mapr.ojai.ojai.OJAIDocumentStream import OJAIDocumentStream
 from mapr.ojai.ojai.OJAIQueryResult import OJAIQueryResult
 from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
 from mapr.ojai.proto.gen.maprdb_server_pb2 import InsertOrReplaceRequest, PayloadEncoding, FindByIdRequest, ErrorCode, \
@@ -34,17 +32,34 @@ class OJAIDocumentStore(DocumentStore):
     def flush(self):
         pass
 
-    def find_by_id(self, _id, field_paths=None, condition=None, results_as_document=False):
+    def find_by_id(self, _id, field_paths=None, condition=None, results_as_document=False, timeout=None):
         if not isinstance(_id, (str, unicode)):
             raise TypeError
+        from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
+        str_condition = condition if isinstance(condition, str) else json.dumps(condition)\
+            if isinstance(condition, dict) else json.dumps(condition.as_dictionary())\
+            if isinstance(condition, OJAIQueryCondition) else None
+
+        str_field_path = field_paths if isinstance(field_paths, list) else field_paths.split(',')\
+            if isinstance(field_paths, str) else None
+
         doc = OJAIDocument().set_id(_id=_id)
+        if str_condition is not None:
+            doc.set('$condition', str_condition)
+        if str_field_path is not None:
+            doc.set('$select', str_field_path)
+
         request = FindByIdRequest(table_path=self.__store_path,
                                   payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
                                   json_document=doc.as_json_str())
 
         if request.WhichOneof('data') == 'json_document' \
                 and request.payload_encoding == PayloadEncoding.Value('JSON_ENCODING'):
-            response = self.__connection.FindById(request)
+            if timeout is None:
+                response = self.__connection.FindById(request)
+            else:
+                response = self.__connection.FindById(request, timeout=timeout)
+
         else:
             raise UnknownPayloadEncodingError(m='Invalid find_by_id params')
 
@@ -60,21 +75,20 @@ class OJAIDocumentStore(DocumentStore):
             return OJAIDocumentCreator.create_document(json_string=response.json_document).as_dictionary()
 
     def __parse_find_response(self, response):
-        self.__validate_response(response)
+        self.validate_response(response)
         response_type = response.type
         if response_type == 0:
             raise UnknownServerError('Unknown response type.')
         elif response_type == 1:
             return response.json_response
+        # TODO
         elif response_type == 2:
             return response.json_response
         else:
             raise UnknownServerError('Check server logs.')
 
-    def find(self, query=None, results_as_document=False, include_query_plan=False):
-        json_document_list = []
+    def find(self, query=None, results_as_document=False, include_query_plan=False, timeout=None):
         if query is None:
-            # TODO for empty find call
             query_str = '{}'
         elif isinstance(query, str):
             query_str = query
@@ -87,34 +101,16 @@ class OJAIDocumentStore(DocumentStore):
 
         request = FindRequest(table_path=self.__store_path,
                               payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-                              include_query_plan=False,
+                              include_query_plan=include_query_plan,
                               json_query=query_str)
 
-        response_stream = self.__connection.Find(request)
-
-        # TODO what to do with payload_encoding in response
-        # ++ why we need json_query_plan and examples
-
-        query_plan = None
-
-        for response in response_stream:
-            json_response = self.__parse_find_response(response)
-            if include_query_plan:
-                query_plan = json_response
-                include_query_plan = False
-            else:
-                json_document_list.append(json_response)
-
-        if json_document_list:
-            doc_stream = OJAIDocumentStream(input_stream=map(lambda doc_string:
-                                                             OJAIDocumentCreator.create_document(doc_string),
-                                                             json_document_list))
-            if results_as_document:
-                return OJAIQueryResult(query_plan=query_plan, document_stream=doc_stream)
-            else:
-                return OJAIQueryResult(query_plan=query_plan, document_stream=doc_stream.as_list_of_dictionary())
+        if timeout is None:
+            response_stream = self.__connection.Find(request)
         else:
-            return OJAIQueryResult(query_plan=query_plan, document_stream=json_document_list)
+            response_stream = self.__connection.Find(request, timeout=timeout)
+
+        return OJAIQueryResult(document_stream=response_stream, results_as_document=results_as_document,
+                               include_query_plan=include_query_plan)
 
     def __evaluate_doc_stream(self, doc_stream, operation_type):
         for doc in doc_stream:
@@ -129,7 +125,7 @@ class OJAIDocumentStore(DocumentStore):
                                        insert_mode=InsertMode.Value(operation_type),
                                        payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
                                        json_document=doc_str))
-            self.__validate_response(response=response)
+            self.validate_response(response=response)
 
     def __evaluate_doc(self, doc_str, operation_type):
         response = self.__connection.InsertOrReplace(
@@ -137,7 +133,7 @@ class OJAIDocumentStore(DocumentStore):
                                    insert_mode=InsertMode.Value(operation_type),
                                    payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
                                    json_document=doc_str))
-        self.__validate_response(response=response)
+        self.validate_response(response=response)
 
     def insert_or_replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
         if doc_stream is None:
@@ -223,7 +219,7 @@ class OJAIDocumentStore(DocumentStore):
         raise InvalidOJAIDocumentError(m="Invalid dictionary")
 
     @staticmethod
-    def __validate_response(response):
+    def validate_response(response):
         if response.error.err_code == ErrorCode.Value('NO_ERROR'):
             return
         if response.error.err_code == ErrorCode.Value('CLUSTER_NOT_FOUND'):

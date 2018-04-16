@@ -52,6 +52,8 @@ class OJAIQueryCondition(QueryCondition):
                 self.__tokens.append(condition_to_add.build().as_dictionary())
         elif isinstance(condition_to_add, dict):
             self.__tokens.append(condition_to_add.as_dictionary())
+        else:
+            TypeError
         return self
 
     def exists_(self, field_path):

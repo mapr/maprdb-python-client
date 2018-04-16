@@ -93,7 +93,8 @@ class DocumentTagsTest(unittest.TestCase):
 
     def test_doc_set_decimal(self):
         doc = OJAIDocument().set('test_decimal', Decimal(3.14))
-        self.assertEqual(doc.as_json_str(), '{"test_decimal": "3.140000000000000124344978758017532527446746826171875"}')
+        self.assertEqual(doc.as_json_str(),
+                         '{"test_decimal": {"$decimal": "3.140000000000000124344978758017532527446746826171875"}}')
 
     def test_doc_set_float(self):
         doc = OJAIDocument() \
@@ -125,7 +126,8 @@ class DocumentTagsTest(unittest.TestCase):
     def test_doc_set_byte_array(self):
         byte_array = bytearray([0x13, 0x00, 0x00, 0x00, 0x08, 0x00])
         doc = OJAIDocument().set('test_byte_array', byte_array)
-        self.assertEqual(doc.as_json_str(), '{"test_byte_array": {"$binary": "\\u0013\\u0000\\u0000\\u0000\\b\\u0000"}}')
+        self.assertEqual(doc.as_json_str(),
+                         '{"test_byte_array": {"$binary": "\\u0013\\u0000\\u0000\\u0000\\b\\u0000"}}')
 
     def test_doc_set_doc(self):
         doc_to_set = OJAIDocument().set_id('121212') \
@@ -200,10 +202,23 @@ class DocumentTagsTest(unittest.TestCase):
         doc.set(field, value={'r': 3})
         self.assertEqual(json.loads(doc.as_json_str()), {field: {'r': {'$numberLong': 3}}})
 
-    # TODO
-    # def test_set_list_instead_of_list(self):
-    #     doc = OJAIDocument()
-    #     field = 'list_field'
-    #     doc.set(field, value=[1, 1])
-    #     doc.set(field, value=[2, 2])
-    #     self.assertEqual(doc.as_dictionary(), {field: [2, 2]})
+    def test_set_list_instead_of_list(self):
+        doc = OJAIDocument()
+        field = 'list_field'
+        doc.set(field, value=[1, 1])
+        self.assertEqual(doc.as_json_str(), '{"list_field": [{"$numberLong": 1}, {"$numberLong": 1}]}')
+        doc.set(field, value=[2, 2])
+        self.assertEqual(doc.as_json_str(), '{"list_field": [{"$numberLong": 2}, {"$numberLong": 2}]}')
+
+    def test_set_decimal(self):
+        doc = OJAIDocument().set('test_decimal', Decimal(3.14))
+        self.assertEqual(doc.as_dictionary(),
+                         {u'test_decimal': Decimal('3.140000000000000124344978758017532527446746826171875')})
+        self.assertEqual(doc.as_json_str(),
+                         '{"test_decimal": {"$decimal": "3.140000000000000124344978758017532527446746826171875"}}')
+        from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator
+        parsed_doc = OJAIDocumentCreator.create_document(doc.as_json_str())
+        self.assertEqual(parsed_doc.as_dictionary(),
+                         {u'test_decimal': Decimal('3.140000000000000124344978758017532527446746826171875')})
+        self.assertEqual(parsed_doc.as_json_str(),
+                         '{"test_decimal": {"$decimal": "3.140000000000000124344978758017532527446746826171875"}}')
