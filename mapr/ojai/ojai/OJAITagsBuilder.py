@@ -94,14 +94,12 @@ class OJAITagsBuilder:
                                                parse_field_path(field_path=field_path,
                                                                 value=value.to_date_str(),
                                                                 oja_type='$dateDay'))
-        # self.__internal_dict[field_path] = {'$dateDay': value.to_date_str()}
 
     def __set_timestamp(self, field_path, value):
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
                                                                 value=value.__str__(),
                                                                 oja_type='$date'))
-        # self.__internal_dict[field_path] = {'$date': value.__str__()}
 
     def __set_interval(self, field_path, value):
         self.__internal_dict = merge_two_dicts(self.__internal_dict,

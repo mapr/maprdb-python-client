@@ -42,20 +42,21 @@ def merge_list_value(merged_dict, k, v):
     working_dict = merged_dict
     swap = False
     for dict_element in working_dict[k]:
-        for elem_k in dict_element:
-            if isinstance(v, list):
-                for item in v:
-                    if elem_k in item:
+        if isinstance(dict_element, (list, dict)):
+            for elem_k in dict_element:
+                if isinstance(v, list):
+                    for item in v:
+                        if elem_k in item:
+                            index = working_dict[k].index(dict_element)
+                            working_dict[k].remove(dict_element)
+                            working_dict[k].insert(index, item)
+                            swap = True
+                else:
+                    if elem_k in v:
                         index = working_dict[k].index(dict_element)
                         working_dict[k].remove(dict_element)
-                        working_dict[k].insert(index, item)
+                        working_dict[k].insert(index, v)
                         swap = True
-            else:
-                if elem_k in v:
-                    index = working_dict[k].index(dict_element)
-                    working_dict[k].remove(dict_element)
-                    working_dict[k].insert(index, v)
-                    swap = True
     if not swap:
         working_dict[k].append(v)
     return working_dict
@@ -75,7 +76,8 @@ def merge_two_dicts(dict1, dict2):
         elif k in merged_dict and isinstance(merged_dict[k], list):
             merged_dict = merge_list_value(merged_dict=merged_dict, k=k, v=v)
         else:
-            if k.startswith('$') and len(merged_dict) == 1:
+            if k in ('$decimal', '$numberLong', '$numberFloat', '$numberShort', '$decimal', '$binary',
+                     '$interval', '$date', '$dateDay', '$time') and len(merged_dict) == 1:
                 merged_dict = dict2
             else:
                 merged_dict[k] = deepcopy(v)

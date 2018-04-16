@@ -123,7 +123,7 @@ class OJAIDocument(Document):
     def __set_decimal(self, field_path, value):
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
-                                                                value=value.to_eng_string(),
+                                                                value=value,
                                                                 ))
 
     def __set_time(self, field_path, value):
@@ -176,6 +176,8 @@ class OJAIDocument(Document):
 
     def __set_array(self, field_path, values):
         list_value = OJAIList.set_list(value=values)
+        if self.get(field_path) is not None:
+            self.delete(field_path)
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
                                                                 value=list_value))
@@ -294,8 +296,8 @@ class OJAIDocument(Document):
 
     def get_binary(self, field_path):
         value = self.get(field_path=field_path)
-        if value.keys()[0] == '$binary':
-            return value.values()[0]
+        if isinstance(value, bytearray):
+            return value
         else:
             return None
 
