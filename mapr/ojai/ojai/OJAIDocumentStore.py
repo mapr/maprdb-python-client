@@ -32,17 +32,34 @@ class OJAIDocumentStore(DocumentStore):
     def flush(self):
         pass
 
-    def find_by_id(self, _id, field_paths=None, condition=None, results_as_document=False):
+    def find_by_id(self, _id, field_paths=None, condition=None, results_as_document=False, timeout=None):
         if not isinstance(_id, (str, unicode)):
             raise TypeError
+        from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
+        str_condition = condition if isinstance(condition, str) else json.dumps(condition)\
+            if isinstance(condition, dict) else json.dumps(condition.as_dictionary())\
+            if isinstance(condition, OJAIQueryCondition) else None
+
+        str_field_path = field_paths if isinstance(field_paths, list) else field_paths.split(',')\
+            if isinstance(field_paths, str) else None
+
         doc = OJAIDocument().set_id(_id=_id)
+        if str_condition is not None:
+            doc.set('$condition', str_condition)
+        if str_field_path is not None:
+            doc.set('$select', str_field_path)
+
         request = FindByIdRequest(table_path=self.__store_path,
                                   payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
                                   json_document=doc.as_json_str())
 
         if request.WhichOneof('data') == 'json_document' \
                 and request.payload_encoding == PayloadEncoding.Value('JSON_ENCODING'):
-            response = self.__connection.FindById(request)
+            if timeout is None:
+                response = self.__connection.FindById(request)
+            else:
+                response = self.__connection.FindById(request, timeout=timeout)
+
         else:
             raise UnknownPayloadEncodingError(m='Invalid find_by_id params')
 
@@ -70,8 +87,7 @@ class OJAIDocumentStore(DocumentStore):
         else:
             raise UnknownServerError('Check server logs.')
 
-    def find(self, query=None, results_as_document=False, include_query_plan=False):
-        # json_document_list = []
+    def find(self, query=None, results_as_document=False, include_query_plan=False, timeout=None):
         if query is None:
             query_str = '{}'
         elif isinstance(query, str):
@@ -88,7 +104,10 @@ class OJAIDocumentStore(DocumentStore):
                               include_query_plan=include_query_plan,
                               json_query=query_str)
 
-        response_stream = self.__connection.Find(request)
+        if timeout is None:
+            response_stream = self.__connection.Find(request)
+        else:
+            response_stream = self.__connection.Find(request, timeout=timeout)
 
         return OJAIQueryResult(document_stream=response_stream, results_as_document=results_as_document,
                                include_query_plan=include_query_plan)

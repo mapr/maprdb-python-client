@@ -55,7 +55,8 @@ class DocumentTest(unittest.TestCase):
 
     def test_doc_set_decimal(self):
         doc = OJAIDocument().set('test_decimal', Decimal(3.14))
-        self.assertEqual(doc.as_dictionary(), {'test_decimal': '3.140000000000000124344978758017532527446746826171875'})
+        self.assertEqual(doc.as_dictionary(),
+                         {'test_decimal': Decimal('3.140000000000000124344978758017532527446746826171875')})
 
     def test_doc_set_float(self):
         doc = OJAIDocument() \
@@ -222,3 +223,10 @@ class DocumentTest(unittest.TestCase):
         doc = OJAIDocument()
         doc.set('f1', b)
         self.assertEqual(doc.get_binary('f1'), b)
+
+    def test_set_list_instead_of_list(self):
+        doc = OJAIDocument()
+        field = 'list_field'
+        doc.set(field, value=[1, 1])
+        doc.set(field, value=[2, 2])
+        self.assertEqual(doc.as_dictionary(), {field: [2, 2]})

@@ -1,6 +1,4 @@
 """Following example works with Python Client"""
-from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
-from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
 from mapr.ojai.ojai_query.QueryOp import QueryOp
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
@@ -24,9 +22,9 @@ for d in query_result.iterator():
     print(d)
 
 print("Create find request with query as a OJAIQuery object")
-query = OJAIQuery().select(['*']).where(OJAIQueryCondition().and_().is_('age', QueryOp.GREATER_OR_EQUAL, 26)
+query = connection.new_query().select(['*']).where(connection.new_condition().and_().is_('age', QueryOp.GREATER_OR_EQUAL, 26)
                                         .is_('age', QueryOp.LESS_OR_EQUAL, 35).close().close().build()).build()
-query_result = document_store.find(query, include_query_plan=True, results_as_document=False)
-query_result.get_query_plan()
+query_result = document_store.find(query, include_query_plan=True, results_as_document=False, timeout=1)
+print(query_result.get_query_plan())
 for d in query_result.iterator():
     print(d)

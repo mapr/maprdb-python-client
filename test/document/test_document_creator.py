@@ -28,4 +28,3 @@ class DocumentCreatorTest(unittest.TestCase):
         doc = OJAIDocumentCreator.create_document(json_string=doc_string)
         self.assertEqual({'test_null': None, 'test_dict': {'test_int': 5}, 'test_list': [5, 6], '_id': u'id008',
                           'test_str': 'strstr', 'test_int': 51}, doc.as_dictionary())
-
