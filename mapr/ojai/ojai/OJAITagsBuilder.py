@@ -20,39 +20,13 @@ class OJAITagsBuilder:
         from mapr.ojai.ojai.OJAIDocument import OJAIDocument
         if field_path == '_id' and isinstance(value, (unicode, str)):
             self.__internal_dict[field_path] = value
-        elif isinstance(value, bool):
-            self.__set_boolean(field_path=field_path, value=value)
-        elif isinstance(value, ODate):
-            self.__set_date(field_path=field_path, value=value)
-        elif isinstance(value, OTime):
-            self.__set_time(field_path=field_path, value=value)
-        elif isinstance(value, OTimestamp):
-            self.__set_timestamp(field_path=field_path, value=value)
-        elif isinstance(value, OInterval):
-            self.__set_interval(field_path=field_path, value=value)
-        elif isinstance(value, (int, long)) and field_path != '_id':
-            self.__set_long(field_path=field_path, value=value)
-        elif isinstance(value, float):
-            self.__set_float(field_path=field_path, value=value)
-        elif isinstance(value, decimal.Decimal):
-            self.__set_decimal(field_path=field_path, value=value)
-        elif isinstance(value, dict):
-            self.__set_dict(field_path=field_path, value=value)
-        elif isinstance(value, bytearray):
-            self.__set_byte_array(field_path=field_path, value=value, offset=off, length=length)
-        elif isinstance(value, list):
-            self.__set_array(field_path=field_path, values=value)
         elif isinstance(value, OJAIDocument):
             self.__set_document(field_path=field_path, value=value)
-        elif isinstance(value, (unicode, str)):
-            self.__set_str(field_path=field_path, value=value)
         elif value is None:
             self.__set_none(field_path=field_path)
         else:
-            # We can set another values with help of set bool method.
-            self.__set_boolean(field_path=field_path, value=value)
-            # self.__internal_dict[field_path] = value
-            # raise TypeError
+            self.__set_dispatcher(field_path=field_path, value=value)
+
         return self
 
     def __set_str(self, field_path, value):
@@ -94,14 +68,12 @@ class OJAITagsBuilder:
                                                parse_field_path(field_path=field_path,
                                                                 value=value.to_date_str(),
                                                                 oja_type='$dateDay'))
-        # self.__internal_dict[field_path] = {'$dateDay': value.to_date_str()}
 
     def __set_timestamp(self, field_path, value):
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
                                                                 value=value.__str__(),
                                                                 oja_type='$date'))
-        # self.__internal_dict[field_path] = {'$date': value.__str__()}
 
     def __set_interval(self, field_path, value):
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
@@ -129,8 +101,8 @@ class OJAITagsBuilder:
                                                parse_field_path(field_path=field_path,
                                                                 value=value.as_dictionary()))
 
-    def __set_array(self, field_path, values):
-        list_value = OJAIList.set_list(value=values, tags=True)
+    def __set_array(self, field_path, value):
+        list_value = OJAIList.set_list(value=value, tags=True)
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
                                                                 value=list_value))
@@ -139,6 +111,29 @@ class OJAITagsBuilder:
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
                                                                 value=None))
+
+    __dispatcher = {
+        str: __set_str,
+        unicode: __set_str,
+        bool: __set_boolean,
+        int: __set_long,
+        long: __set_long,
+        float: __set_float,
+        OTime: __set_time,
+        OTimestamp: __set_timestamp,
+        ODate: __set_date,
+        OInterval: __set_interval,
+        list: __set_array,
+        dict: __set_dict,
+        bytearray: __set_byte_array,
+        decimal.Decimal: __set_decimal,
+        None: __set_none
+    }
+
+    def __set_dispatcher(self, field_path, value):
+        t = type(value)
+        f = OJAITagsBuilder.__dispatcher[t]
+        f(self, field_path, value)
 
     def as_dictionary(self):
         return self.__internal_dict

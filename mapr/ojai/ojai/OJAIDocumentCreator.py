@@ -2,6 +2,8 @@ import json
 
 from copy import deepcopy
 
+from decimal import Decimal
+
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 
 
@@ -24,12 +26,14 @@ class OJAIDocumentCreator:
                 result_dict[key] = OJAIDocumentCreator.remove_tags(value)
             elif isinstance(value, list):
                 result_dict[key] = OJAIDocumentCreator.clear_list(value)
-            elif key in ('$numberLong', '$numberFloat', '$numberShort', '$decimal'):
+            elif key in ('$numberLong', '$numberFloat', '$numberShort'):
                 return value
             elif key == '$binary':
                 return bytearray(value, 'ISO-8859-1')
             elif key in ('$interval', '$date', '$dateDay', '$time'):
                 return OJAIDocumentCreator.generate_o_types(key, value)
+            elif key == '$decimal':
+                return Decimal(value)
             else:
                 result_dict[key] = value
         return result_dict

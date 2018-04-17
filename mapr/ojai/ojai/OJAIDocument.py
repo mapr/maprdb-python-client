@@ -30,7 +30,7 @@ class OJAIDocument(Document):
     def set_id(self, _id):
         """Set _id field into the Document. _id field required for each document in MapR-DB
         :param _id: type should be binary or str"""
-        if not isinstance(_id, (unicode, str)):
+        if not isinstance(_id, (unicode, str, bytearray)):
             raise TypeError
         self.set(field_path="_id", value=_id)
         return self
@@ -54,47 +54,23 @@ class OJAIDocument(Document):
         return str(self.__internal_dict["_id"])
 
     def set(self, field_path, value, off=None, length=None):
-        if field_path == '_id' and isinstance(value, (unicode, str)):
+        if field_path == '_id' and isinstance(value, (unicode, str, bytearray)):
             self.__internal_dict[field_path] = value
-        elif isinstance(value, bool):
-            self.__set_boolean(field_path=field_path, value=value)
-        elif isinstance(value, ODate):
-            self.__set_date(field_path=field_path, value=value)
-        elif isinstance(value, OTime):
-            self.__set_time(field_path=field_path, value=value)
-        elif isinstance(value, OTimestamp):
-            self.__set_timestamp(field_path=field_path, value=value)
-        elif isinstance(value, OInterval):
-            self.__set_interval(field_path=field_path, value=value)
-        elif isinstance(value, (int, long)) and field_path != '_id':
-            self.__set_long(field_path=field_path, value=value)
-        elif isinstance(value, float):
-            self.__set_float(field_path=field_path, value=value)
-        elif isinstance(value, decimal.Decimal):
-            self.__set_decimal(field_path=field_path, value=value)
-        elif isinstance(value, dict):
-            self.__set_dict(field_path=field_path, value=value)
-        elif isinstance(value, bytearray):
-            self.__set_byte_array(field_path=field_path, value=value, offset=off, length=length)
-        elif isinstance(value, list):
-            self.__set_array(field_path=field_path, values=value)
         elif isinstance(value, OJAIDocument):
             self.__set_document(field_path=field_path, value=value)
-        elif isinstance(value, (unicode, str)):
-            self.__set_str(field_path=field_path, value=value)
         elif value is None:
             self.__set_none(field_path=field_path)
         else:
-            # We can set another values with help of set bool method.
-            self.__set_boolean(field_path=field_path, value=value)
-            # self.__internal_dict[field_path] = value
-            # raise TypeError
+            self.__set_dispatcher(field_path=field_path, value=value)
+
         return self
 
     def parse_dict(self, dictionary):
-        raise NotImplementedError
+        if not isinstance(dictionary, dict):
+            raise TypeError("parse_dict allows only dict as input param.")
+        self.__internal_dict = dictionary
+        return self
 
-    # TODO
     def as_dictionary(self):
         return self.__internal_dict
 
@@ -123,39 +99,34 @@ class OJAIDocument(Document):
     def __set_decimal(self, field_path, value):
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
-                                                                value=value.to_eng_string(),
+                                                                value=value,
                                                                 ))
 
     def __set_time(self, field_path, value):
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
-                                                                # value=value.time_to_str(),
                                                                 value=value,
                                                                 ))
 
     def __set_date(self, field_path, value):
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
-                                                                # value=value.to_date_str(),
                                                                 value=value,
                                                                 ))
 
     def __set_timestamp(self, field_path, value):
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
-                                                                # value=value.__str__(),
                                                                 value=value,
                                                                 ))
 
     def __set_interval(self, field_path, value):
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
-                                                                # value=value.time_duration,
                                                                 value=value,
                                                                 ))
 
     def __set_byte_array(self, field_path, value, offset=None, length=None):
-        # to_str = str(value)
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
                                                                 value=value,
@@ -174,8 +145,10 @@ class OJAIDocument(Document):
                                                parse_field_path(field_path=field_path,
                                                                 value=value.as_dictionary()))
 
-    def __set_array(self, field_path, values):
-        list_value = OJAIList.set_list(value=values)
+    def __set_array(self, field_path, value):
+        list_value = OJAIList.set_list(value=value)
+        if self.get(field_path) is not None:
+            self.delete(field_path)
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
                                                                 value=list_value))
@@ -266,8 +239,8 @@ class OJAIDocument(Document):
 
     def get_decimal(self, field_path):
         value = self.get(field_path=field_path)
-        if value.keys()[0] == '$decimal':
-            return decimal.Decimal(value.values()[0])
+        if isinstance(value, decimal.Decimal):
+            return value
         else:
             return None
 

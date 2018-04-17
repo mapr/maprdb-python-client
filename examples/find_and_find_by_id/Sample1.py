@@ -1,4 +1,5 @@
 """Following example works with Python Client"""
+from mapr.ojai.ojai_query.QueryOp import QueryOp
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
 """Create a connection, get store, insert new documents into store, find document by id"""
@@ -12,7 +13,7 @@ else:
     document_store = connection.create_store(store_path='/find_sample_store1')
 
 # Json string or json dictionary
-document_list = [{'_id': 'user0000', 'age': 35, 'firstName': 'John', 'lastName': 'Doe', 'address':
+document_list = [{'_id': 'user0001', 'age': 35, 'firstName': 'John', 'lastName': 'Doe', 'address':
     {'street': '350 Hoger Way', 'city': 'San Jose', 'state': 'CA', 'zipCode': 95134},
                   'phoneNumbers': [{'areaCode': 555, 'number': 5555555}, {'areaCode': '555', 'number': '555-5556'}]},
                  {'_id': 'user0001', 'age': 26, 'firstName': 'Jane', 'lastName': 'Dupont',
@@ -26,7 +27,10 @@ document_list = [{'_id': 'user0000', 'age': 35, 'firstName': 'John', 'lastName':
 document_store.insert_or_replace(doc_stream=document_list)
 
 # Find document by _id field
-document = document_store.find_by_id('user0001')
+document = document_store.find_by_id('user0001', condition=connection.new_condition().or_() \
+                                     .is_('address.street', QueryOp.EQUAL, '320 Blossom Hill Road') \
+                                     .is_('address.zipCode', QueryOp.EQUAL, 95134).close().close().build(),
+                                     field_paths=["age", "firstName"], timeout=5)
 
 # Print the document
 print(document)

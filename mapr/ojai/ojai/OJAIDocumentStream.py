@@ -45,6 +45,6 @@ class OJAIDocumentStream(DocumentStream):
 
     @staticmethod
     def new_document_stream(fs, path, field_path_type_map=None, event_delegate=None):
-        pass
+        raise NotImplementedError
 
 
