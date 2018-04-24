@@ -21,7 +21,7 @@ json_dict = {"_id": "id004",
 new_document = connection.new_document(dictionary=json_dict)
 print(new_document.as_json_str())
 # Insert json dictionary into the store
-store.insert_or_replace(json_dictionary=json_dict)
+store.insert_or_replace(doc=json_dict)
 
 delete = connection.delete_store(store_path='/sample_store1')
 
