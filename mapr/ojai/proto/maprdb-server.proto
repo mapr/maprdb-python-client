@@ -18,6 +18,8 @@ service MapRDbServer {
   rpc InsertOrReplace (InsertOrReplaceRequest) returns (InsertOrReplaceResponse) {}
   rpc FindById (FindByIdRequest) returns (FindByIdResponse) {}
   rpc Find (FindRequest) returns (stream FindResponse) {}
+  rpc Update (UpdateRequest) returns (UpdateResponse) {}
+  rpc Delete (DeleteRequest) returns (DeleteResponse) {}
 }
 
 //=============================================//
@@ -196,11 +198,21 @@ message InsertOrReplaceRequest {
   InsertMode insert_mode = 2;
   PayloadEncoding payload_encoding = 3;
 
+  oneof condition {
+    /**
+     * <b>[Optional]</b><p/>
+     * Contains JSON encoded OJAI QueryCondition when payload_encoding is `JSON_ENCODING`.<p/>
+     * This should only be specified if the `insert_mode` == REPLACE
+     */
+    string json_condition = 4;
+  }
+
   oneof data {
     /**
+     * <b>[Required]</b><p/>
      * Contains JSON encoded OJAI Document if the payload_encoding is `JSON_ENCODING`
      */
-    string json_document = 10;
+    string json_document = 30;
   }
 }
 
@@ -219,7 +231,7 @@ message FindByIdRequest {
      * <pre>
      * {
      *    "_id": &lt;id_value>,
-     *    "$condition": { &lt;ojai_condition_in_json_format> },
+     *    "$where": { &lt;ojai_condition_in_json_format> },
      *    "$select": [ &lt;list_of_field_paths> ]
      * }
      * </pre>
@@ -234,7 +246,7 @@ message FindByIdRequest {
      * <pre>
      * {
      *    "_id": { "$binary": "dXNlcjAwMDE="} },
-     *    "$condition": { "$eq": {"address.zip": 95111} },
+     *    "$where": { "$eq": {"address.zip": 95111} },
      *    "$select": [ "name", "address.phone" ]
      * }
      * </pre>
@@ -254,9 +266,10 @@ message FindByIdResponse {
 
   oneof data {
     /**
+     * <b>[Required]</b><p/>
      * Contains JSON encoded OJAI Document if the payload_encoding is `JSON_ENCODING`
      */
-    string json_document = 10;
+    string json_document = 30;
   }
 }
 
@@ -267,9 +280,10 @@ message FindRequest {
 
   oneof data {
     /**
+     * <b>[Required]</b><p/>
      * Contains JSON encoded OJAI Query if the payload_encoding is `JSON_ENCODING`
      */
-    string json_query = 10;
+    string json_query = 4;
   }
 }
 
@@ -308,6 +322,74 @@ message FindResponse {
     /**
      * Contains JSON encoded response if the payload_encoding is `JSON_ENCODING`
      */
-    string json_response = 11;
+    string json_response = 30;
   }
+}
+
+message UpdateRequest {
+  string table_path = 1;
+  PayloadEncoding payload_encoding = 2;
+
+  oneof document {
+    /**
+     * <b>[Required]</b><p/>
+     * Contains JSON encoded OJAI Document with `_id` field when payload_encoding is `JSON_ENCODING`.<p/>
+     */
+    string json_document = 3;
+  }
+
+  oneof condition {
+    /**
+     * <b>[Optional]</b><p/>
+     * Contains JSON encoded OJAI QueryCondition when payload_encoding is `JSON_ENCODING`.<p/>
+     */
+    string json_condition = 4;
+  }
+
+  oneof mutation {
+    /**
+     * <b>[Required]</b><p/>
+     * Contains JSON encoded OJAI DocumentMutation when payload_encoding is `JSON_ENCODING`.<p/>
+     */
+    string json_mutation = 30;
+  }
+
+}
+
+message UpdateResponse {
+  /**
+   * `NO_ERROR` - if a document was updated successfuly
+   * `DOCUMENT_NOT_FOUND` - if a document with specified `_id` does not exist or the specified condition
+   *                        evaluated to 'false'.
+   */
+  RpcError error = 1;
+}
+
+message DeleteRequest {
+  string table_path = 1;
+  PayloadEncoding payload_encoding = 2;
+
+  oneof condition {
+    /**
+     * <b>[Optional]</b><p/>
+     * Contains JSON encoded OJAI QueryCondition when payload_encoding is `JSON_ENCODING`.<p/>
+     */
+    string json_condition = 3;
+  }
+
+  oneof document {
+    /**
+     * <b>[Required]</b><p/>
+     * Contains JSON encoded OJAI Document with `_id` field when payload_encoding is `JSON_ENCODING`.<p/>
+     */
+    string json_document = 4;
+  }
+
+}
+
+message DeleteResponse {
+  /**
+   * `NO_ERROR` - if a document was deleted successfuly
+   */
+  RpcError error = 1;
 }

@@ -46,6 +46,16 @@ class MapRDbServerStub(object):
         request_serializer=maprdb__server__pb2.FindRequest.SerializeToString,
         response_deserializer=maprdb__server__pb2.FindResponse.FromString,
         )
+    self.Update = channel.unary_unary(
+        '/com.mapr.data.db.MapRDbServer/Update',
+        request_serializer=maprdb__server__pb2.UpdateRequest.SerializeToString,
+        response_deserializer=maprdb__server__pb2.UpdateResponse.FromString,
+        )
+    self.Delete = channel.unary_unary(
+        '/com.mapr.data.db.MapRDbServer/Delete',
+        request_serializer=maprdb__server__pb2.DeleteRequest.SerializeToString,
+        response_deserializer=maprdb__server__pb2.DeleteResponse.FromString,
+        )
 
 
 class MapRDbServerServicer(object):
@@ -96,6 +106,20 @@ class MapRDbServerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def Update(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def Delete(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_MapRDbServerServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -128,6 +152,16 @@ def add_MapRDbServerServicer_to_server(servicer, server):
           servicer.Find,
           request_deserializer=maprdb__server__pb2.FindRequest.FromString,
           response_serializer=maprdb__server__pb2.FindResponse.SerializeToString,
+      ),
+      'Update': grpc.unary_unary_rpc_method_handler(
+          servicer.Update,
+          request_deserializer=maprdb__server__pb2.UpdateRequest.FromString,
+          response_serializer=maprdb__server__pb2.UpdateResponse.SerializeToString,
+      ),
+      'Delete': grpc.unary_unary_rpc_method_handler(
+          servicer.Delete,
+          request_deserializer=maprdb__server__pb2.DeleteRequest.FromString,
+          response_serializer=maprdb__server__pb2.DeleteResponse.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(

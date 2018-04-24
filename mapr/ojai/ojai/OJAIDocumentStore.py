@@ -17,7 +17,7 @@ from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 from mapr.ojai.ojai.OJAIQueryResult import OJAIQueryResult
 from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
 from mapr.ojai.proto.gen.maprdb_server_pb2 import InsertOrReplaceRequest, PayloadEncoding, FindByIdRequest, ErrorCode, \
-    InsertMode, FindRequest
+    InsertMode, FindRequest, DeleteRequest
 
 
 class OJAIDocumentStore(DocumentStore):
@@ -138,12 +138,10 @@ class OJAIDocumentStore(DocumentStore):
 
     def insert_or_replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
         if doc_stream is None:
-            if doc is not None:
-                self.__validate_dict(doc.as_dictionary())
+            if isinstance(doc, OJAIDocument):
                 doc_str = doc.as_json_str()
-            elif json_dictionary is not None:
-                self.__validate_dict(json_dictionary)
-                doc_str = json.dumps(json_dictionary)
+            elif isinstance(doc, dict):
+                doc_str = OJAIDocument().from_dict(doc).as_json_str()
             else:
                 raise IllegalArgumentError(m="Invalid type of the doc parameter.")
             self.__evaluate_doc(doc_str=doc_str, operation_type='INSERT_OR_REPLACE')
@@ -153,17 +151,55 @@ class OJAIDocumentStore(DocumentStore):
     def update(self, _id, mutation):
         pass
 
+    def __evaluate_delete(self, doc_string):
+        request = DeleteRequest(table_path=self.__store_path,
+                                payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
+                                json_document=doc_string)
+        response = self.__connection.Delete(request)
+        self.validate_response(response)
+
+    def __delete_doc_stream(self, doc_stream):
+        if not isinstance(doc_stream, list):
+            raise IllegalArgumentError(m="Invalid type of the doc_stream parameter.")
+
+        for doc in doc_stream:
+            if isinstance(doc, OJAIDocument):
+                self.__evaluate_delete(doc.as_json_str())
+            elif isinstance(doc, dict):
+                self.__evaluate_delete(OJAIDocument().from_dict(document_dict=doc).as_json_str())
+            else:
+                raise IllegalArgumentError(m="Invalid type of the doc parameter, must be OJAIDocument or dict.")
+
+    def __delete_id_field(self, _id):
+        if not isinstance(_id, (str, unicode, bytearray)):
+            raise IllegalArgumentError(m="Invalid type of the _id parameter.")
+        self.__evaluate_delete(OJAIDocument().set_id(_id=_id).as_json_str())
+
+    def __delete_document(self, document):
+        if not isinstance(document, (OJAIDocument, dict)):
+            raise IllegalArgumentError(m="Invalid type of the doc parameter.")
+
+        if isinstance(document, OJAIDocument):
+            self.__evaluate_delete(document.as_json_str())
+        else:
+            self.__evaluate_delete(OJAIDocument().from_dict(document_dict=document).as_json_str())
+
     def delete(self, doc=None, _id=None, field_as_key=None, doc_stream=None):
-        pass
+        if doc is not None:
+            self.__delete_document(document=doc)
+        elif _id is not None:
+            self.__delete_id_field(_id=_id)
+        elif doc_stream is not None:
+            self.__delete_doc_stream(doc_stream=doc_stream)
+        else:
+            raise IllegalArgumentError(m="Invalid set of the parameters.")
 
     def insert(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
         if doc_stream is None:
-            if doc is not None:
-                self.__validate_dict(doc.as_dictionary())
+            if isinstance(doc, OJAIDocument):
                 doc_str = doc.as_json_str()
-            elif json_dictionary is not None:
-                self.__validate_dict(json_dictionary)
-                doc_str = json.dumps(json_dictionary)
+            elif isinstance(doc, dict):
+                doc_str = OJAIDocument().from_dict(doc).as_json_str()
             else:
                 raise IllegalArgumentError(m="Invalid type of the doc parameter.")
             self.__evaluate_doc(doc_str=doc_str, operation_type='INSERT')
@@ -172,12 +208,10 @@ class OJAIDocumentStore(DocumentStore):
 
     def replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
         if doc_stream is None:
-            if doc is not None:
-                self.__validate_dict(doc.as_dictionary())
+            if isinstance(doc, OJAIDocument):
                 doc_str = doc.as_json_str()
-            elif json_dictionary is not None:
-                self.__validate_dict(json_dictionary)
-                doc_str = json.dumps(json_dictionary)
+            elif isinstance(doc, dict):
+                doc_str = OJAIDocument().from_dict(doc).as_json_str()
             else:
                 raise IllegalArgumentError(m="Invalid type of the doc parameter.")
             self.__evaluate_doc(doc_str=doc_str, operation_type='REPLACE')
