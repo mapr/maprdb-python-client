@@ -17,7 +17,7 @@ from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 from mapr.ojai.ojai.OJAIQueryResult import OJAIQueryResult
 from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
 from mapr.ojai.proto.gen.maprdb_server_pb2 import InsertOrReplaceRequest, PayloadEncoding, FindByIdRequest, ErrorCode, \
-    InsertMode, FindRequest
+    InsertMode, FindRequest, DeleteRequest
 
 
 class OJAIDocumentStore(DocumentStore):
@@ -33,15 +33,33 @@ class OJAIDocumentStore(DocumentStore):
     def flush(self):
         pass
 
+    @staticmethod
+    def __get_str_condition(condition):
+        from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
+        if not isinstance(condition, (OJAIQueryCondition, dict)):
+            raise IllegalArgumentError(m='Condition must be instance of OJAIQueryCondition, dict or str.')
+
+        str_condition = json.dumps({'$condition': condition}) \
+            if isinstance(condition, dict) else json.dumps({'$condition': condition.as_dictionary()}) \
+            if isinstance(condition, OJAIQueryCondition) else None
+        return str_condition
+
+    @staticmethod
+    def __get_doc_str(doc):
+        if not isinstance(doc, (OJAIDocument, dict)):
+            raise IllegalArgumentError(m="Invalid type of the doc parameter.")
+        return doc.as_json_str() if isinstance(doc, OJAIDocument) else OJAIDocument().from_dict(doc).as_json_str()
+
     def find_by_id(self, _id, field_paths=None, condition=None, results_as_document=False, timeout=None):
         if not isinstance(_id, (str, unicode)):
             raise TypeError
-        from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
-        str_condition = condition if isinstance(condition, str) else json.dumps(condition)\
-            if isinstance(condition, dict) else json.dumps(condition.as_dictionary())\
-            if isinstance(condition, OJAIQueryCondition) else None
 
-        str_field_path = field_paths if isinstance(field_paths, list) else field_paths.split(',')\
+        if condition is not None:
+            str_condition = OJAIDocumentStore.__get_str_condition(condition=condition)
+        else:
+            str_condition = None
+
+        str_field_path = field_paths if isinstance(field_paths, list) else field_paths.split(',') \
             if isinstance(field_paths, str) else None
 
         doc = OJAIDocument().set_id(_id=_id)
@@ -128,24 +146,19 @@ class OJAIDocumentStore(DocumentStore):
                                        json_document=doc_str))
             self.validate_response(response=response)
 
-    def __evaluate_doc(self, doc_str, operation_type):
-        response = self.__connection.InsertOrReplace(
-            InsertOrReplaceRequest(table_path=self.__store_path,
-                                   insert_mode=InsertMode.Value(operation_type),
-                                   payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
-                                   json_document=doc_str))
+    def __evaluate_doc(self, doc_str, operation_type, condition=None):
+        request = InsertOrReplaceRequest(table_path=self.__store_path,
+                                         insert_mode=InsertMode.Value(operation_type),
+                                         payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
+                                         json_document=doc_str)
+        if condition is not None:
+            request.json_condition = condition
+        response = self.__connection.InsertOrReplace(request)
         self.validate_response(response=response)
 
     def insert_or_replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
         if doc_stream is None:
-            if doc is not None:
-                self.__validate_dict(doc.as_dictionary())
-                doc_str = doc.as_json_str()
-            elif json_dictionary is not None:
-                self.__validate_dict(json_dictionary)
-                doc_str = json.dumps(json_dictionary)
-            else:
-                raise IllegalArgumentError(m="Invalid type of the doc parameter.")
+            doc_str = OJAIDocumentStore.__get_doc_str(doc=doc)
             self.__evaluate_doc(doc_str=doc_str, operation_type='INSERT_OR_REPLACE')
         else:
             self.__evaluate_doc_stream(doc_stream, 'INSERT_OR_REPLACE')
@@ -153,33 +166,59 @@ class OJAIDocumentStore(DocumentStore):
     def update(self, _id, mutation):
         pass
 
+    def __evaluate_delete(self, doc_string):
+        request = DeleteRequest(table_path=self.__store_path,
+                                payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
+                                json_document=doc_string)
+        response = self.__connection.Delete(request)
+        self.validate_response(response)
+
+    def __delete_doc_stream(self, doc_stream):
+        if not isinstance(doc_stream, list):
+            raise IllegalArgumentError(m="Invalid type of the doc_stream parameter.")
+
+        for doc in doc_stream:
+            if isinstance(doc, OJAIDocument):
+                self.__evaluate_delete(doc.as_json_str())
+            elif isinstance(doc, dict):
+                self.__evaluate_delete(OJAIDocument().from_dict(document_dict=doc).as_json_str())
+            else:
+                raise IllegalArgumentError(m="Invalid type of the doc parameter, must be OJAIDocument or dict.")
+
+    def __delete_id_field(self, _id):
+        if not isinstance(_id, (str, unicode, bytearray)):
+            raise IllegalArgumentError(m="Invalid type of the _id parameter.")
+        self.__evaluate_delete(OJAIDocument().set_id(_id=_id).as_json_str())
+
+    def __delete_document(self, document):
+        if not isinstance(document, (OJAIDocument, dict)):
+            raise IllegalArgumentError(m="Invalid type of the doc parameter.")
+
+        if isinstance(document, OJAIDocument):
+            self.__evaluate_delete(document.as_json_str())
+        else:
+            self.__evaluate_delete(OJAIDocument().from_dict(document_dict=document).as_json_str())
+
     def delete(self, doc=None, _id=None, field_as_key=None, doc_stream=None):
-        pass
+        if doc is not None:
+            self.__delete_document(document=doc)
+        elif _id is not None:
+            self.__delete_id_field(_id=_id)
+        elif doc_stream is not None:
+            self.__delete_doc_stream(doc_stream=doc_stream)
+        else:
+            raise IllegalArgumentError(m="Invalid set of the parameters.")
 
     def insert(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
         if doc_stream is None:
-            if doc is not None:
-                self.__validate_dict(doc.as_dictionary())
-                doc_str = doc.as_json_str()
-            elif json_dictionary is not None:
-                self.__validate_dict(json_dictionary)
-                doc_str = json.dumps(json_dictionary)
-            else:
-                raise IllegalArgumentError(m="Invalid type of the doc parameter.")
+            doc_str = OJAIDocumentStore.__get_doc_str(doc=doc)
             self.__evaluate_doc(doc_str=doc_str, operation_type='INSERT')
         else:
             self.__evaluate_doc_stream(doc_stream, 'INSERT')
 
     def replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None, json_dictionary=None):
         if doc_stream is None:
-            if doc is not None:
-                self.__validate_dict(doc.as_dictionary())
-                doc_str = doc.as_json_str()
-            elif json_dictionary is not None:
-                self.__validate_dict(json_dictionary)
-                doc_str = json.dumps(json_dictionary)
-            else:
-                raise IllegalArgumentError(m="Invalid type of the doc parameter.")
+            doc_str = OJAIDocumentStore.__get_doc_str(doc=doc)
             self.__evaluate_doc(doc_str=doc_str, operation_type='REPLACE')
         else:
             self.__evaluate_doc_stream(doc_stream, 'REPLACE')
@@ -187,14 +226,30 @@ class OJAIDocumentStore(DocumentStore):
     def increment(self, _id, field, inc):
         pass
 
-    def check_and_mutate(self, _id, query_condition, mutation):
-        pass
+    def check_and_update(self, _id, query_condition, mutation):
+        from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
+        if not isinstance(query_condition, (OJAIQueryCondition, dict, str, unicode)):
+            raise IllegalArgumentError(m='Condition must be instance of OJAIQueryCondition, dict or str.')
+
+        str_condition = OJAIDocumentStore.__get_str_condition(query_condition)
+
+        raise NotImplementedError
 
     def check_and_delete(self, _id, condition):
-        pass
+        str_condition = OJAIDocumentStore.__get_str_condition(condition=condition)
+        request = DeleteRequest(table_path=self.__store_path,
+                                payload_encoding=PayloadEncoding.Value('JSON_ENCODING'),
+                                json_condition=str_condition,
+                                json_document=OJAIDocument().set_id(_id=_id).as_json_str())
+        response = self.__connection.Delete(request)
+        self.validate_response(response)
 
-    def check_and_replace(self, _id, condition, doc):
-        pass
+    def check_and_replace(self,  doc, condition, _id=None):
+        if _id is not None:
+            doc.set_id(_id=_id)
+        doc_str = OJAIDocumentStore.__get_doc_str(doc=doc)
+        str_condition = OJAIDocumentStore.__get_str_condition(condition=condition)
+        self.__evaluate_doc(doc_str=doc_str, operation_type='REPLACE', condition=str_condition)
 
     @staticmethod
     def __validate_document(doc_to_insert):
@@ -237,7 +292,5 @@ class OJAIDocumentStore(DocumentStore):
             raise EncodingError(m=response.error.error_message)
         elif response.error.err_code == ErrorCode.Value('DECODING_ERROR'):
             raise DecodingError(m=response.error.error_message)
-        elif response.error.err_code == ErrorCode.Value('UNRECOGNIZED_INSERT_MODE'):
-            raise UnrecognizedInsertModeError(m=response.error.error_message)
-        elif response.error.err_code == ErrorCode.Value('UNKNOWN_EXCEPTION'):
+        elif response.error.err_code == ErrorCode.Value('UNKNOWN_ERROR'):
             raise UnknownServerError('Check server logs.')

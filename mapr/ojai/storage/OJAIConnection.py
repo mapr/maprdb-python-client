@@ -85,8 +85,6 @@ class OJAIConnection(Connection):
             #     doc.set(k, v)
         elif json_string is not None:
             doc.from_dict(json.loads(json_string))
-        else:
-            raise AttributeError
 
         return doc
 

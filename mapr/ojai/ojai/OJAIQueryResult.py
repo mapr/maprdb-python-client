@@ -2,6 +2,7 @@ from ojai.store.QueryResult import QueryResult
 
 from mapr.ojai.exceptions.InvalidStreamResponseError import InvalidStreamResponseError
 from mapr.ojai.exceptions.UnknownServerError import UnknownServerError
+from mapr.ojai.ojai.OJAIDocumentStream import OJAIDocumentStream
 from mapr.ojai.proto.gen.maprdb_server_pb2 import FindResponseType
 
 
@@ -35,9 +36,9 @@ class OJAIQueryResult(QueryResult):
         else:
             raise UnknownServerError('Check server logs.')
 
-    def iterator(self):
-        from mapr.ojai.ojai.OJAIDocumentStream import OJAIDocumentStream
-        return OJAIDocumentStream(input_stream=self.__doc_stream, results_as_document=self.__results_as_document)
-
     def get_query_plan(self):
         return self.__query_plan
+
+    def __iter__(self):
+        return OJAIDocumentStream(input_stream=self.__doc_stream, results_as_document=self.__results_as_document)
+
