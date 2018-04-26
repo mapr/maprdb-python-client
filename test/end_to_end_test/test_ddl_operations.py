@@ -14,12 +14,10 @@ except ImportError:
 
 
 class ConnectionTest(unittest.TestCase):
+    url = 'localhost:5678'
 
     def test_connection(self):
-        # TODO doesn't work
-        # url = str(DRIVER_BASE_URL) + 'localhost:' + str(SERVICE_PORT)
-        url = 'localhost:5678'
-        connection = OJAIConnection(connection_url=url)
+        connection = OJAIConnection(connection_url=ConnectionTest.url)
         before_create = connection.is_store_exists(store_path='/test-store1')
         self.assertFalse(before_create)
         store = connection.create_store(store_path='/test-store1')
@@ -30,8 +28,7 @@ class ConnectionTest(unittest.TestCase):
         self.assertTrue(delete_response)
 
     def test_create_table_error(self):
-        url = 'localhost:5678'
-        connection = OJAIConnection(connection_url=url)
+        connection = OJAIConnection(connection_url=ConnectionTest.url)
         before_create = connection.is_store_exists(store_path='/test-store2')
         self.assertFalse(before_create)
         store = connection.create_store(store_path='/test-store2')
@@ -47,8 +44,8 @@ class ConnectionTest(unittest.TestCase):
         delete_response = connection.delete_store(store_path='/test-store2')
         self.assertTrue(delete_response)
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     test_classes_to_run = [ConnectionTest]
     loader = unittest.TestLoader()
     suites_list = []

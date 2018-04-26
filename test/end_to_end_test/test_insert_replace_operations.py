@@ -14,6 +14,7 @@ except ImportError:
 
 
 class InsertOrReplaceTest(unittest.TestCase):
+    url = 'localhost:5678'
 
     def test_insert_or_replace(self):
         dict_stream = [{'_id': "id01", 'test_int': 51, 'test_str': 'strstr'},
@@ -28,8 +29,7 @@ class InsertOrReplaceTest(unittest.TestCase):
                        {'_id': 'id09', 'test_int': 51, 'test_str': 'strstr', 'test_list': [5, 6]},
                        {'_id': 'id10', 'test_int': 51, 'test_str': 'strstr', 'test_null': None}]
 
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=InsertOrReplaceTest.url)
 
         if connection.is_store_exists(store_path='/test-store5'):
             document_store = connection.get_store(store_path='/test-store5')
@@ -57,8 +57,7 @@ class InsertOrReplaceTest(unittest.TestCase):
                        {'_id': 'id009', 'test_int': 51, 'test_str': 'strstr', 'test_list': [5, 6]},
                        {'_id': 'id010', 'test_int': 51, 'test_str': 'strstr', 'test_null': None}]
 
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=InsertOrReplaceTest.url)
 
         # should raise an error if exit is not 0
         if connection.is_store_exists(store_path='/test-store6'):
@@ -103,8 +102,7 @@ class InsertOrReplaceTest(unittest.TestCase):
                                {'_id': 'id009', 'test_int': 52, 'test_str': 'strstr', 'test_list': [5, 6]},
                                {'_id': 'id010', 'test_int': 52, 'test_str': 'strstr', 'test_null': None}]
 
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=InsertOrReplaceTest.url)
 
         # should raise an error if exit is not 0
         if connection.is_store_exists(store_path='/test-store7'):
@@ -131,8 +129,7 @@ class InsertOrReplaceTest(unittest.TestCase):
         nested_doc = OJAIDocument().set('nested_int', 11).set('nested_str', 'strstr')
         doc = OJAIDocument().set('test_list', [1, 2, 3, 4, False, 'mystr', [{}, {}, [7, 8, 9, nested_doc]]]) \
             .set_id('testid001')
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=InsertOrReplaceTest.url)
         if connection.is_store_exists(store_path='/test-store8'):
             document_store = connection.get_store(store_path='/test-store8')
         else:
@@ -144,7 +141,6 @@ class InsertOrReplaceTest(unittest.TestCase):
         document_store.insert_or_replace(doc=doc)
 
 if __name__ == '__main__':
-
     test_classes_to_run = [InsertOrReplaceTest]
     loader = unittest.TestLoader()
     suites_list = []

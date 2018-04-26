@@ -15,10 +15,11 @@ except ImportError:
 
 
 class FindByIdTest(unittest.TestCase):
+    url = 'localhost:5678'
 
     def test_find_by_id(self):
         url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=FindByIdTest.url)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
             document_store = connection.get_store(store_path='/find-by-id-test-store1')
@@ -54,8 +55,7 @@ class FindByIdTest(unittest.TestCase):
             .set('first.test_dict2', {}) \
             .set('first.test_list', [1, 2, 'str', False, ODate(days_since_epoch=3457)]) \
 
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=FindByIdTest.url)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
             document_store = connection.get_store(store_path='/find-by-id-test-store1')
@@ -78,8 +78,7 @@ class FindByIdTest(unittest.TestCase):
         self.assertEqual(doc.as_dictionary(), document.as_dictionary())
 
     def test_find_by_id_as_dict(self):
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=FindByIdTest.url)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
             document_store = connection.get_store(store_path='/find-by-id-test-store1')
@@ -106,8 +105,7 @@ class FindByIdTest(unittest.TestCase):
         self.assertEqual(doc, document.as_dictionary())
 
     def test_find_by_id_empty_response(self):
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=FindByIdTest.url)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
             document_store = connection.get_store(store_path='/find-by-id-test-store1')

@@ -14,10 +14,10 @@ except ImportError:
 
 
 class FindTest(unittest.TestCase):
+    url = 'localhost:5678'
 
     def test_simple_find(self):
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=FindTest.url)
 
         if connection.is_store_exists(store_path='/find-test-store1'):
             document_store = connection.get_store(store_path='/find-test-store1')
@@ -35,13 +35,12 @@ class FindTest(unittest.TestCase):
         query = OJAIQuery().select(['_id', 'test_int', 'test_str', 'test_dict', 'test_list', 'test_null']).build()
 
         self.assertTrue(connection.is_store_exists('/find-test-store1'))
-        doc_stream = document_store.find(query).iterator()
+        doc_stream = document_store.find(query)
         for doc in doc_stream:
             self.assertEqual(doc, document.as_dictionary())
 
     def test_find_on_empty_table(self):
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=FindTest.url)
 
         if connection.is_store_exists(store_path='/find-test-store2'):
             document_store = connection.get_store(store_path='/find-test-store2')
@@ -51,7 +50,7 @@ class FindTest(unittest.TestCase):
         query = OJAIQuery().select(['_id', 'test_int', 'test_str', 'test_dict', 'test_list', 'test_null']).build()
 
         self.assertTrue(connection.is_store_exists('/find-test-store2'))
-        doc_stream = document_store.find(query).iterator()
+        doc_stream = document_store.find(query)
         size = 0
         for doc in doc_stream:
             size += 1
@@ -59,8 +58,7 @@ class FindTest(unittest.TestCase):
         self.assertEqual(size, 0)
 
     def test_find_table_not_found(self):
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=FindTest.url)
 
         document_store = connection.get_store(store_path='/find-test-store3')
 
@@ -68,7 +66,8 @@ class FindTest(unittest.TestCase):
 
         self.assertFalse(connection.is_store_exists('/find-test-store3'))
         with self.assertRaises(StoreNotFoundError):
-            for doc in document_store.find(query).iterator():
+            query_result = document_store.find(query)
+            for doc in query_result:
                 print(doc)
 
     def test_find_multiple_records(self):
@@ -91,7 +90,7 @@ class FindTest(unittest.TestCase):
 
         document_store.insert_or_replace(doc_stream=document_list)
         query = OJAIQuery().select(['_id', 'test_int', 'test_str', 'test_dict', 'test_list', 'test_null']).build()
-        doc_stream = document_store.find(query).iterator()
+        doc_stream = document_store.find(query)
 
         index = 0
         for doc in doc_stream:
@@ -120,7 +119,7 @@ class FindTest(unittest.TestCase):
                    .and_()
                    .is_('test_int', QueryOp.GREATER_OR_EQUAL, 3)
                    .is_('test_int', QueryOp.LESS_OR_EQUAL, 6).close().close().build()).build()
-        doc_stream = document_store.find(query).iterator()
+        doc_stream = document_store.find(query)
 
         index = 0
         for doc in doc_stream:
@@ -137,7 +136,7 @@ class FindTest(unittest.TestCase):
         else:
             document_store = connection.create_store(store_path='/find-test-store4')
 
-        doc_stream = document_store.find().iterator()
+        doc_stream = document_store.find()
         stream_size = 0
         for doc in doc_stream:
             stream_size += 1

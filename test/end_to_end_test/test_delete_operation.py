@@ -14,6 +14,7 @@ except ImportError:
 
 
 class DeleteTest(unittest.TestCase):
+    url = 'localhost:5678'
     dict_stream = [{'_id': "id01", 'test_int': 51, 'test_str': 'strstr'},
                    {'_id': 'id02', 'mystr': 'str', 'test_int': 51, 'test_str': 'strstr'},
                    {'_id': 'id03', 'test_int': 51, 'test_otime': OTime(timestamp=1518689532), 'test_str': 'strstr'},
@@ -27,8 +28,7 @@ class DeleteTest(unittest.TestCase):
                    {'_id': 'id10', 'test_int': 51, 'test_str': 'strstr', 'test_null': None}]
 
     def test_delete_document(self):
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=DeleteTest.url)
 
         if connection.is_store_exists(store_path='/delete-test-store1'):
             document_store = connection.get_store(store_path='/delete-test-store1')
@@ -39,15 +39,13 @@ class DeleteTest(unittest.TestCase):
 
         for doc in DeleteTest.dict_stream:
             document = connection.new_document(dictionary=doc)
-            # print('Insert document with ID: ' + str(document.get_id()))
             document_store.insert_or_replace(doc=document)
 
         document_store.delete(doc=document)
         self.assertEqual(document_store.find_by_id('id10'), {})
 
     def test_delete_id(self):
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=DeleteTest.url)
 
         if connection.is_store_exists(store_path='/delete-test-store1'):
             document_store = connection.get_store(store_path='/delete-test-store1')
@@ -59,8 +57,7 @@ class DeleteTest(unittest.TestCase):
         self.assertEqual(document_store.find_by_id('id09'), {})
 
     def test_delete_document_stream(self):
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=DeleteTest.url)
 
         if connection.is_store_exists(store_path='/delete-test-store1'):
             document_store = connection.get_store(store_path='/delete-test-store1')
@@ -75,3 +72,15 @@ class DeleteTest(unittest.TestCase):
         document_store.delete(doc_stream=doc_stream)
 
 
+if __name__ == '__main__':
+    test_classes_to_run = [DeleteTest]
+    loader = unittest.TestLoader()
+    suites_list = []
+    for test_class in test_classes_to_run:
+        suite = loader.loadTestsFromTestCase(test_class)
+        suites_list.append(suite)
+
+    big_suite = unittest.TestSuite(suites_list)
+
+    runner = unittest.TextTestRunner()
+    results = runner.run(big_suite)
