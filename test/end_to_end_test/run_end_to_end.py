@@ -5,6 +5,7 @@ from test.end_to_end_test.test_delete_operation import DeleteTest
 from test.end_to_end_test.test_find_by_id_operations import FindByIdTest
 from test.end_to_end_test.test_find_operations import FindTest
 from test.end_to_end_test.test_insert_replace_operations import InsertOrReplaceTest
+from test.end_to_end_test.test_update_operations import UpdateTest
 
 try:
     import unittest2 as unittest
@@ -19,7 +20,8 @@ if __name__ == '__main__':
                            InsertOrReplaceTest,
                            DeleteTest,
                            CheckAndDeleteTest,
-                           CheckAndReplaceTest
+                           CheckAndReplaceTest,
+                           UpdateTest
                            ]
 
     loader = unittest.TestLoader()

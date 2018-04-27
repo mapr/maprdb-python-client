@@ -1,6 +1,7 @@
 from test.document.test_document import DocumentTest
 from test.document.test_document_creator import DocumentCreatorTest
 from test.document.test_document_with_tags import DocumentTagsTest
+from test.document.test_documentmutation import DocumentMutationTest
 from test.document.test_documentstream import DocumentStreamTest
 from test.ojaitest.test_jsonvalue import JsonValueTest
 from test.query_test.test_query import QueryTest
@@ -19,7 +20,8 @@ if __name__ == '__main__':
                            DocumentTagsTest,
                            QueryTest,
                            DocumentStreamTest,
-                           DocumentCreatorTest
+                           DocumentCreatorTest,
+                           DocumentMutationTest
                            ]
 
     loader = unittest.TestLoader()

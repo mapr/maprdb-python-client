@@ -22,6 +22,7 @@ class OJAIDocument(Document):
 
     __json_stream_document_reader = None
     __regex = re.compile(r"""(["']).*?\1|(?P<dot>\.)""")
+    __list_regex = re.compile(r"\[(\w+)\]")
 
     def __init__(self, json_value=None):
         self.__internal_dict = {}
@@ -56,6 +57,8 @@ class OJAIDocument(Document):
     def set(self, field_path, value, off=None, length=None):
         if field_path == '_id' and isinstance(value, (unicode, str, bytearray)):
             self.__internal_dict[field_path] = value
+        elif self.__list_regex.search(field_path):
+            self.__set_list_element(field_path=field_path, value=value)
         elif isinstance(value, OJAIDocument):
             self.__set_document(field_path=field_path, value=value)
         elif value is None:
@@ -64,6 +67,20 @@ class OJAIDocument(Document):
             self.__set_dispatcher(field_path=field_path, value=value)
 
         return self
+
+    def __get_index_and_stored_value(self, field_path):
+        index = int(self.__list_regex.search(field_path).group(1))
+        stored_value = self.get(re.sub(self.__list_regex, '', field_path))
+        return index, stored_value
+
+    def __set_list_element(self, field_path, value):
+        index, stored_value = self.__get_index_and_stored_value(field_path=field_path)
+
+        if isinstance(stored_value, list):
+            if len(stored_value) < index:
+                stored_value.append(value)
+            else:
+                stored_value[index] = value
 
     def parse_dict(self, dictionary):
         if not isinstance(dictionary, dict):
@@ -194,9 +211,14 @@ class OJAIDocument(Document):
         return self
 
     def get(self, field_path):
+        value = None
+        index = None
+        if self.__list_regex.search(field_path):
+            index = int(self.__list_regex.search(field_path).group(1))
+            field_path = re.sub(self.__list_regex, '', field_path)
+
         split_path = [part.strip("'").strip('"') for part in self.__regex.sub(replacer,
                                                                               field_path).split("pass") if part]
-        value = None
         try:
             tmp_dict = self.__internal_dict
             for k in split_path[:-1]:
@@ -204,6 +226,11 @@ class OJAIDocument(Document):
             value = tmp_dict[split_path[-1]]
         except KeyError:
             pass
+        if index is not None and value is not None and isinstance(value, list):
+            try:
+                value = value[index]
+            except IndexError:
+                value = None
         return value
 
     def get_str(self, field_path):

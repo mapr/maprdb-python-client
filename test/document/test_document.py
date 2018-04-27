@@ -239,3 +239,15 @@ class DocumentTest(unittest.TestCase):
         doc = OJAIDocument()
         doc.set('bool', True)
         self.assertEqual(doc.get_decimal('bool'), None)
+
+    def test_set_array_element(self):
+        doc = OJAIDocument().set('a.b.c', [1, 2, 3])
+        self.assertEqual(doc.as_dictionary(), {'a': {'b': {'c': [1, 2, 3]}}})
+        doc.set('a.b.c[1]', 9)
+        self.assertEqual(doc.as_dictionary(), {'a': {'b': {'c': [1, 9, 3]}}})
+        doc.set('a.b.c[100]', 55)
+        self.assertEqual(doc.as_dictionary(), {'a': {'b': {'c': [1, 9, 3, 55]}}})
+        self.assertEqual(doc.get('a.b.c[55]'), None)
+        self.assertEqual(doc.get('a.b.c[0]'), 1)
+        self.assertEqual(doc.get('a.b.c[1]'), 9)
+        self.assertEqual(doc.get('a.b.c[3]'), 55)

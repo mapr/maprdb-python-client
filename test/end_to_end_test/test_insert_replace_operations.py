@@ -140,6 +140,7 @@ class InsertOrReplaceTest(unittest.TestCase):
 
         document_store.insert_or_replace(doc=doc)
 
+
 if __name__ == '__main__':
     test_classes_to_run = [InsertOrReplaceTest]
     loader = unittest.TestLoader()

@@ -20,7 +20,7 @@ query_condition = connection.new_condition()\
 
 query = connection.new_query().select(['address']).where(query_condition).build()
 
-doc_stream = document_store.find(query, results_as_document=True, include_query_plan=True)
+query_result = document_store.find(query, results_as_document=True, include_query_plan=True)
 
-for doc in doc_stream:
+for doc in query_result:
     print(doc.as_dictionary())
