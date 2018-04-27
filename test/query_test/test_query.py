@@ -140,7 +140,7 @@ class QueryTest(unittest.TestCase):
                         .is_('age', QueryOp.GREATER_OR_EQUAL, 18)
                         .is_('city', QueryOp.EQUAL, 'London').close()).close().build()
 
-        query = OJAIQuery().select(['name', 'age', 'city']).where(qc).order_by('name').offset(500).limit(5).build()
+        query = OJAIQuery().select('name', 'age', 'city').where(qc).order_by('name').offset(500).limit(5).build()
 
         self.assertEqual(query.query_dict(), {'$orderby': {'name': 'asc'},
                                               '$offset': 500,

@@ -1,17 +1,13 @@
 """Following example works with Python Client"""
-from mapr.ojai.ojai_query.QueryOp import QueryOp
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
-"""Create a connection, get store, insert new documents into store, find document by id"""
-# create a connection
+"""Create a connection, get store, insert new document into store"""
+# create a connection using path:user@password
 connection = ConnectionFactory.get_connection(url="localhost:5678")
 
 # Get a store and assign it as a DocumentStore object
-if connection.is_store_exists(store_path='/find_sample_store1'):
-    document_store = connection.get_store(store_path='/find_sample_store1')
-else:
-    document_store = connection.create_store(store_path='/find_sample_store1')
-
+document_store = connection.create_store(store_path="/update_store1")
+"""Sample for update operation."""
 # Json string or json dictionary
 document_list = [{'_id': 'user0000', 'age': 35, 'firstName': 'John', 'lastName': 'Doe', 'address':
     {'street': '350 Hoger Way', 'city': 'San Jose', 'state': 'CA', 'zipCode': 95134},
@@ -26,14 +22,14 @@ document_list = [{'_id': 'user0000', 'age': 35, 'firstName': 'John', 'lastName':
 # Insert new document into the store
 document_store.insert_or_replace(doc_stream=document_list)
 
-# Find document by _id field
-document = document_store.find_by_id('user0001', condition=connection.new_condition().or_() \
-                                     .is_('address.street', QueryOp.EQUAL, '320 Blossom Hill Road') \
-                                     .is_('address.zipCode', QueryOp.EQUAL, 95134).close().close().build(),
-                                     field_paths=["age", "firstName"], timeout=5)
+# Create doc mutation
+doc_mutation = connection.new_mutation()\
+    .set_or_replace('mutation_field', 50)\
+    .append('phoneNumbers', [{'areaCode': 111, 'number': 9369992}])\
+    .merge('address', {'country': 'USA'})
 
-# Print the document
+document_store.update('user0002', doc_mutation)
+
+document = document_store.find_by_id('user0002')
+
 print(document)
-
-# close
-connection.close()

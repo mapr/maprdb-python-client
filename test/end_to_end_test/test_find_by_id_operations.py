@@ -6,6 +6,7 @@ import grpc
 from ojai.o_types.ODate import ODate
 from ojai.o_types.OTime import OTime
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
+from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
 try:
@@ -18,7 +19,6 @@ class FindByIdTest(unittest.TestCase):
     url = 'localhost:5678'
 
     def test_find_by_id(self):
-        url = 'localhost:5678'
         connection = ConnectionFactory.get_connection(url=FindByIdTest.url)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
@@ -120,6 +120,26 @@ class FindByIdTest(unittest.TestCase):
 
         doc_as_object = document_store.find_by_id('id9999', results_as_document=True)
         self.assertEqual(doc_as_object.as_dictionary(), {})
+
+    def test_find_by_id_with_condition(self):
+        connection = ConnectionFactory.get_connection(url=FindByIdTest.url)
+
+        if connection.is_store_exists(store_path='/find-by-id-test-store1'):
+            document_store = connection.get_store(store_path='/find-by-id-test-store1')
+        else:
+            document_store = connection.create_store(store_path='/find-by-id-test-store1')
+
+        self.assertTrue(connection.is_store_exists('/find-by-id-test-store1'))
+
+        condition = OJAIQueryCondition().exists_('false_field').close().build()
+        doc = document_store.find_by_id('id008', condition=condition, results_as_document=True)
+        self.assertEqual(doc.as_dictionary(), {})
+        condition = OJAIQueryCondition().exists_('test_list').close().build()
+        doc = document_store.find_by_id('id008', condition=condition, results_as_document=True,
+                                        field_paths=['test_null', 'test_dict', '_id', 'test_str'])
+        self.assertEqual(doc.as_dictionary(),
+                         {'_id': 'id008', 'test_dict': {'test_int': 5},
+                          'test_null': None, 'test_str': 'strstr'})
 
 
 if __name__ == '__main__':

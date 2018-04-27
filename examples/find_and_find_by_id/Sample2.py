@@ -26,5 +26,6 @@ query = connection.new_query().select(['*']).where(connection.new_condition().an
                                         .is_('age', QueryOp.LESS_OR_EQUAL, 35).close().close().build()).build()
 query_result = document_store.find(query, include_query_plan=True, results_as_document=False, timeout=1)
 print(query_result.get_query_plan())
+
 for d in query_result:
     print(d)

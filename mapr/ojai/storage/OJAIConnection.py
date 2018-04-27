@@ -3,6 +3,7 @@ import json
 import grpc
 from ojai.store.Connection import Connection
 
+from mapr.ojai.document.OJAIDocumentMutation import OJAIDocumentMutation
 from mapr.ojai.exceptions.ClusterNotFoundError import ClusterNotFoundError
 from mapr.ojai.exceptions.PathNotFoundError import PathNotFoundError
 from mapr.ojai.exceptions.StoreAlreadyExistsError import StoreAlreadyExistsError
@@ -73,6 +74,12 @@ class OJAIConnection(Connection):
         if not isinstance(store_path, (str, unicode)):
             raise TypeError
 
+    def get_or_create_store(self, store_path, options=None):
+        if self.is_store_exists(store_path=store_path):
+            return self.get_store(store_path=store_path, options=options)
+        else:
+            return self.create_store(store_path=store_path)
+
     def get_store(self, store_path, options=None):
         return OJAIDocumentStore(url=self.__connection_url, store_path=store_path, connection=self.__connection)
 
@@ -81,21 +88,22 @@ class OJAIConnection(Connection):
 
         if dictionary is not None:
             doc.from_dict(dictionary)
-            # for k, v in dictionary.iteritems():
-            #     doc.set(k, v)
         elif json_string is not None:
             doc.from_dict(json.loads(json_string))
 
         return doc
 
     def new_mutation(self):
-        raise NotImplementedError
+        return OJAIDocumentMutation()
 
     def new_condition(self):
         return OJAIQueryCondition()
 
     def new_query(self, query_json=None):
-        return OJAIQuery()
+        ojai_query = OJAIQuery()
+        if query_json is not None:
+            ojai_query.from_json(query_json)
+        return ojai_query
 
     def close(self):
         del self.__channel

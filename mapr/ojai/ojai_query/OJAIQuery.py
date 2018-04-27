@@ -67,9 +67,16 @@ class OJAIQuery(Query):
     def set_timeout(self, timeout_in_millis):
         pass
 
-    def select(self, field_paths):
-        if not isinstance(field_paths, list):
-            raise TypeError()
+    def select(self, *args):
+        field_paths = []
+        for arg in args:
+            if isinstance(arg, list):
+                field_paths = field_paths + arg
+            elif isinstance(arg, (unicode, str)):
+                field_paths.append(arg)
+            else:
+                raise TypeError
+
         self.__query_dict = self.__merge_two_dicts(self.__query_dict,
                                                    {Operations.SELECT: self.__convert_values(field_paths)})
 
@@ -135,6 +142,14 @@ class OJAIQuery(Query):
             return self.__query_dict
         else:
             raise QueryNotBuildError('Build query with help of build() method.')
+
+    def from_dict(self, query_dict):
+        self.__query_dict = query_dict
+        return self
+
+    def from_json(self, json_query):
+        self.from_dict(query_dict=json.loads(json_query))
+        return self
 
 
 class Operations(enum):
