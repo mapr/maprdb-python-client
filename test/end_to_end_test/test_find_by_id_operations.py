@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 from __future__ import unicode_literals
 
-import grpc
-
 from ojai.o_types.ODate import ODate
 from ojai.o_types.OTime import OTime
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
@@ -115,7 +113,6 @@ class FindByIdTest(unittest.TestCase):
         self.assertTrue(connection.is_store_exists('/find-by-id-test-store1'))
         doc_as_dict = document_store.find_by_id('id9999')
 
-        print(doc_as_dict)
         self.assertEqual(doc_as_dict, {})
 
         doc_as_object = document_store.find_by_id('id9999', results_as_document=True)

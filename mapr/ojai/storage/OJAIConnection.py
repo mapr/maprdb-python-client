@@ -2,6 +2,7 @@ import json
 
 import grpc
 from ojai.store.Connection import Connection
+from retrying import retry
 
 from mapr.ojai.document.OJAIDocumentMutation import OJAIDocumentMutation
 from mapr.ojai.exceptions.ClusterNotFoundError import ClusterNotFoundError
@@ -15,6 +16,7 @@ from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
 from mapr.ojai.proto.gen.maprdb_server_pb2 import CreateTableRequest, ErrorCode, TableExistsRequest, \
     InsertOrReplaceRequest, DeleteTableRequest
 from mapr.ojai.proto.gen.maprdb_server_pb2_grpc import MapRDbServerStub
+from mapr.ojai.utils.retry_utils import retry_if_connection_not_established
 
 
 class OJAIConnection(Connection):
@@ -28,12 +30,20 @@ class OJAIConnection(Connection):
     def channel(self):
         return self.__channel
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def create_store(self, store_path):
         self.__validate_store_path(store_path=store_path)
         response = self.__connection.CreateTable(CreateTableRequest(table_path=store_path))
         if self.__validate_response(response=response):
             return self.get_store(store_path=store_path)
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def is_store_exists(self, store_path):
         self.__validate_store_path(store_path=store_path)
         response = self.__connection.TableExists(TableExistsRequest(table_path=store_path))
@@ -51,12 +61,17 @@ class OJAIConnection(Connection):
         else:
             raise UnknownServerError
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def delete_store(self, store_path):
         self.__validate_store_path(store_path=store_path)
         response = self.__connection.DeleteTable(DeleteTableRequest(table_path=store_path))
         return self.__validate_response(response=response)
 
-    def __validate_response(self, response):
+    @staticmethod
+    def __validate_response(response):
         if response.error.err_code == ErrorCode.Value('NO_ERROR'):
             return True
         elif response.error.err_code == ErrorCode.Value('CLUSTER_NOT_FOUND'):
@@ -70,7 +85,8 @@ class OJAIConnection(Connection):
         else:
             raise UnknownServerError
 
-    def __validate_store_path(self, store_path):
+    @staticmethod
+    def __validate_store_path(store_path):
         if not isinstance(store_path, (str, unicode)):
             raise TypeError
 
@@ -81,7 +97,9 @@ class OJAIConnection(Connection):
             return self.create_store(store_path=store_path)
 
     def get_store(self, store_path, options=None):
-        return OJAIDocumentStore(url=self.__connection_url, store_path=store_path, connection=self.__connection)
+        return OJAIDocumentStore(url=self.__connection_url,
+                                 store_path=store_path,
+                                 connection=self.__connection)
 
     def new_document(self, json_string=None, dictionary=None):
         doc = OJAIDocument()

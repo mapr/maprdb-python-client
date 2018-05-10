@@ -5,6 +5,7 @@ from ojai.o_types.OTime import OTime
 from ojai.o_types.OTimestamp import OTimestamp
 
 from mapr.ojai.document.OJAIDocumentMutation import OJAIDocumentMutation
+from mapr.ojai.exceptions.DocumentNotFoundError import DocumentNotFoundError
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
 try:
@@ -63,23 +64,21 @@ class UpdateTest(unittest.TestCase):
                           'a': {'b': {'c': 50}}},
                          document_store.find_by_id('id08'))
 
-    # def test_update_document_set_error(self):
-    #     # TODO verify which error code received from server
-    #     connection = ConnectionFactory.get_connection(url=UpdateTest.url)
-    #
-    #     if connection.is_store_exists(store_path=UpdateTest.store_name):
-    #         document_store = connection.get_store(store_path=UpdateTest.store_name)
-    #     else:
-    #         document_store = connection.create_store(store_path=UpdateTest.store_name)
-    #
-    #     self.assertEqual({'_id': 'id08', 'test_int': 51, 'test_str': 'strstr',
-    #                       'test_dict': {'test_int': 5}},
-    #                      document_store.find_by_id('id08'))
-    #     mutation = OJAIDocumentMutation().set('test_int', 50)
-    #     document_store.update('id08', mutation)
-    #     self.assertEqual({'_id': 'id08', 'test_int': 50, 'test_str': 'strstr',
-    #                       'test_dict': {'test_int': 5}},
-    #                      document_store.find_by_id('id08'))
+    def test_update_document_set_error(self):
+        connection = ConnectionFactory.get_connection(url=UpdateTest.url)
+
+        if connection.is_store_exists(store_path=UpdateTest.store_name):
+            document_store = connection.get_store(store_path=UpdateTest.store_name)
+        else:
+            document_store = connection.create_store(store_path=UpdateTest.store_name)
+        self.assertEqual({'_id': 'id11', 'test_int': 51, 'test_str': 'strstr',
+                          'test_dict': {'test_int': 5}},
+                         document_store.find_by_id('id11'))
+        mutation = OJAIDocumentMutation().set_or_replace('test_int', 50)
+        document_store.update('id11', mutation)
+        self.assertEqual({'_id': 'id11', 'test_int': 50, 'test_str': 'strstr',
+                          'test_dict': {'test_int': 5}},
+                         document_store.find_by_id('id11'))
 
     def test_update_document_put(self):
         connection = ConnectionFactory.get_connection(url=UpdateTest.url)
@@ -184,7 +183,8 @@ class UpdateTest(unittest.TestCase):
                                                          {'d': 55, 'g': 'text'})
         from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
         false_condition = OJAIQueryCondition().equals_('test_str', 'rtsrts').close().build()
-        document_store.check_and_update('id02', mutation=mutation, query_condition=false_condition)
+        with self.assertRaises(DocumentNotFoundError):
+            document_store.check_and_update('id02', mutation=mutation, query_condition=false_condition)
         self.assertEqual({'_id': 'id02', 'mystr': 'str', 'test_int': 51,
                           'test_str': 'strstr'},
                          document_store.find_by_id('id02'))

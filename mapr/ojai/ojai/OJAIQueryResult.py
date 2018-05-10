@@ -1,3 +1,6 @@
+from collections import deque
+
+from grpc._channel import _Rendezvous
 from ojai.store.QueryResult import QueryResult
 
 from mapr.ojai.exceptions.InvalidStreamResponseError import InvalidStreamResponseError
@@ -13,11 +16,23 @@ class OJAIQueryResult(QueryResult):
         self.__doc_stream = document_stream
         self.__include_query_plan = include_query_plan
         self.__results_as_document = results_as_document
+        self.__init_cache = deque()
         if self.__include_query_plan:
-            for response in self.__doc_stream:
-                json_response = self.__parse_find_response(response)
-                self.__query_plan = json_response
-                break
+            json_response = self.__parse_find_response(self.__doc_stream.next())
+            self.__query_plan = json_response
+        try:
+            for _ in range(10):
+                try:
+                    self.__init_cache.append(OJAIDocumentStream.
+                                             parse_find_response(self.__doc_stream.next()))
+                except StopIteration:
+                    break
+        except _Rendezvous as e:
+            if not self.__init_cache:
+                raise e
+            else:
+                from mapr.ojai.exceptions.ConnectionLostError import ConnectionLostError
+                raise ConnectionLostError(m="Connection lost during operation.")
 
     def __parse_find_response(self, response):
         from mapr.ojai.ojai.OJAIDocumentStore import OJAIDocumentStore
@@ -40,5 +55,7 @@ class OJAIQueryResult(QueryResult):
         return self.__query_plan
 
     def __iter__(self):
-        return OJAIDocumentStream(input_stream=self.__doc_stream, results_as_document=self.__results_as_document)
+        return OJAIDocumentStream(input_stream=self.__doc_stream,
+                                  results_as_document=self.__results_as_document,
+                                  init_cache=self.__init_cache)
 
