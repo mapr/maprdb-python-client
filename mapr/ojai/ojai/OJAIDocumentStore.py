@@ -1,13 +1,16 @@
 import json
 
 from ojai.document.DocumentStore import DocumentStore
+from retrying import retry
 
 from mapr.ojai.exceptions.ClusterNotFoundError import ClusterNotFoundError
 from mapr.ojai.exceptions.DecodingError import DecodingError
 from mapr.ojai.exceptions.DocumentAlreadyExistsError import \
     DocumentAlreadyExistsError
+from mapr.ojai.exceptions.DocumentNotFoundError import DocumentNotFoundError
 from mapr.ojai.exceptions.EncodingError import EncodingError
 from mapr.ojai.exceptions.IllegalArgumentError import IllegalArgumentError
+from mapr.ojai.exceptions.IllegalMutationError import IllegalMutationError
 from mapr.ojai.exceptions.InvalidOJAIDocumentError import \
     InvalidOJAIDocumentError
 from mapr.ojai.exceptions.PathNotFoundError import PathNotFoundError
@@ -15,8 +18,6 @@ from mapr.ojai.exceptions.StoreNotFoundError import StoreNotFoundError
 from mapr.ojai.exceptions.UnknownPayloadEncodingError import \
     UnknownPayloadEncodingError
 from mapr.ojai.exceptions.UnknownServerError import UnknownServerError
-from mapr.ojai.exceptions.UnrecognizedInsertModeError import \
-    UnrecognizedInsertModeError
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 from mapr.ojai.ojai.OJAIQueryResult import OJAIQueryResult
 from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
@@ -24,6 +25,7 @@ from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
 from mapr.ojai.proto.gen.maprdb_server_pb2 import InsertOrReplaceRequest, \
     PayloadEncoding, FindByIdRequest, ErrorCode, \
     InsertMode, FindRequest, DeleteRequest, UpdateRequest
+from mapr.ojai.utils.retry_utils import retry_if_connection_not_established
 
 
 class OJAIDocumentStore(DocumentStore):
@@ -72,7 +74,8 @@ class OJAIDocumentStore(DocumentStore):
             else OJAIDocument().from_dict(
             doc).as_json_str()
 
-    def __build_find_by_id_result(self, response, results_as_document):
+    @staticmethod
+    def __build_find_by_id_result(response, results_as_document):
         from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator
 
         if len(response.json_document) == 0 and results_as_document:
@@ -86,30 +89,35 @@ class OJAIDocumentStore(DocumentStore):
             return OJAIDocumentCreator.create_document(
                 json_string=response.json_document).as_dictionary()
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def find_by_id(self, _id, field_paths=None, condition=None,
                    results_as_document=False, timeout=None):
         if not isinstance(_id, (str, unicode)):
             raise TypeError
 
-        doc = OJAIDocument().set_id(_id=_id)
+        request = FindByIdRequest(table_path=self.__store_path,
+                                  payload_encoding=PayloadEncoding.Value(
+                                      'JSON_ENCODING'),
+                                  json_document=OJAIDocument().set_id(_id=_id).as_json_str())
         if condition is not None:
             if not isinstance(condition, (OJAIQueryCondition, dict)):
                 raise IllegalArgumentError(
                     m='Condition must be instance of OJAIQueryCondition, dict.')
-            doc.set('$where', condition if isinstance(condition, dict) else condition.as_dictionary())
+            request.json_condition = json.dumps(condition
+                                                if isinstance(condition, dict)
+                                                else condition.as_dictionary())
         if field_paths is not None:
-            if not isinstance(condition, (OJAIQueryCondition, dict)):
+            if not isinstance(field_paths, (list, str)):
                 raise IllegalArgumentError(
                     m='Field paths must be instance of list, str.')
-            doc.set('$select', field_paths if isinstance(field_paths,
-                                                         list) else field_paths.split(','))
+            request.projetions[:] = field_paths \
+                if isinstance(field_paths, list) \
+                else field_paths.split(',')
 
-        request = FindByIdRequest(table_path=self.__store_path,
-                                  payload_encoding=PayloadEncoding.Value(
-                                      'JSON_ENCODING'),
-                                  json_document=doc.as_json_str())
-
-        if request.WhichOneof('data') == 'json_document' \
+        if request.WhichOneof('document') == 'json_document' \
                 and request.payload_encoding == \
                 PayloadEncoding.Value('JSON_ENCODING'):
             if timeout is None:
@@ -136,6 +144,10 @@ class OJAIDocumentStore(DocumentStore):
         else:
             raise UnknownServerError('Check server logs.')
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def find(self, query=None, results_as_document=False,
              include_query_plan=False, timeout=None):
         if query is None:
@@ -194,6 +206,10 @@ class OJAIDocumentStore(DocumentStore):
         response = self.__connection.InsertOrReplace(request)
         self.validate_response(response=response)
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def insert_or_replace(self, doc=None, _id=None, field_as_key=None,
                           doc_stream=None, json_dictionary=None):
         if doc_stream is None:
@@ -242,6 +258,10 @@ class OJAIDocumentStore(DocumentStore):
             self.__evaluate_delete(
                 OJAIDocument().from_dict(document_dict=document).as_json_str())
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def delete(self, doc=None, _id=None, field_as_key=None, doc_stream=None):
         if doc is not None:
             self.__delete_document(document=doc)
@@ -252,6 +272,10 @@ class OJAIDocumentStore(DocumentStore):
         else:
             raise IllegalArgumentError(m="Invalid set of the parameters.")
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def insert(self, doc=None, _id=None, field_as_key=None, doc_stream=None,
                json_dictionary=None):
         if doc_stream is None:
@@ -260,6 +284,10 @@ class OJAIDocumentStore(DocumentStore):
         else:
             self.__evaluate_doc_stream(doc_stream, 'INSERT')
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None,
                 json_dictionary=None):
         if doc_stream is None:
@@ -268,6 +296,10 @@ class OJAIDocumentStore(DocumentStore):
         else:
             self.__evaluate_doc_stream(doc_stream, 'REPLACE')
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def increment(self, _id, field, inc):
         str_doc = OJAIDocument().set_id(_id=_id).as_json_str()
         from mapr.ojai.document.OJAIDocumentMutation import \
@@ -288,6 +320,10 @@ class OJAIDocumentStore(DocumentStore):
         response = self.__connection.Update(request)
         self.validate_response(response=response)
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def update(self, _id, mutation):
         str_doc = OJAIDocument().set_id(_id=_id).as_json_str()
         str_mutation = OJAIDocumentStore.__get_str_mutation(mutation)
@@ -304,6 +340,10 @@ class OJAIDocumentStore(DocumentStore):
                               mutation=str_mutation,
                               condition=str_condition)
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def check_and_delete(self, _id, condition):
         str_condition = OJAIDocumentStore.__get_str_condition(
             condition=condition)
@@ -316,6 +356,10 @@ class OJAIDocumentStore(DocumentStore):
         response = self.__connection.Delete(request)
         self.validate_response(response)
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def check_and_replace(self, doc, condition, _id=None):
         if _id is not None:
             doc.set_id(_id=_id)
@@ -356,11 +400,13 @@ class OJAIDocumentStore(DocumentStore):
             return
         if response.error.err_code == ErrorCode.Value('CLUSTER_NOT_FOUND'):
             raise ClusterNotFoundError(m=response.error.error_message)
-        if response.error.err_code == ErrorCode.Value(
+        elif response.error.err_code == ErrorCode.Value(
                 'UNKNOWN_PAYLOAD_ENCODING'):
             raise UnknownPayloadEncodingError(m=response.error.error_message)
         elif response.error.err_code == ErrorCode.Value('PATH_NOT_FOUND'):
             raise PathNotFoundError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('DOCUMENT_NOT_FOUND'):
+            raise DocumentNotFoundError(m=response.error.error_message)
         elif response.error.err_code == ErrorCode.Value('TABLE_NOT_FOUND'):
             raise StoreNotFoundError(m=response.error.error_message)
         elif response.error.err_code == ErrorCode.Value(
@@ -370,5 +416,9 @@ class OJAIDocumentStore(DocumentStore):
             raise EncodingError(m=response.error.error_message)
         elif response.error.err_code == ErrorCode.Value('DECODING_ERROR'):
             raise DecodingError(m=response.error.error_message)
-        elif response.error.err_code == ErrorCode.Value('UNKNOWN_ERROR'):
-            raise UnknownServerError('Check server logs.')
+        elif response.error.err_code == ErrorCode.Value('PATH_NOT_FOUND'):
+            raise PathNotFoundError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('ILLEGAL_MUTATION'):
+            raise IllegalMutationError(m=response.error.error_message)
+        else:
+            raise UnknownServerError(m=response.error.error_message)
