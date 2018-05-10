@@ -3,8 +3,6 @@ from __future__ import unicode_literals
 import json
 
 from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
-# from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition, _is
-# from mapr.ojai.ojai_query.QueryOp import QueryOp
 from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
 from mapr.ojai.ojai_query.QueryOp import QueryOp
 
@@ -241,20 +239,33 @@ class QueryTest(unittest.TestCase):
 
     def test_empty_where(self):
         with self.assertRaises(AttributeError):
-            query = OJAIQuery().where({}).build()
+            OJAIQuery().where({}).build()
 
         with self.assertRaises(AttributeError):
-            query = OJAIQuery().where('').build()
+            OJAIQuery().where('').build()
 
         with self.assertRaises(AttributeError):
-            query = OJAIQuery().where(u'').build()
+            OJAIQuery().where(u'').build()
 
         with self.assertRaises(AttributeError):
-            query = OJAIQuery().where(OJAIQueryCondition().build()).build()
+            OJAIQuery().where(OJAIQueryCondition().build()).build()
 
     def test_order_by_empty(self):
         with self.assertRaises(TypeError):
-            query = OJAIQuery().order_by([]).build()
+            OJAIQuery().order_by([]).build()
 
         with self.assertRaises(TypeError):
-            query = OJAIQuery().order_by('').build()
+            OJAIQuery().order_by('').build()
+
+    def test_element_and(self):
+        query_condition = OJAIQueryCondition()\
+            .element_and('grades[]')\
+            .equals_('dsc', 'history')\
+            .equals_('ev', 12)\
+            .close()\
+            .build()
+        self.assertEqual({'$elementAnd': {'grades[]': [
+                                                  {'$eq': {'dsc': 'history'}},
+                                                  {'$eq': {'ev': 12}}
+                                              ]}},
+                         query_condition.as_dictionary())

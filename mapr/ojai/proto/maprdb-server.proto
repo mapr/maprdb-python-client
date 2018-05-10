@@ -92,6 +92,7 @@ enum ErrorCode {
   DOCUMENT_NOT_FOUND = 281;         // a document with the specified _id wasn't found in the store
   ENCODING_ERROR = 290;             // an error occurred while encoding an OJAI object
   DECODING_ERROR = 291;             // the supplied OJAI object could not be decoded
+  ILLEGAL_MUTATION = 292;           // A mutation operation could not be applied
 }
 
 /**
@@ -224,34 +225,26 @@ message FindByIdRequest {
   string table_path = 1;
   PayloadEncoding payload_encoding = 2;
 
-  oneof data {
+  /**
+   * <b>[Optional]</b><p/>
+   * List of OJAI FieldPaths that should be included in the returned document
+   */
+  repeated string projetions = 3;
+
+  oneof condition {
     /**
-     * Contains JSON encoded OJAI document if the payload_encoding is `JSON_ENCODING`.<p/>
-     * <b>Schema of the OJAI document:</b>
-     * <pre>
-     * {
-     *    "_id": &lt;id_value>,
-     *    "$where": { &lt;ojai_condition_in_json_format> },
-     *    "$select": [ &lt;list_of_field_paths> ]
-     * }
-     * </pre>
-     * The document MUST contain the "_id" field.<p/>
-     * <b>Examples:</b><p/>
-     * <pre>
-     * {
-     *    "_id": "user0001"
-     * }
-     * </pre>
-     * <i>or</i>,
-     * <pre>
-     * {
-     *    "_id": { "$binary": "dXNlcjAwMDE="} },
-     *    "$where": { "$eq": {"address.zip": 95111} },
-     *    "$select": [ "name", "address.phone" ]
-     * }
-     * </pre>
+     * <b>[Optional]</b><p/>
+     * Contains JSON encoded OJAI QueryCondition when payload_encoding is `JSON_ENCODING`.<p/>
      */
-    string json_document = 10;
+    string json_condition = 4;
+  }
+
+  oneof document {
+    /**
+     * <b>[Required]</b><p/>
+     * Contains JSON encoded OJAI Document with `_id` field when payload_encoding is `JSON_ENCODING`.<p/>
+     */
+    string json_document = 5;
   }
 }
 

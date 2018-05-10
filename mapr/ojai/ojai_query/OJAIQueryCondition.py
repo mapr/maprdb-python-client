@@ -4,6 +4,7 @@ from collections import deque
 from ojai.store.QueryCondition import QueryCondition
 
 from mapr.ojai.exceptions.ConditionNotClosedError import ConditionNotClosedError
+from mapr.ojai.exceptions.InvalidArgumentError import InvalidArgumentError
 from mapr.ojai.ojai_query.QueryOp import QueryOp
 
 
@@ -40,6 +41,13 @@ class OJAIQueryCondition(QueryCondition):
         self.__tokens.append('$or')
         return self
 
+    def element_and(self, field_path):
+        if not isinstance(field_path, (str, unicode)) or not field_path:
+            raise InvalidArgumentError(m='field path must be str or unicode.')
+        self.__tokens.append('$elementAnd')
+        self.__tokens.append(field_path)
+        return self
+
     def close(self):
         self.__tokens.append(';')
         return self
@@ -53,7 +61,7 @@ class OJAIQueryCondition(QueryCondition):
         elif isinstance(condition_to_add, dict):
             self.__tokens.append(condition_to_add.as_dictionary())
         else:
-            TypeError
+            raise TypeError
         return self
 
     def exists_(self, field_path):
@@ -121,22 +129,30 @@ class OJAIQueryCondition(QueryCondition):
                 else:
                     continue
 
-            if token in ['$and', '$or']:
-                self.__query_dict = self.__merge_two_dicts(self.__query_dict, self.build_block(tokens, token))
+            if token in ['$and', '$or', '$elementAnd']:
+                self.__query_dict = \
+                    self.__merge_two_dicts(self.__query_dict,
+                                           self.__build_block(tokens, token))
             elif isinstance(token, dict):
                 self.__query_dict = self.__merge_two_dicts(self.__query_dict, token)
             elif token == ';' and tokens:
                 raise ConditionNotClosedError("All statement in condition must be closed.")
         return self.__query_dict
 
-    def build_block(self, tokens, op):
+    def __build_block(self, tokens, op):
         statement_list = []
+        element_and_fp = None
+        if op == '$elementAnd':
+            element_and_fp = tokens.popleft()
         while tokens:
             token = tokens.popleft()
-            if token in ['$and', '$or']:
-                statement_list.append(self.build_block(tokens, token))
+            if token in ['$and', '$or', '$elementAnd']:
+                statement_list.append(self.__build_block(tokens, token))
             elif token == ';':
-                return {op: statement_list}
+                if not element_and_fp:
+                    return {op: statement_list}
+                else:
+                    return {op: {element_and_fp: statement_list}}
             else:
                 statement_list.append(token)
 

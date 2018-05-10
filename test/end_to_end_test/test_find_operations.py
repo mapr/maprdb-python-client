@@ -126,7 +126,6 @@ class FindTest(unittest.TestCase):
             self.assertEqual(doc, document_list[index].as_dictionary())
             index += 1
 
-
     def test_find_all(self):
         url = 'localhost:5678'
         connection = ConnectionFactory.get_connection(url=url)
@@ -138,7 +137,7 @@ class FindTest(unittest.TestCase):
 
         doc_stream = document_store.find()
         stream_size = 0
-        for doc in doc_stream:
+        for _ in doc_stream:
             stream_size += 1
         self.assertEqual(stream_size, 9)
 
