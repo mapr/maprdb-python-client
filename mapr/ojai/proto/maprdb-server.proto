@@ -229,7 +229,7 @@ message FindByIdRequest {
    * <b>[Optional]</b><p/>
    * List of OJAI FieldPaths that should be included in the returned document
    */
-  repeated string projetions = 3;
+  repeated string projections = 3;
 
   oneof condition {
     /**

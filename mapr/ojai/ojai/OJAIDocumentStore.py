@@ -113,7 +113,7 @@ class OJAIDocumentStore(DocumentStore):
             if not isinstance(field_paths, (list, str)):
                 raise IllegalArgumentError(
                     m='Field paths must be instance of list, str.')
-            request.projetions[:] = field_paths \
+            request.projections[:] = field_paths \
                 if isinstance(field_paths, list) \
                 else field_paths.split(',')
 

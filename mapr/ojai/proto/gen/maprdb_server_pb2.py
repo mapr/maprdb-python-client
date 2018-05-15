@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='maprdb-server.proto',
   package='com.mapr.data.db',
   syntax='proto3',
-  serialized_pb=_b('\n\x13maprdb-server.proto\x12\x10\x63om.mapr.data.db\"j\n\x08RpcError\x12-\n\x08\x65rr_code\x18\x01 \x01(\x0e\x32\x1b.com.mapr.data.db.ErrorCode\x12\x15\n\rerror_message\x18\x02 \x01(\t\x12\x18\n\x10java_stack_trace\x18\x03 \x01(\t\"(\n\x12\x43reateTableRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13\x43reateTableResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"(\n\x12\x44\x65leteTableRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13\x44\x65leteTableResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"(\n\x12TableExistsRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13TableExistsResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"\xe4\x01\n\x16InsertOrReplaceRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12\x31\n\x0binsert_mode\x18\x02 \x01(\x0e\x32\x1c.com.mapr.data.db.InsertMode\x12;\n\x10payload_encoding\x18\x03 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x18\n\x0ejson_condition\x18\x04 \x01(\tH\x00\x12\x17\n\rjson_document\x18\x1e \x01(\tH\x01\x42\x0b\n\tconditionB\x06\n\x04\x64\x61ta\"D\n\x17InsertOrReplaceResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"\xc2\x01\n\x0f\x46indByIdRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x12\n\nprojetions\x18\x03 \x03(\t\x12\x18\n\x0ejson_condition\x18\x04 \x01(\tH\x00\x12\x17\n\rjson_document\x18\x05 \x01(\tH\x01\x42\x0b\n\tconditionB\n\n\x08\x64ocument\"\x9b\x01\n\x10\x46indByIdResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x17\n\rjson_document\x18\x1e \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\x98\x01\n\x0b\x46indRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x1a\n\x12include_query_plan\x18\x03 \x01(\x08\x12\x14\n\njson_query\x18\x04 \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\xc9\x01\n\x0c\x46indResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x30\n\x04type\x18\x03 \x01(\x0e\x32\".com.mapr.data.db.FindResponseType\x12\x17\n\rjson_response\x18\x1e \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\xd1\x01\n\rUpdateRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x17\n\rjson_document\x18\x03 \x01(\tH\x00\x12\x18\n\x0ejson_condition\x18\x04 \x01(\tH\x01\x12\x17\n\rjson_mutation\x18\x1e \x01(\tH\x02\x42\n\n\x08\x64ocumentB\x0b\n\tconditionB\n\n\x08mutation\";\n\x0eUpdateResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"\xac\x01\n\rDeleteRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x18\n\x0ejson_condition\x18\x03 \x01(\tH\x00\x12\x17\n\rjson_document\x18\x04 \x01(\tH\x01\x42\x0b\n\tconditionB\n\n\x08\x64ocument\";\n\x0e\x44\x65leteResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError*\x85\x03\n\tErrorCode\x12\x0c\n\x08NO_ERROR\x10\x00\x12\x13\n\x0fTABLE_NOT_FOUND\x10\x02\x12\x0c\n\x08IO_ERROR\x10\x05\x12\x11\n\rOUT_OF_MEMORY\x10\x0c\x12\x11\n\rACCESS_DENIED\x10\r\x12\x18\n\x14TABLE_ALREADY_EXISTS\x10\x11\x12\x14\n\x10INVALID_ARGUMENT\x10\x16\x12\x19\n\x15UNSUPPORTED_OPERATION\x10&\x12\x12\n\rUNKNOWN_ERROR\x10\x80\x02\x12\x1d\n\x18UNKNOWN_PAYLOAD_ENCODING\x10\x84\x02\x12\x16\n\x11\x43LUSTER_NOT_FOUND\x10\x8e\x02\x12\x13\n\x0ePATH_NOT_FOUND\x10\x8f\x02\x12\x1c\n\x17\x44OCUMENT_ALREADY_EXISTS\x10\x98\x02\x12\x17\n\x12\x44OCUMENT_NOT_FOUND\x10\x99\x02\x12\x13\n\x0e\x45NCODING_ERROR\x10\xa2\x02\x12\x13\n\x0e\x44\x45\x43ODING_ERROR\x10\xa3\x02\x12\x15\n\x10ILLEGAL_MUTATION\x10\xa4\x02*:\n\x0fPayloadEncoding\x12\x14\n\x10UNKNOWN_ENCODING\x10\x00\x12\x11\n\rJSON_ENCODING\x10\x01*N\n\nInsertMode\x12\x10\n\x0cUNKNOWN_MODE\x10\x00\x12\x15\n\x11INSERT_OR_REPLACE\x10\x01\x12\n\n\x06INSERT\x10\x02\x12\x0b\n\x07REPLACE\x10\x03*I\n\x10\x46indResponseType\x12\x10\n\x0cUNKNOWN_TYPE\x10\x00\x12\x13\n\x0fRESULT_DOCUMENT\x10\x01\x12\x0e\n\nQUERY_PLAN\x10\x02\x32\xd0\x05\n\x0cMapRDbServer\x12\\\n\x0b\x43reateTable\x12$.com.mapr.data.db.CreateTableRequest\x1a%.com.mapr.data.db.CreateTableResponse\"\x00\x12\\\n\x0b\x44\x65leteTable\x12$.com.mapr.data.db.DeleteTableRequest\x1a%.com.mapr.data.db.DeleteTableResponse\"\x00\x12\\\n\x0bTableExists\x12$.com.mapr.data.db.TableExistsRequest\x1a%.com.mapr.data.db.TableExistsResponse\"\x00\x12h\n\x0fInsertOrReplace\x12(.com.mapr.data.db.InsertOrReplaceRequest\x1a).com.mapr.data.db.InsertOrReplaceResponse\"\x00\x12S\n\x08\x46indById\x12!.com.mapr.data.db.FindByIdRequest\x1a\".com.mapr.data.db.FindByIdResponse\"\x00\x12I\n\x04\x46ind\x12\x1d.com.mapr.data.db.FindRequest\x1a\x1e.com.mapr.data.db.FindResponse\"\x00\x30\x01\x12M\n\x06Update\x12\x1f.com.mapr.data.db.UpdateRequest\x1a .com.mapr.data.db.UpdateResponse\"\x00\x12M\n\x06\x44\x65lete\x12\x1f.com.mapr.data.db.DeleteRequest\x1a .com.mapr.data.db.DeleteResponse\"\x00\x42\x1a\n\x16\x63om.mapr.data.db.protoP\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x13maprdb-server.proto\x12\x10\x63om.mapr.data.db\"j\n\x08RpcError\x12-\n\x08\x65rr_code\x18\x01 \x01(\x0e\x32\x1b.com.mapr.data.db.ErrorCode\x12\x15\n\rerror_message\x18\x02 \x01(\t\x12\x18\n\x10java_stack_trace\x18\x03 \x01(\t\"(\n\x12\x43reateTableRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13\x43reateTableResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"(\n\x12\x44\x65leteTableRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13\x44\x65leteTableResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"(\n\x12TableExistsRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13TableExistsResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"\xe4\x01\n\x16InsertOrReplaceRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12\x31\n\x0binsert_mode\x18\x02 \x01(\x0e\x32\x1c.com.mapr.data.db.InsertMode\x12;\n\x10payload_encoding\x18\x03 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x18\n\x0ejson_condition\x18\x04 \x01(\tH\x00\x12\x17\n\rjson_document\x18\x1e \x01(\tH\x01\x42\x0b\n\tconditionB\x06\n\x04\x64\x61ta\"D\n\x17InsertOrReplaceResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"\xc3\x01\n\x0f\x46indByIdRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x13\n\x0bprojections\x18\x03 \x03(\t\x12\x18\n\x0ejson_condition\x18\x04 \x01(\tH\x00\x12\x17\n\rjson_document\x18\x05 \x01(\tH\x01\x42\x0b\n\tconditionB\n\n\x08\x64ocument\"\x9b\x01\n\x10\x46indByIdResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x17\n\rjson_document\x18\x1e \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\x98\x01\n\x0b\x46indRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x1a\n\x12include_query_plan\x18\x03 \x01(\x08\x12\x14\n\njson_query\x18\x04 \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\xc9\x01\n\x0c\x46indResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x30\n\x04type\x18\x03 \x01(\x0e\x32\".com.mapr.data.db.FindResponseType\x12\x17\n\rjson_response\x18\x1e \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\xd1\x01\n\rUpdateRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x17\n\rjson_document\x18\x03 \x01(\tH\x00\x12\x18\n\x0ejson_condition\x18\x04 \x01(\tH\x01\x12\x17\n\rjson_mutation\x18\x1e \x01(\tH\x02\x42\n\n\x08\x64ocumentB\x0b\n\tconditionB\n\n\x08mutation\";\n\x0eUpdateResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"\xac\x01\n\rDeleteRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x18\n\x0ejson_condition\x18\x03 \x01(\tH\x00\x12\x17\n\rjson_document\x18\x04 \x01(\tH\x01\x42\x0b\n\tconditionB\n\n\x08\x64ocument\";\n\x0e\x44\x65leteResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError*\x85\x03\n\tErrorCode\x12\x0c\n\x08NO_ERROR\x10\x00\x12\x13\n\x0fTABLE_NOT_FOUND\x10\x02\x12\x0c\n\x08IO_ERROR\x10\x05\x12\x11\n\rOUT_OF_MEMORY\x10\x0c\x12\x11\n\rACCESS_DENIED\x10\r\x12\x18\n\x14TABLE_ALREADY_EXISTS\x10\x11\x12\x14\n\x10INVALID_ARGUMENT\x10\x16\x12\x19\n\x15UNSUPPORTED_OPERATION\x10&\x12\x12\n\rUNKNOWN_ERROR\x10\x80\x02\x12\x1d\n\x18UNKNOWN_PAYLOAD_ENCODING\x10\x84\x02\x12\x16\n\x11\x43LUSTER_NOT_FOUND\x10\x8e\x02\x12\x13\n\x0ePATH_NOT_FOUND\x10\x8f\x02\x12\x1c\n\x17\x44OCUMENT_ALREADY_EXISTS\x10\x98\x02\x12\x17\n\x12\x44OCUMENT_NOT_FOUND\x10\x99\x02\x12\x13\n\x0e\x45NCODING_ERROR\x10\xa2\x02\x12\x13\n\x0e\x44\x45\x43ODING_ERROR\x10\xa3\x02\x12\x15\n\x10ILLEGAL_MUTATION\x10\xa4\x02*:\n\x0fPayloadEncoding\x12\x14\n\x10UNKNOWN_ENCODING\x10\x00\x12\x11\n\rJSON_ENCODING\x10\x01*N\n\nInsertMode\x12\x10\n\x0cUNKNOWN_MODE\x10\x00\x12\x15\n\x11INSERT_OR_REPLACE\x10\x01\x12\n\n\x06INSERT\x10\x02\x12\x0b\n\x07REPLACE\x10\x03*I\n\x10\x46indResponseType\x12\x10\n\x0cUNKNOWN_TYPE\x10\x00\x12\x13\n\x0fRESULT_DOCUMENT\x10\x01\x12\x0e\n\nQUERY_PLAN\x10\x02\x32\xd0\x05\n\x0cMapRDbServer\x12\\\n\x0b\x43reateTable\x12$.com.mapr.data.db.CreateTableRequest\x1a%.com.mapr.data.db.CreateTableResponse\"\x00\x12\\\n\x0b\x44\x65leteTable\x12$.com.mapr.data.db.DeleteTableRequest\x1a%.com.mapr.data.db.DeleteTableResponse\"\x00\x12\\\n\x0bTableExists\x12$.com.mapr.data.db.TableExistsRequest\x1a%.com.mapr.data.db.TableExistsResponse\"\x00\x12h\n\x0fInsertOrReplace\x12(.com.mapr.data.db.InsertOrReplaceRequest\x1a).com.mapr.data.db.InsertOrReplaceResponse\"\x00\x12S\n\x08\x46indById\x12!.com.mapr.data.db.FindByIdRequest\x1a\".com.mapr.data.db.FindByIdResponse\"\x00\x12I\n\x04\x46ind\x12\x1d.com.mapr.data.db.FindRequest\x1a\x1e.com.mapr.data.db.FindResponse\"\x00\x30\x01\x12M\n\x06Update\x12\x1f.com.mapr.data.db.UpdateRequest\x1a .com.mapr.data.db.UpdateResponse\"\x00\x12M\n\x06\x44\x65lete\x12\x1f.com.mapr.data.db.DeleteRequest\x1a .com.mapr.data.db.DeleteResponse\"\x00\x42\x1a\n\x16\x63om.mapr.data.db.protoP\x01\x62\x06proto3')
 )
 
 _ERRORCODE = _descriptor.EnumDescriptor(
@@ -100,8 +100,8 @@ _ERRORCODE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1998,
-  serialized_end=2387,
+  serialized_start=1999,
+  serialized_end=2388,
 )
 _sym_db.RegisterEnumDescriptor(_ERRORCODE)
 
@@ -123,8 +123,8 @@ _PAYLOADENCODING = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2389,
-  serialized_end=2447,
+  serialized_start=2390,
+  serialized_end=2448,
 )
 _sym_db.RegisterEnumDescriptor(_PAYLOADENCODING)
 
@@ -154,8 +154,8 @@ _INSERTMODE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2449,
-  serialized_end=2527,
+  serialized_start=2450,
+  serialized_end=2528,
 )
 _sym_db.RegisterEnumDescriptor(_INSERTMODE)
 
@@ -181,8 +181,8 @@ _FINDRESPONSETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2529,
-  serialized_end=2602,
+  serialized_start=2530,
+  serialized_end=2603,
 )
 _sym_db.RegisterEnumDescriptor(_FINDRESPONSETYPE)
 
@@ -565,7 +565,7 @@ _FINDBYIDREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='projetions', full_name='com.mapr.data.db.FindByIdRequest.projetions', index=2,
+      name='projections', full_name='com.mapr.data.db.FindByIdRequest.projections', index=2,
       number=3, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -604,7 +604,7 @@ _FINDBYIDREQUEST = _descriptor.Descriptor(
       index=1, containing_type=None, fields=[]),
   ],
   serialized_start=775,
-  serialized_end=969,
+  serialized_end=970,
 )
 
 
@@ -651,8 +651,8 @@ _FINDBYIDRESPONSE = _descriptor.Descriptor(
       name='data', full_name='com.mapr.data.db.FindByIdResponse.data',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=972,
-  serialized_end=1127,
+  serialized_start=973,
+  serialized_end=1128,
 )
 
 
@@ -706,8 +706,8 @@ _FINDREQUEST = _descriptor.Descriptor(
       name='data', full_name='com.mapr.data.db.FindRequest.data',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=1130,
-  serialized_end=1282,
+  serialized_start=1131,
+  serialized_end=1283,
 )
 
 
@@ -761,8 +761,8 @@ _FINDRESPONSE = _descriptor.Descriptor(
       name='data', full_name='com.mapr.data.db.FindResponse.data',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=1285,
-  serialized_end=1486,
+  serialized_start=1286,
+  serialized_end=1487,
 )
 
 
@@ -829,8 +829,8 @@ _UPDATEREQUEST = _descriptor.Descriptor(
       name='mutation', full_name='com.mapr.data.db.UpdateRequest.mutation',
       index=2, containing_type=None, fields=[]),
   ],
-  serialized_start=1489,
-  serialized_end=1698,
+  serialized_start=1490,
+  serialized_end=1699,
 )
 
 
@@ -860,8 +860,8 @@ _UPDATERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1700,
-  serialized_end=1759,
+  serialized_start=1701,
+  serialized_end=1760,
 )
 
 
@@ -918,8 +918,8 @@ _DELETEREQUEST = _descriptor.Descriptor(
       name='document', full_name='com.mapr.data.db.DeleteRequest.document',
       index=1, containing_type=None, fields=[]),
   ],
-  serialized_start=1762,
-  serialized_end=1934,
+  serialized_start=1763,
+  serialized_end=1935,
 )
 
 
@@ -949,8 +949,8 @@ _DELETERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1936,
-  serialized_end=1995,
+  serialized_start=1937,
+  serialized_end=1996,
 )
 
 _RPCERROR.fields_by_name['err_code'].enum_type = _ERRORCODE
@@ -1159,8 +1159,8 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=2605,
-  serialized_end=3325,
+  serialized_start=2606,
+  serialized_end=3326,
   methods=[
   _descriptor.MethodDescriptor(
     name='CreateTable',
