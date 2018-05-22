@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from __future__ import unicode_literals
 
-from ojai.o_types.OTime import OTime
-from ojai.o_types.OTimestamp import OTimestamp
+from ojai.types.OTime import OTime
+from ojai.types.OTimestamp import OTimestamp
 
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
@@ -14,7 +14,15 @@ except ImportError:
 
 
 class DeleteTest(unittest.TestCase):
-    url = 'localhost:5678'
+    # url = "192.168.33.11:5678?auth=basic;user=fred;password=george;" \
+    #       "ssl=true;" \
+    #       "sslValidate=true;" \
+    #       "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;"
+    url = "node1.cluster.com:5678?auth=basic;user=fred;password=george;" \
+          "ssl=true;" \
+          "sslValidate=true;" \
+          "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;" \
+          "checkServerIdentity=true"
     dict_stream = [{'_id': "id01", 'test_int': 51, 'test_str': 'strstr'},
                    {'_id': 'id02', 'mystr': 'str', 'test_int': 51, 'test_str': 'strstr'},
                    {'_id': 'id03', 'test_int': 51, 'test_otime': OTime(timestamp=1518689532), 'test_str': 'strstr'},

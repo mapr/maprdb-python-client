@@ -14,7 +14,15 @@ except ImportError:
 
 
 class FindTest(unittest.TestCase):
-    url = 'localhost:5678'
+    # url = "192.168.33.11:5678?auth=basic;user=fred;password=george;" \
+    #       "ssl=true;" \
+    #       "sslValidate=true;" \
+    #       "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;"
+    url = "node1.cluster.com:5678?auth=basic;user=fred;password=george;" \
+          "ssl=true;" \
+          "sslValidate=true;" \
+          "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;" \
+          "checkServerIdentity=true"
 
     def test_simple_find(self):
         connection = ConnectionFactory.get_connection(url=FindTest.url)
@@ -71,8 +79,7 @@ class FindTest(unittest.TestCase):
                 print(doc)
 
     def test_find_multiple_records(self):
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=FindTest.url)
 
         if connection.is_store_exists(store_path='/find-test-store4'):
             document_store = connection.get_store(store_path='/find-test-store4')
@@ -98,8 +105,7 @@ class FindTest(unittest.TestCase):
             index += 1
 
     def test_find_with_condition(self):
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=FindTest.url)
         document_list = []
         for i in range(3, 7):
             document_list.append(connection.new_document(dictionary={'_id': 'id00%s' % i,
@@ -127,8 +133,7 @@ class FindTest(unittest.TestCase):
             index += 1
 
     def test_find_all(self):
-        url = 'localhost:5678'
-        connection = ConnectionFactory.get_connection(url=url)
+        connection = ConnectionFactory.get_connection(url=FindTest.url)
 
         if connection.is_store_exists(store_path='/find-test-store4'):
             document_store = connection.get_store(store_path='/find-test-store4')

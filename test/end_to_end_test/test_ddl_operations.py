@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 from __future__ import unicode_literals
 
-import grpc
-
 from mapr.ojai.exceptions.StoreAlreadyExistsError import StoreAlreadyExistsError
 from mapr.ojai.ojai.OJAIDocumentStore import OJAIDocumentStore
 from mapr.ojai.storage.OJAIConnection import OJAIConnection
@@ -14,7 +12,15 @@ except ImportError:
 
 
 class ConnectionTest(unittest.TestCase):
-    url = 'localhost:5678'
+    # url = "192.168.33.11:5678?auth=basic;user=fred;password=george;" \
+    #       "ssl=true;" \
+    #       "sslValidate=true;" \
+    #       "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;"
+    url = "node1.cluster.com:5678?auth=basic;user=fred;password=george;" \
+          "ssl=true;" \
+          "sslValidate=true;" \
+          "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;" \
+          "checkServerIdentity=true"
 
     def test_connection(self):
         connection = OJAIConnection(connection_url=ConnectionTest.url)

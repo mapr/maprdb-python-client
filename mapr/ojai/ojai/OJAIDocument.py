@@ -3,12 +3,12 @@ import re
 from copy import deepcopy
 
 import decimal
-from ojai.document.Document import Document
+from ojai.Document import Document
 
-from ojai.o_types.ODate import ODate
-from ojai.o_types.OInterval import OInterval
-from ojai.o_types.OTime import OTime
-from ojai.o_types.OTimestamp import OTimestamp
+from ojai.types.ODate import ODate
+from ojai.types.OInterval import OInterval
+from ojai.types.OTime import OTime
+from ojai.types.OTimestamp import OTimestamp
 from mapr.ojai.ojai.OJAIDict import OJAIDict
 from mapr.ojai.ojai.OJAIList import OJAIList
 from mapr.ojai.ojai.document_utils import merge_two_dicts, parse_field_path, replacer

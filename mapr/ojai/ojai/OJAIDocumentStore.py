@@ -1,6 +1,6 @@
 import json
 
-from ojai.document.DocumentStore import DocumentStore
+from ojai.store.DocumentStore import DocumentStore
 from retrying import retry
 
 from mapr.ojai.exceptions.ClusterNotFoundError import ClusterNotFoundError
@@ -67,12 +67,14 @@ class OJAIDocumentStore(DocumentStore):
         return str_condition
 
     @staticmethod
-    def __get_doc_str(doc):
+    def __get_doc_str(doc, _id=None):
         if not isinstance(doc, (OJAIDocument, dict)):
             raise IllegalArgumentError(m="Invalid type of the doc parameter.")
-        return doc.as_json_str() if isinstance(doc, OJAIDocument) \
-            else OJAIDocument().from_dict(
-            doc).as_json_str()
+        if isinstance(doc, dict):
+            doc = OJAIDocument().from_dict(doc)
+        if _id is not None:
+            doc.set_id(_id=_id)
+        return doc.as_json_str()
 
     @staticmethod
     def __build_find_by_id_result(response, results_as_document):
@@ -213,7 +215,7 @@ class OJAIDocumentStore(DocumentStore):
     def insert_or_replace(self, doc=None, _id=None, field_as_key=None,
                           doc_stream=None, json_dictionary=None):
         if doc_stream is None:
-            doc_str = OJAIDocumentStore.__get_doc_str(doc=doc)
+            doc_str = OJAIDocumentStore.__get_doc_str(doc=doc, _id=_id)
             self.__evaluate_doc(doc_str=doc_str,
                                 operation_type='INSERT_OR_REPLACE')
         else:
@@ -279,7 +281,7 @@ class OJAIDocumentStore(DocumentStore):
     def insert(self, doc=None, _id=None, field_as_key=None, doc_stream=None,
                json_dictionary=None):
         if doc_stream is None:
-            doc_str = OJAIDocumentStore.__get_doc_str(doc=doc)
+            doc_str = OJAIDocumentStore.__get_doc_str(doc=doc, _id=_id)
             self.__evaluate_doc(doc_str=doc_str, operation_type='INSERT')
         else:
             self.__evaluate_doc_stream(doc_stream, 'INSERT')
@@ -291,7 +293,7 @@ class OJAIDocumentStore(DocumentStore):
     def replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None,
                 json_dictionary=None):
         if doc_stream is None:
-            doc_str = OJAIDocumentStore.__get_doc_str(doc=doc)
+            doc_str = OJAIDocumentStore.__get_doc_str(doc=doc, _id=_id)
             self.__evaluate_doc(doc_str=doc_str, operation_type='REPLACE')
         else:
             self.__evaluate_doc_stream(doc_stream, 'REPLACE')
@@ -363,7 +365,7 @@ class OJAIDocumentStore(DocumentStore):
     def check_and_replace(self, doc, condition, _id=None):
         if _id is not None:
             doc.set_id(_id=_id)
-        doc_str = OJAIDocumentStore.__get_doc_str(doc=doc)
+        doc_str = OJAIDocumentStore.__get_doc_str(doc=doc, _id=_id)
         str_condition = OJAIDocumentStore.__get_str_condition(
             condition=condition)
         self.__evaluate_doc(doc_str=doc_str, operation_type='REPLACE',

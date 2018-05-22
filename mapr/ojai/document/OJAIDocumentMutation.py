@@ -1,4 +1,4 @@
-from ojai.document.DocumentMutation import DocumentMutation
+from ojai.store.DocumentMutation import DocumentMutation
 
 from mapr.ojai.document.MutationOp import MutationOp
 from mapr.ojai.document.MutationUtil import MutationUtil

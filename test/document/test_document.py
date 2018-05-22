@@ -5,11 +5,11 @@ from datetime import datetime
 from decimal import Decimal
 from random import getrandbits, randint
 
-from ojai.o_types.OInterval import OInterval
+from ojai.types.OInterval import OInterval
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
-from ojai.o_types.ODate import ODate
-from ojai.o_types.OTime import OTime
-from ojai.o_types.OTimestamp import OTimestamp
+from ojai.types.ODate import ODate
+from ojai.types.OTime import OTime
+from ojai.types.OTimestamp import OTimestamp
 
 from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator
 

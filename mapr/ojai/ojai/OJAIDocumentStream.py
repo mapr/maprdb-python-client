@@ -1,7 +1,7 @@
 from collections import deque
 
 from grpc._channel import _Rendezvous
-from ojai.document.DocumentStream import DocumentStream
+from ojai.DocumentStream import DocumentStream
 
 from mapr.ojai.exceptions.InvalidStreamResponseError import InvalidStreamResponseError
 from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator

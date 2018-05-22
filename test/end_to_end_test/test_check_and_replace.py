@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from __future__ import unicode_literals
 
-from ojai.o_types.OTime import OTime
-from ojai.o_types.OTimestamp import OTimestamp
+from ojai.types.OTime import OTime
+from ojai.types.OTimestamp import OTimestamp
 
 from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
 from mapr.ojai.ojai_query.QueryOp import QueryOp
@@ -26,7 +26,15 @@ class CheckAndReplaceTest(unittest.TestCase):
                    {'_id': 'id08', 'test_int': 51, 'test_str': 'strstr', 'test_dict': {'test_int': 5}},
                    {'_id': 'id09', 'test_int': 51, 'test_str': 'strstr', 'test_list': [5, 6]},
                    {'_id': 'id10', 'test_int': 51, 'test_str': 'strstr', 'test_null': None}]
-    url = 'localhost:5678'
+    # url = "192.168.33.11:5678?auth=basic;user=fred;password=george;" \
+    #       "ssl=true;" \
+    #       "sslValidate=true;" \
+    #       "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;"
+    url = "node1.cluster.com:5678?auth=basic;user=fred;password=george;" \
+          "ssl=true;" \
+          "sslValidate=true;" \
+          "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;" \
+          "checkServerIdentity=true"
 
     def test_check_and_replace(self):
         connection = ConnectionFactory.get_connection(url=CheckAndReplaceTest.url)

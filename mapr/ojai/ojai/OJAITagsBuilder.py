@@ -1,8 +1,8 @@
 import decimal
-from ojai.o_types.ODate import ODate
-from ojai.o_types.OInterval import OInterval
-from ojai.o_types.OTime import OTime
-from ojai.o_types.OTimestamp import OTimestamp
+from ojai.types.ODate import ODate
+from ojai.types.OInterval import OInterval
+from ojai.types.OTime import OTime
+from ojai.types.OTimestamp import OTimestamp
 
 from mapr.ojai.ojai.OJAIList import OJAIList
 from mapr.ojai.ojai.document_utils import parse_field_path, merge_two_dicts

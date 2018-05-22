@@ -1,9 +1,6 @@
 import json
 
-from copy import deepcopy
-
 from decimal import Decimal
-
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 
 
@@ -53,15 +50,14 @@ class OJAIDocumentCreator:
     @staticmethod
     def generate_o_types(str_type, str_value):
         if str_type == '$interval':
-            from ojai.o_types.OInterval import OInterval
+            from ojai.types.OInterval import OInterval
             return OInterval(milli_seconds=str_value)
         elif str_type == '$date':
-            from ojai.o_types.OTimestamp import OTimestamp
+            from ojai.types.OTimestamp import OTimestamp
             return OTimestamp.parse(str_value)
         elif str_type == '$dateDay':
-            from ojai.o_types.ODate import ODate
+            from ojai.types.ODate import ODate
             return ODate.parse(str_value)
         else:
-            from ojai.o_types.OTime import OTime
+            from ojai.types.OTime import OTime
             return OTime.parse(str_value)
-
