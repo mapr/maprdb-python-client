@@ -337,10 +337,13 @@ class OJAIDocumentStore(DocumentStore):
         str_condition = OJAIDocumentStore.__get_str_condition(query_condition)
         str_doc = OJAIDocument().set_id(_id=_id).as_json_str()
         str_mutation = OJAIDocumentStore.__get_str_mutation(mutation)
-
-        self.__execute_update(_id=str_doc,
-                              mutation=str_mutation,
-                              condition=str_condition)
+        try:
+            self.__execute_update(_id=str_doc,
+                                  mutation=str_mutation,
+                                  condition=str_condition)
+        except DocumentNotFoundError:
+            return False
+        return True
 
     @retry(wait_exponential_multiplier=1000,
            wait_exponential_max=18000,
