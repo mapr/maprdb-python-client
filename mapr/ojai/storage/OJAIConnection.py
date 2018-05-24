@@ -6,6 +6,7 @@ from retrying import retry
 
 from mapr.ojai.document.OJAIDocumentMutation import OJAIDocumentMutation
 from mapr.ojai.exceptions.ClusterNotFoundError import ClusterNotFoundError
+from mapr.ojai.exceptions.IllegalArgumentError import IllegalArgumentError
 from mapr.ojai.exceptions.PathNotFoundError import PathNotFoundError
 from mapr.ojai.exceptions.StoreAlreadyExistsError import StoreAlreadyExistsError
 from mapr.ojai.exceptions.UnknownServerError import UnknownServerError
@@ -104,10 +105,16 @@ class OJAIConnection(Connection):
     def new_document(self, json_string=None, dictionary=None):
         doc = OJAIDocument()
 
-        if dictionary is not None:
+        if json_string is None and dictionary is None:
+            return doc
+        elif dictionary is not None and isinstance(dictionary, dict):
             doc.from_dict(dictionary)
-        elif json_string is not None:
+        elif json_string is not None\
+                and isinstance(json_string, (str, unicode)):
             doc.from_dict(json.loads(json_string))
+        else:
+            raise IllegalArgumentError(
+                m='Optional parameters for document can be only string or dictionary.')
 
         return doc
 
