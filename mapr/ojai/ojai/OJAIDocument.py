@@ -3,6 +3,8 @@ import re
 from copy import deepcopy
 
 import decimal
+
+from datetime import datetime
 from ojai.Document import Document
 
 from ojai.types.ODate import ODate
@@ -334,9 +336,19 @@ class OJAIDocument(Document):
         self.__internal_dict = document_dict
         return self
 
+    @staticmethod
+    def __type_serializer(obj):
+        try:
+            return obj.toJSON()
+        except:
+            if isinstance(obj, (OTime, ODate, OTimestamp, OInterval)):
+                return obj.__str__()
+            else:
+                return obj.__dict__
+
     def as_json_str(self, with_tags=True):
         if with_tags:
             from mapr.ojai.ojai.OJAITagsBuilder import OJAITagsBuilder
             return json.dumps(OJAITagsBuilder().set('tmp', self.__internal_dict).as_dictionary()['tmp'])
         else:
-            return json.dumps(self.__internal_dict)
+            return json.dumps(self.__internal_dict, default=OJAIDocument.__type_serializer)
