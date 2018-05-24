@@ -251,3 +251,41 @@ class DocumentTest(unittest.TestCase):
         self.assertEqual(doc.get('a.b.c[0]'), 1)
         self.assertEqual(doc.get('a.b.c[1]'), 9)
         self.assertEqual(doc.get('a.b.c[3]'), 55)
+
+    def test_document_to_json_str_without_tags(self):
+        doc = OJAIDocument().set_id('121212') \
+            .set('test_int', 123) \
+            .set('first.test_int', 1235) \
+            .set('first.test_long', 123456789) \
+            .set('first.test_float', 123456789.123) \
+            .set('first.test_time', OTime(timestamp=1518689532)) \
+            .set('test_float', 11.1) \
+            .set('first.test_timestamp', OTimestamp(millis_since_epoch=29877132000)) \
+            .set('first.test_date', ODate(days_since_epoch=3456)) \
+            .set('first.test_bool', True) \
+            .set('first.test_bool_false', False) \
+            .set('first.test_invalid', ODate(days_since_epoch=3457)) \
+            .set('first.test_str', 'strstr') \
+            .set('first.test_dict', {'a': 1, 'b': 2}) \
+            .set('first.test_dict2', {}) \
+            .set('first.test_list', [1, 2, 'str', False, ODate(days_since_epoch=3457)])
+
+        print(doc.as_json_str(with_tags=False))
+
+        self.assertEqual('{"test_float": 11.1, '
+                         '"_id": "121212", '
+                         '"test_int": 123, '
+                         '"first": {"test_invalid": "1979-06-20", '
+                         '"test_time": "12:12:12", '
+                         '"test_bool_false": false, '
+                         '"test_list": [1, 2, "str",'
+                         ' false, "1979-06-20"],'
+                         ' "test_long": 123456789, "test_dict2": {},'
+                         ' "test_dict": {"a": 1, "b": 2},'
+                         ' "test_bool": true,'
+                         ' "test_date": "1979-06-19",'
+                         ' "test_float": 123456789.123,'
+                         ' "test_timestamp": "1970-12-12T19:12:12.000000Z",'
+                         ' "test_str": "strstr",'
+                         ' "test_int": 1235}}',
+                         doc.as_json_str(with_tags=False))
