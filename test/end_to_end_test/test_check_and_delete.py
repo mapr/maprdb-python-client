@@ -37,7 +37,7 @@ class CheckAndDeleteTest(unittest.TestCase):
           "checkServerIdentity=true"
 
     def test_check_and_delete(self):
-        connection = ConnectionFactory.get_connection(url=CheckAndDeleteTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=CheckAndDeleteTest.url)
         if connection.is_store_exists(store_path='/check-delete-test-store1'):
             document_store = connection.get_store(store_path='/check-delete-test-store1')
         else:
@@ -54,7 +54,7 @@ class CheckAndDeleteTest(unittest.TestCase):
         self.assertEqual(after_action, {})
 
     def test_check_and_delete_false_condition(self):
-        connection = ConnectionFactory.get_connection(url=CheckAndDeleteTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=CheckAndDeleteTest.url)
         if connection.is_store_exists(store_path='/check-delete-test-store1'):
             document_store = connection.get_store(store_path='/check-delete-test-store1')
         else:
@@ -68,7 +68,7 @@ class CheckAndDeleteTest(unittest.TestCase):
         self.assertEqual(after_action, {'_id': 'id07', 'test_int': 51, 'test_str': 'strstr'})
 
     def test_check_and_delete_dict_condition(self):
-        connection = ConnectionFactory.get_connection(url=CheckAndDeleteTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=CheckAndDeleteTest.url)
         if connection.is_store_exists(store_path='/check-delete-test-store1'):
             document_store = connection.get_store(store_path='/check-delete-test-store1')
         else:

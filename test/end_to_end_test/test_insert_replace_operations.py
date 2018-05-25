@@ -37,7 +37,7 @@ class InsertOrReplaceTest(unittest.TestCase):
                        {'_id': 'id09', 'test_int': 51, 'test_str': 'strstr', 'test_list': [5, 6]},
                        {'_id': 'id10', 'test_int': 51, 'test_str': 'strstr', 'test_null': None}]
 
-        connection = ConnectionFactory.get_connection(url=InsertOrReplaceTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=InsertOrReplaceTest.url)
 
         if connection.is_store_exists(store_path='/test-store5'):
             document_store = connection.get_store(store_path='/test-store5')
@@ -65,7 +65,7 @@ class InsertOrReplaceTest(unittest.TestCase):
                        {'_id': 'id009', 'test_int': 51, 'test_str': 'strstr', 'test_list': [5, 6]},
                        {'_id': 'id010', 'test_int': 51, 'test_str': 'strstr', 'test_null': None}]
 
-        connection = ConnectionFactory.get_connection(url=InsertOrReplaceTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=InsertOrReplaceTest.url)
 
         # should raise an error if exit is not 0
         if connection.is_store_exists(store_path='/test-store6'):
@@ -110,7 +110,7 @@ class InsertOrReplaceTest(unittest.TestCase):
                                {'_id': 'id009', 'test_int': 52, 'test_str': 'strstr', 'test_list': [5, 6]},
                                {'_id': 'id010', 'test_int': 52, 'test_str': 'strstr', 'test_null': None}]
 
-        connection = ConnectionFactory.get_connection(url=InsertOrReplaceTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=InsertOrReplaceTest.url)
 
         # should raise an error if exit is not 0
         if connection.is_store_exists(store_path='/test-store7'):
@@ -137,7 +137,7 @@ class InsertOrReplaceTest(unittest.TestCase):
         nested_doc = OJAIDocument().set('nested_int', 11).set('nested_str', 'strstr')
         doc = OJAIDocument().set('test_list', [1, 2, 3, 4, False, 'mystr', [{}, {}, [7, 8, 9, nested_doc]]]) \
             .set_id('testid001')
-        connection = ConnectionFactory.get_connection(url=InsertOrReplaceTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=InsertOrReplaceTest.url)
         if connection.is_store_exists(store_path='/test-store8'):
             document_store = connection.get_store(store_path='/test-store8')
         else:

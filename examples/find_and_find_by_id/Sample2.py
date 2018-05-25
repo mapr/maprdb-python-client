@@ -4,7 +4,7 @@ from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
 """Create a connection, get store, find document in store"""
 # create a connection
-connection = ConnectionFactory.get_connection(url="localhost:5678")
+connection = ConnectionFactory.get_connection(connection_str="localhost:5678")
 
 # Get a store and assign it as a DocumentStore object
 if connection.is_store_exists(store_path='/find_sample_store1'):

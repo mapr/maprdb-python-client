@@ -23,7 +23,7 @@ class ConnectionTest(unittest.TestCase):
           "checkServerIdentity=true"
 
     def test_connection(self):
-        connection = OJAIConnection(connection_url=ConnectionTest.url)
+        connection = OJAIConnection(connection_str=ConnectionTest.url)
         before_create = connection.is_store_exists(store_path='/test-store1')
         self.assertFalse(before_create)
         store = connection.create_store(store_path='/test-store1')
@@ -34,7 +34,7 @@ class ConnectionTest(unittest.TestCase):
         self.assertTrue(delete_response)
 
     def test_create_table_error(self):
-        connection = OJAIConnection(connection_url=ConnectionTest.url)
+        connection = OJAIConnection(connection_str=ConnectionTest.url)
         before_create = connection.is_store_exists(store_path='/test-store2')
         self.assertFalse(before_create)
         store = connection.create_store(store_path='/test-store2')

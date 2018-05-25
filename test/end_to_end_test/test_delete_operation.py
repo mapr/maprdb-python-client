@@ -36,7 +36,7 @@ class DeleteTest(unittest.TestCase):
                    {'_id': 'id10', 'test_int': 51, 'test_str': 'strstr', 'test_null': None}]
 
     def test_delete_document(self):
-        connection = ConnectionFactory.get_connection(url=DeleteTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=DeleteTest.url)
 
         if connection.is_store_exists(store_path='/delete-test-store1'):
             document_store = connection.get_store(store_path='/delete-test-store1')
@@ -53,7 +53,7 @@ class DeleteTest(unittest.TestCase):
         self.assertEqual(document_store.find_by_id('id10'), {})
 
     def test_delete_id(self):
-        connection = ConnectionFactory.get_connection(url=DeleteTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=DeleteTest.url)
 
         if connection.is_store_exists(store_path='/delete-test-store1'):
             document_store = connection.get_store(store_path='/delete-test-store1')
@@ -65,7 +65,7 @@ class DeleteTest(unittest.TestCase):
         self.assertEqual(document_store.find_by_id('id09'), {})
 
     def test_delete_document_stream(self):
-        connection = ConnectionFactory.get_connection(url=DeleteTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=DeleteTest.url)
 
         if connection.is_store_exists(store_path='/delete-test-store1'):
             document_store = connection.get_store(store_path='/delete-test-store1')

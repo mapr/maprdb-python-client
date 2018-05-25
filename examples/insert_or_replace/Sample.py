@@ -3,7 +3,7 @@ from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
 """Create a connection, get store, insert new document into store"""
 # create a connection using path:user@password
-connection = ConnectionFactory.get_connection(url="localhost:5678")
+connection = ConnectionFactory.get_connection(connection_str="localhost:5678")
 
 # Get a store and assign it as a DocumentStore object
 store = connection.create_store(store_path="/sample_store1")

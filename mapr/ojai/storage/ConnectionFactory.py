@@ -7,5 +7,5 @@ class ConnectionFactory:
         pass
 
     @staticmethod
-    def get_connection(url, options=None):
-        return OJAIConnection(connection_url=url)
+    def get_connection(connection_str, options=None):
+        return OJAIConnection(connection_str=connection_str)

@@ -37,7 +37,7 @@ class CheckAndReplaceTest(unittest.TestCase):
           "checkServerIdentity=true"
 
     def test_check_and_replace(self):
-        connection = ConnectionFactory.get_connection(url=CheckAndReplaceTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=CheckAndReplaceTest.url)
         if connection.is_store_exists(store_path='/check-replace-test-store1'):
             document_store = connection.get_store(store_path='/check-replace-test-store1')
         else:
@@ -58,7 +58,7 @@ class CheckAndReplaceTest(unittest.TestCase):
         self.assertEqual(after_action, {'_id': 'id06', 'new_field': 123, 'new_array': [1, 2, 3]})
 
     def test_check_and_replace_false_condition(self):
-        connection = ConnectionFactory.get_connection(url=CheckAndReplaceTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=CheckAndReplaceTest.url)
         if connection.is_store_exists(store_path='/check-replace-test-store1'):
             document_store = connection.get_store(store_path='/check-replace-test-store1')
         else:
@@ -76,7 +76,7 @@ class CheckAndReplaceTest(unittest.TestCase):
         self.assertEqual(after_action, {'_id': 'id06', 'new_field': 123, 'new_array': [1, 2, 3]})
 
     def test_check_and_replace_no_document(self):
-        connection = ConnectionFactory.get_connection(url=CheckAndReplaceTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=CheckAndReplaceTest.url)
         if connection.is_store_exists(store_path='/check-replace-test-store1'):
             document_store = connection.get_store(store_path='/check-replace-test-store1')
         else:
