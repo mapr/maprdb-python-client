@@ -2,6 +2,11 @@ from copy import deepcopy
 
 import re
 
+import decimal
+from ojai.types.ODate import ODate
+from ojai.types.OInterval import OInterval
+from ojai.types.OTime import OTime
+from ojai.types.OTimestamp import OTimestamp
 
 __regex = re.compile(r"""(["']).*?\1|(?P<dot>\.)""")
 
@@ -82,3 +87,17 @@ def replacer(match):
         return "pass"
     else:
         return match.group(0)
+
+
+def type_serializer(obj):
+    try:
+        return obj.toJSON()
+    except:
+        if isinstance(obj, (OTime, ODate, OTimestamp, OInterval)):
+            return obj.__str__()
+        elif isinstance(obj, decimal.Decimal):
+            return obj.to_eng_string()
+        elif isinstance(obj, bytearray):
+            return obj.decode('utf8')
+        else:
+            return obj.__dict__

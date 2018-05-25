@@ -18,6 +18,7 @@ from mapr.ojai.exceptions.StoreNotFoundError import StoreNotFoundError
 from mapr.ojai.exceptions.UnknownPayloadEncodingError import \
     UnknownPayloadEncodingError
 from mapr.ojai.exceptions.UnknownServerError import UnknownServerError
+from mapr.ojai.ojai import document_utils
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 from mapr.ojai.ojai.OJAIQueryResult import OJAIQueryResult
 from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
@@ -48,9 +49,11 @@ class OJAIDocumentStore(DocumentStore):
         if not isinstance(mutation, (OJAIDocumentMutation, dict)):
             raise IllegalArgumentError(
                 m='Mutation type must be OJAIDocumentMutation or dict.')
-        str_mutation = json.dumps(mutation.as_dict()) \
+        str_mutation = json.dumps(mutation.as_dict(),
+                                  default=document_utils.type_serializer) \
             if isinstance(mutation, OJAIDocumentMutation) \
-            else json.dumps(mutation)
+            else json.dumps(mutation,
+                            default=document_utils.type_serializer)
         return str_mutation
 
     @staticmethod
@@ -60,9 +63,11 @@ class OJAIDocumentStore(DocumentStore):
             raise IllegalArgumentError(
                 m='Condition must be instance of OJAIQueryCondition, dict.')
 
-        str_condition = json.dumps({'$condition': condition}) \
+        str_condition = json.dumps({'$condition': condition},
+                                   default=document_utils.type_serializer) \
             if isinstance(condition, dict) else json.dumps(
-            {'$condition': condition.as_dictionary()}) \
+            {'$condition': condition.as_dictionary()},
+            default=document_utils.type_serializer) \
             if isinstance(condition, OJAIQueryCondition) else None
         return str_condition
 
@@ -110,7 +115,8 @@ class OJAIDocumentStore(DocumentStore):
                     m='Condition must be instance of OJAIQueryCondition, dict.')
             request.json_condition = json.dumps(condition
                                                 if isinstance(condition, dict)
-                                                else condition.as_dictionary())
+                                                else condition.as_dictionary(),
+                                                default=document_utils.type_serializer)
         if field_paths is not None:
             if not isinstance(field_paths, (list, str)):
                 raise IllegalArgumentError(
@@ -159,7 +165,8 @@ class OJAIDocumentStore(DocumentStore):
         elif isinstance(query, OJAIQuery):
             query_str = query.to_json_str()
         elif isinstance(query, dict):
-            query_str = json.dumps(query)
+            query_str = json.dumps(query,
+                                   default=document_utils.type_serializer)
         else:
             raise IllegalArgumentError(
                 m="Invalid type of the query parameter.")

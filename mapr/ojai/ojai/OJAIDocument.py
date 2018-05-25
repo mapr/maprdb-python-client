@@ -1,16 +1,16 @@
 import json
 import re
-from copy import deepcopy
 
 import decimal
 
-from datetime import datetime
 from ojai.Document import Document
 
 from ojai.types.ODate import ODate
 from ojai.types.OInterval import OInterval
 from ojai.types.OTime import OTime
 from ojai.types.OTimestamp import OTimestamp
+
+from mapr.ojai.ojai import document_utils
 from mapr.ojai.ojai.OJAIDict import OJAIDict
 from mapr.ojai.ojai.OJAIList import OJAIList
 from mapr.ojai.ojai.document_utils import merge_two_dicts, parse_field_path, replacer
@@ -336,19 +336,9 @@ class OJAIDocument(Document):
         self.__internal_dict = document_dict
         return self
 
-    @staticmethod
-    def __type_serializer(obj):
-        try:
-            return obj.toJSON()
-        except:
-            if isinstance(obj, (OTime, ODate, OTimestamp, OInterval)):
-                return obj.__str__()
-            else:
-                return obj.__dict__
-
     def as_json_str(self, with_tags=True):
         if with_tags:
             from mapr.ojai.ojai.OJAITagsBuilder import OJAITagsBuilder
             return json.dumps(OJAITagsBuilder().set('tmp', self.__internal_dict).as_dictionary()['tmp'])
         else:
-            return json.dumps(self.__internal_dict, default=OJAIDocument.__type_serializer)
+            return json.dumps(self.__internal_dict, default=document_utils.type_serializer)
