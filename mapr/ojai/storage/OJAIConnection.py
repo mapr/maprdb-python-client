@@ -56,7 +56,7 @@ class OJAIConnection(Connection):
         ssl = True if options_dict.get('ssl', ['false'])[0] == 'true' else False
         ssl_validation = True if options_dict.get('sslValidate', ['true'])[0] == 'true' else False
         ssl_ca = options_dict.get('sslCA', [''])[0]
-        ssl_target_name_override = options_dict.get('ssl_target_name_override', [''])[0]
+        ssl_target_name_override = options_dict.get('sslTargetNameOverride', [''])[0]
 
         if ssl and ssl_validation and ssl_ca == '':
             raise AttributeError('sslCa path must be specified when ssl and sslValidation enabled.')

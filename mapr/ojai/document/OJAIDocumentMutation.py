@@ -80,7 +80,7 @@ class OJAIDocumentMutation(DocumentMutation):
 
     def decrement(self, field_path, dec=None):
         if dec is None:
-            dec = -1
+            dec = 1
         if not isinstance(dec, (int, long, float)):
             raise TypeError('Value must be only Document or dict')
         self.__mutation_dict = \
