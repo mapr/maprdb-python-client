@@ -105,11 +105,10 @@ class OJAIQuery(Query):
 
     def order_by(self, field_paths, order='asc'):
         if not isinstance(field_paths, (str, unicode, list)) or not field_paths:
-            raise TypeError()
+            raise TypeError('The field paths type can be either str or list and cannot be empty.')
         self.__query_dict = self.__merge_two_dicts(self.__query_dict,
                                                    {Operations.ORDER_BY:
                                                     {field_paths: order} if isinstance(field_paths, (unicode, str))
-                                                    # else [{field: order} for field in field_paths]})
                                                     else map(lambda field: {field: order}, field_paths)})
         return self
 
