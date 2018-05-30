@@ -269,3 +269,10 @@ class QueryTest(unittest.TestCase):
                                                   {'$eq': {'ev': 12}}
                                               ]}},
                          query_condition.as_dictionary())
+
+    def test_empty_value_order_by(self):
+        with self.assertRaises(TypeError):
+            OJAIQuery().order_by('').build().to_json_str()
+
+        with self.assertRaises(TypeError):
+            OJAIQuery().order_by([]).build().to_json_str()
