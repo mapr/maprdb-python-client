@@ -27,6 +27,7 @@ from mapr.ojai.proto.gen.maprdb_server_pb2 import InsertOrReplaceRequest, \
     PayloadEncoding, FindByIdRequest, ErrorCode, \
     InsertMode, FindRequest, DeleteRequest, UpdateRequest
 from mapr.ojai.utils.retry_utils import retry_if_connection_not_established
+from mapr.ojai.ojai.OJAITagsBuilder import OJAITagsBuilder
 
 
 class OJAIDocumentStore(DocumentStore):
@@ -49,12 +50,13 @@ class OJAIDocumentStore(DocumentStore):
         if not isinstance(mutation, (OJAIDocumentMutation, dict)):
             raise IllegalArgumentError(
                 m='Mutation type must be OJAIDocumentMutation or dict.')
-        str_mutation = json.dumps(mutation.as_dict(),
-                                  default=document_utils.type_serializer) \
-            if isinstance(mutation, OJAIDocumentMutation) \
-            else json.dumps(mutation,
-                            default=document_utils.type_serializer)
-        return str_mutation
+        mutation_with_tags = OJAITagsBuilder().set('mutation',
+                                                   mutation.as_dict()
+                                                   if isinstance(mutation,
+                                                                 OJAIDocumentMutation)
+                                                   else mutation).as_dictionary()['mutation']
+        return json.dumps(mutation_with_tags,
+                          default=document_utils.type_serializer)
 
     @staticmethod
     def __get_str_condition(condition):
@@ -63,13 +65,13 @@ class OJAIDocumentStore(DocumentStore):
             raise IllegalArgumentError(
                 m='Condition must be instance of OJAIQueryCondition, dict.')
 
-        str_condition = json.dumps({'$condition': condition},
-                                   default=document_utils.type_serializer) \
-            if isinstance(condition, dict) else json.dumps(
-            {'$condition': condition.as_dictionary()},
-            default=document_utils.type_serializer) \
-            if isinstance(condition, OJAIQueryCondition) else None
-        return str_condition
+        condition_with_tags = OJAITagsBuilder().set('condition',
+                                                    condition.as_dictionary()
+                                                    if isinstance(condition,
+                                                                  OJAIQueryCondition)
+                                                    else condition).as_dictionary()['condition']
+        return json.dumps({'$condition': condition_with_tags},
+                          default=document_utils.type_serializer)
 
     @staticmethod
     def __get_doc_str(doc, _id=None):
@@ -138,19 +140,6 @@ class OJAIDocumentStore(DocumentStore):
 
         return self.__build_find_by_id_result(response=response,
                                               results_as_document=results_as_document)
-
-    def __parse_find_response(self, response):
-        self.validate_response(response)
-        response_type = response.type
-        if response_type == 0:
-            raise UnknownServerError('Unknown response type.')
-        elif response_type == 1:
-            return response.json_response
-        # TODO
-        elif response_type == 2:
-            return response.json_response
-        else:
-            raise UnknownServerError('Check server logs.')
 
     @retry(wait_exponential_multiplier=1000,
            wait_exponential_max=18000,
