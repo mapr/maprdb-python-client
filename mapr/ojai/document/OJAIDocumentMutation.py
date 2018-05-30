@@ -3,9 +3,17 @@ from ojai.store.DocumentMutation import DocumentMutation
 from mapr.ojai.document.MutationOp import MutationOp
 from mapr.ojai.document.MutationUtil import MutationUtil
 from mapr.ojai.exceptions.DocumentMutationError import DocumentMutationError
-from mapr.ojai.exceptions.FieldPathAlreadyInDocumentError import \
-    FieldPathAlreadyInDocumentError
+from mapr.ojai.exceptions.IllegalArgumentError import IllegalArgumentError
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
+
+
+def validate_field_path(f):
+    def wrapper(*args, **kwargs):
+        if (kwargs.get('field_path', None) or args[1]) == '_id':
+            raise IllegalArgumentError('The _id field cannot be set or updated')
+        return f(*args, **kwargs)
+
+    return wrapper
 
 
 class OJAIDocumentMutation(DocumentMutation):
@@ -23,6 +31,7 @@ class OJAIDocumentMutation(DocumentMutation):
     def empty(self):
         self.__mutation_dict = {}
 
+    @validate_field_path
     def set(self, field_path, value):
         self.__mutation_dict = \
             MutationUtil.evaluate_common(path=field_path,
@@ -32,16 +41,17 @@ class OJAIDocumentMutation(DocumentMutation):
                                          doc=self.__doc)
         return self
 
+    @validate_field_path
     def set_or_replace(self, field_path, value):
         self.__mutation_dict = \
             MutationUtil.evaluate_common(path=field_path,
                                          value=value,
-                                         operation_type=
-                                         MutationOp.SET_OR_REPLACE,
+                                         operation_type=MutationOp.SET_OR_REPLACE,
                                          mutation_dict=self.__mutation_dict,
                                          doc=self.__doc)
         return self
 
+    @validate_field_path
     def append(self, field_path, value, offset=None, length=None):
         if not isinstance(value, (list, str, bytearray)):
             raise TypeError('Value type is not supported. Must be list, str, bytearray')
@@ -53,6 +63,7 @@ class OJAIDocumentMutation(DocumentMutation):
                                          doc=self.__doc)
         return self
 
+    @validate_field_path
     def merge(self, field_path, value):
         if not isinstance(value, (OJAIDocument, dict)):
             raise TypeError('Value must be only Document or dict')
@@ -64,6 +75,7 @@ class OJAIDocumentMutation(DocumentMutation):
                                          doc=self.__doc)
         return self
 
+    @validate_field_path
     def increment(self, field_path, inc=None):
         if inc is None:
             inc = 1
@@ -78,6 +90,7 @@ class OJAIDocumentMutation(DocumentMutation):
                                          doc=self.__doc)
         return self
 
+    @validate_field_path
     def decrement(self, field_path, dec=None):
         if dec is None:
             dec = 1
@@ -91,6 +104,7 @@ class OJAIDocumentMutation(DocumentMutation):
                                          doc=self.__doc)
         return self
 
+    @validate_field_path
     def delete(self, field_path):
         self.__mutation_dict = \
             MutationUtil.delete(path=field_path,
