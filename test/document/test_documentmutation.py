@@ -1,4 +1,5 @@
 from mapr.ojai.document.OJAIDocumentMutation import OJAIDocumentMutation
+from mapr.ojai.exceptions.IllegalArgumentError import IllegalArgumentError
 
 try:
     import unittest2 as unittest
@@ -114,7 +115,7 @@ class DocumentMutationTest(unittest.TestCase):
         self.assertEqual(doc_mutation.as_dict(),
                          {'$decrement': [{'b': 5},
                                          {'a.w': 66},
-                                         {'hhh': -1}],
+                                         {'hhh': 1}],
                           '$merge': {'a.b.c': {'d': 55, 'g': 'text'}}})
 
     def test_document_mutation_set_arr(self):
@@ -177,3 +178,19 @@ class DocumentMutationTest(unittest.TestCase):
         self.assertEqual(doc_mutation.as_dict(),
                          {'$merge': [{'a.b.c': {'d': 55, 'g': 'text'}},
                                      {'t.o.y': {'b': 9, 'o': 1, 'y': 1}}]})
+
+    def test_invalid_with_path(self):
+        with self.assertRaises(IllegalArgumentError):
+            OJAIDocumentMutation().set('_id', 5)
+        with self.assertRaises(IllegalArgumentError):
+            OJAIDocumentMutation().set_or_replace('_id', 5)
+        with self.assertRaises(IllegalArgumentError):
+            OJAIDocumentMutation().delete('_id')
+        with self.assertRaises(IllegalArgumentError):
+            OJAIDocumentMutation().increment(field_path='_id')
+        with self.assertRaises(IllegalArgumentError):
+            OJAIDocumentMutation().decrement('_id')
+        with self.assertRaises(IllegalArgumentError):
+            OJAIDocumentMutation().append('_id', ['1', '2', '3'])
+        with self.assertRaises(IllegalArgumentError):
+            OJAIDocumentMutation().merge(field_path='_id', value={'a': 5})
