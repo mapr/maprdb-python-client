@@ -176,12 +176,13 @@ class OJAIDocumentStore(DocumentStore):
                                   'JSON_ENCODING'),
                               include_query_plan=include_query_plan,
                               json_query=query_str)
-
         if timeout is None:
-            response_stream = self.__connection.Find(request)
+            response_stream = \
+                self.__connection.Find(request)
         else:
-            response_stream = self.__connection.Find(request, timeout=timeout)
-
+            response_stream = \
+                self.__connection.Find(request,
+                                       timeout=timeout)
         return OJAIQueryResult(document_stream=response_stream,
                                results_as_document=results_as_document,
                                include_query_plan=include_query_plan)
@@ -194,15 +195,13 @@ class OJAIDocumentStore(DocumentStore):
             else:
                 self.__validate_dict(doc)
                 doc_str = OJAIDocument().from_dict(doc).as_json_str()
-            response = self.__connection.InsertOrReplace(
-                InsertOrReplaceRequest(table_path=self.__store_path,
-                                       insert_mode=InsertMode.Value(
-                                           operation_type),
-                                       payload_encoding=PayloadEncoding.Value(
-                                           'JSON_ENCODING'),
-                                       json_document=doc_str))
-            self.validate_response(response=response)
+            self.__evaluate_doc(doc_str=doc_str,
+                                operation_type=operation_type)
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def __evaluate_doc(self, doc_str, operation_type, condition=None):
         request = InsertOrReplaceRequest(table_path=self.__store_path,
                                          insert_mode=InsertMode.Value(
@@ -212,7 +211,8 @@ class OJAIDocumentStore(DocumentStore):
                                          json_document=doc_str)
         if condition is not None:
             request.json_condition = condition
-        response = self.__connection.InsertOrReplace(request)
+        response = \
+            self.__connection.InsertOrReplace(request)
         self.validate_response(response=response)
 
     @retry(wait_exponential_multiplier=1000,
@@ -340,6 +340,10 @@ class OJAIDocumentStore(DocumentStore):
         self.__execute_update(_id=str_doc,
                               mutation=str_mutation)
 
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
     def check_and_update(self, _id, query_condition, mutation):
         str_condition = OJAIDocumentStore.__get_str_condition(query_condition)
         str_doc = OJAIDocument().set_id(_id=_id).as_json_str()
