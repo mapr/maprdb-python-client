@@ -29,7 +29,7 @@ Single host name in case of a single-name certificate (e.g. mapr.com) or a wildc
 
 ##### Connection string example:
 * Connection is secure, SSL enabled, username/password authentication enabled.    
-    ```localhost:5678?auth=basic;user=mapr;password=mapr;ssl=true;sslCA=/opt/mapr/conf/ssl_truststore.pem;ssl_target_name_override=node.mapr.com```
+    ```localhost:5678?auth=basic;user=mapr;password=mapr;ssl=true;sslCA=/opt/mapr/conf/ssl_truststore.pem;sslTargetNameOverride=node.mapr.com```
 * Connection isn't secure, client use insecure channel, username/password authentication enabled.    
     ```localhost:5678?auth=basic;user=mapr;password=mapr;ssl=false```
 
@@ -42,7 +42,7 @@ Simple code example:
 ```
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
-connection_string = 'localhost:5678?auth=basic;user=mapr;password=mapr;ssl=true;sslCA=/opt/mapr/conf/ssl_truststore.pem;ssl_target_name_override=node.mapr.com'
+connection_string = 'localhost:5678?auth=basic;user=mapr;password=mapr;ssl=true;sslCA=/opt/mapr/conf/ssl_truststore.pem;sslTargetNameOverride=node.mapr.com'
 connection = ConnectionFactory.get_connection(connection_string)
 document_store = connection.create_store('/test-store)
 ```

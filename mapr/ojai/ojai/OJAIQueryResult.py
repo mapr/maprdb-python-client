@@ -35,7 +35,7 @@ class OJAIQueryResult(QueryResult):
                 raise ConnectionLostError(m="Connection lost during operation.")
 
     def __parse_find_response(self, response):
-        from mapr.ojai.ojai.OJAIDocumentStore import OJAIDocumentStore
+        from mapr.ojai.storage.OJAIDocumentStore import OJAIDocumentStore
         OJAIDocumentStore.validate_response(response)
         response_type = response.type
         if response_type == FindResponseType.Value('UNKNOWN_TYPE'):

@@ -14,15 +14,10 @@ except ImportError:
 
 
 class FindTest(unittest.TestCase):
-    # url = "192.168.33.11:5678?auth=basic;user=fred;password=george;" \
-    #       "ssl=true;" \
-    #       "sslValidate=true;" \
-    #       "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;"
-    url = "node1.cluster.com:5678?auth=basic;user=fred;password=george;" \
+    url = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
           "ssl=true;" \
-          "sslValidate=true;" \
-          "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;" \
-          "checkServerIdentity=true"
+          "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
+          "sslTargetNameOverride=node1.cluster.com"
 
     def test_simple_find(self):
         connection = ConnectionFactory.get_connection(connection_str=FindTest.url)
@@ -67,19 +62,17 @@ class FindTest(unittest.TestCase):
 
     def test_find_table_not_found(self):
         connection = ConnectionFactory.get_connection(connection_str=FindTest.url)
-
-        document_store = connection.get_store(store_path='/find-test-store3')
-
         query = OJAIQuery().select(['_id', 'test_int', 'test_str', 'test_dict', 'test_list', 'test_null']).build()
-
+        connection.delete_store('/find-test-store3')
         self.assertFalse(connection.is_store_exists('/find-test-store3'))
         with self.assertRaises(StoreNotFoundError):
+            document_store = connection.get_store(store_path='/find-test-store3')
             query_result = document_store.find(query)
             for doc in query_result:
                 print(doc)
 
     def test_find_multiple_records(self):
-        connection = ConnectionFactory.get_connection(connection_str=url)
+        connection = ConnectionFactory.get_connection(connection_str=FindTest.url)
 
         if connection.is_store_exists(store_path='/find-test-store4'):
             document_store = connection.get_store(store_path='/find-test-store4')
@@ -105,7 +98,7 @@ class FindTest(unittest.TestCase):
             index += 1
 
     def test_find_with_condition(self):
-        connection = ConnectionFactory.get_connection(connection_str=url)
+        connection = ConnectionFactory.get_connection(connection_str=FindTest.url)
         document_list = []
         for i in range(3, 7):
             document_list.append(connection.new_document(dictionary={'_id': 'id00%s' % i,
@@ -133,7 +126,7 @@ class FindTest(unittest.TestCase):
             index += 1
 
     def test_find_all(self):
-        connection = ConnectionFactory.get_connection(connection_str=url)
+        connection = ConnectionFactory.get_connection(connection_str=FindTest.url)
 
         if connection.is_store_exists(store_path='/find-test-store4'):
             document_store = connection.get_store(store_path='/find-test-store4')

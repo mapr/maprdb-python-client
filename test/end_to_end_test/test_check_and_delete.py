@@ -26,15 +26,10 @@ class CheckAndDeleteTest(unittest.TestCase):
                    {'_id': 'id08', 'test_int': 51, 'test_str': 'strstr', 'test_dict': {'test_int': 5}},
                    {'_id': 'id09', 'test_int': 51, 'test_str': 'strstr', 'test_list': [5, 6]},
                    {'_id': 'id10', 'test_int': 51, 'test_str': 'strstr', 'test_null': None}]
-    # url = "192.168.33.11:5678?auth=basic;user=fred;password=george;" \
-    #       "ssl=true;" \
-    #       "sslValidate=true;" \
-    #       "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;"
-    url = "node1.cluster.com:5678?auth=basic;user=fred;password=george;" \
+    url = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
           "ssl=true;" \
-          "sslValidate=true;" \
-          "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;" \
-          "checkServerIdentity=true"
+          "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
+          "sslTargetNameOverride=node1.cluster.com"
 
     def test_check_and_delete(self):
         connection = ConnectionFactory.get_connection(connection_str=CheckAndDeleteTest.url)

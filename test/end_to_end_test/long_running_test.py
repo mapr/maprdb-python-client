@@ -14,18 +14,14 @@ except ImportError:
 
 
 class LongRunningTest(unittest.TestCase):
-    # url = "192.168.33.11:5678?auth=basic;user=fred;password=george;" \
-    #       "ssl=true;" \
-    #       "sslValidate=true;" \
-    #       "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;"
-    url = "node1.cluster.com:5678?auth=basic;user=fred;password=george;" \
+
+    url = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
           "ssl=true;" \
-          "sslValidate=true;" \
-          "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;" \
-          "checkServerIdentity=true"
+          "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
+          "sslTargetNameOverride=node1.cluster.com"
 
     def test_huge_operations(self):
-        connection = ConnectionFactory.get_connection(url=LongRunningTest.url)
+        connection = ConnectionFactory.get_connection(LongRunningTest.url)
 
         if connection.is_store_exists(store_path='/long-run-test-store'):
             connection.delete_store(store_path='/long-run-test-store')

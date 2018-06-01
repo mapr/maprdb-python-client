@@ -216,7 +216,7 @@ class DocumentTagsTest(unittest.TestCase):
                          {u'test_decimal': Decimal('3.140000000000000124344978758017532527446746826171875')})
         self.assertEqual(doc.as_json_str(),
                          '{"test_decimal": {"$decimal": "3.140000000000000124344978758017532527446746826171875"}}')
-        from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator
+        from mapr.ojai.ojai_utils.ojai_document_creator import OJAIDocumentCreator
         parsed_doc = OJAIDocumentCreator.create_document(doc.as_json_str())
         self.assertEqual(parsed_doc.as_dictionary(),
                          {u'test_decimal': Decimal('3.140000000000000124344978758017532527446746826171875')})

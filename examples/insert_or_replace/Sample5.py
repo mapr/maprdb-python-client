@@ -1,14 +1,18 @@
 """Following example works with Python Client.
 Inserting document with multiple field and nested document, array, dict"""
-from ojai.o_types.ODate import ODate
-from ojai.o_types.OTime import OTime
-from ojai.o_types.OTimestamp import OTimestamp
+from ojai.types.ODate import ODate
+from ojai.types.OTime import OTime
+from ojai.types.OTimestamp import OTimestamp
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
 """Create a connection, get store, insert new document into store"""
 # create a connection using path:user@password
-connection = ConnectionFactory.get_connection(connection_str="localhost:5678")
+connection_string = "localhost:5678?auth=basic;user=mapr;password=mapr;" \
+          "ssl=true;" \
+          "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
+          "sslTargetNameOverride=node.mapr.com"
+connection = ConnectionFactory.get_connection(connection_str=connection_string)
 
 # Get a store and assign it as a DocumentStore object
 store = connection.get_store(store_path="/sample_store1")

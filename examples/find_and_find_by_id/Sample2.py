@@ -4,7 +4,11 @@ from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
 """Create a connection, get store, find document in store"""
 # create a connection
-connection = ConnectionFactory.get_connection(connection_str="localhost:5678")
+connection_string = "localhost:5678?auth=basic;user=mapr;password=mapr;" \
+          "ssl=true;" \
+          "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
+          "sslTargetNameOverride=node.mapr.com"
+connection = ConnectionFactory.get_connection(connection_str=connection_string)
 
 # Get a store and assign it as a DocumentStore object
 if connection.is_store_exists(store_path='/find_sample_store1'):
@@ -22,8 +26,9 @@ for d in query_result:
     print(d)
 
 print("Create find request with query as a OJAIQuery object")
-query = connection.new_query().select(['*']).where(connection.new_condition().and_().is_('age', QueryOp.GREATER_OR_EQUAL, 26)
-                                        .is_('age', QueryOp.LESS_OR_EQUAL, 35).close().close().build()).build()
+query = connection.new_query().select(['*']) \
+    .where(connection.new_condition().and_().is_('age', QueryOp.GREATER_OR_EQUAL, 26)
+           .is_('age', QueryOp.LESS_OR_EQUAL, 35).close().close().build()).build()
 query_result = document_store.find(query, include_query_plan=True, results_as_document=False, timeout=1)
 print(query_result.get_query_plan())
 

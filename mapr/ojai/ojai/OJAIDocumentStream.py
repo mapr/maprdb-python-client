@@ -4,7 +4,7 @@ from grpc._channel import _Rendezvous
 from ojai.DocumentStream import DocumentStream
 
 from mapr.ojai.exceptions.InvalidStreamResponseError import InvalidStreamResponseError
-from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator
+from mapr.ojai.ojai_utils.ojai_document_creator import OJAIDocumentCreator
 
 
 class OJAIDocumentStream(DocumentStream):
@@ -18,7 +18,7 @@ class OJAIDocumentStream(DocumentStream):
 
     @staticmethod
     def parse_find_response(response):
-        from mapr.ojai.ojai.OJAIDocumentStore import OJAIDocumentStore
+        from mapr.ojai.storage.OJAIDocumentStore import OJAIDocumentStore
         OJAIDocumentStore.validate_response(response)
         response_type = response.type
         from mapr.ojai.proto.gen.maprdb_server_pb2 import FindResponseType
@@ -52,9 +52,4 @@ class OJAIDocumentStream(DocumentStream):
 
     def close(self):
         raise StopIteration
-
-    @staticmethod
-    def new_document_stream(fs, path, field_path_type_map=None, event_delegate=None):
-        raise NotImplementedError
-
 

@@ -11,8 +11,8 @@ from ojai.types.OTime import OTime
 from ojai.types.OTimestamp import OTimestamp
 
 from mapr.ojai.ojai import document_utils
-from mapr.ojai.ojai.OJAIDict import OJAIDict
-from mapr.ojai.ojai.OJAIList import OJAIList
+from mapr.ojai.ojai_utils.ojai_dict import OJAIDict
+from mapr.ojai.ojai_utils.ojai_list import OJAIList
 from mapr.ojai.ojai.document_utils import merge_two_dicts, parse_field_path, replacer
 
 

@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-from datetime import datetime
-
 from decimal import Decimal
 from random import getrandbits, randint
 
@@ -11,7 +9,7 @@ from ojai.types.ODate import ODate
 from ojai.types.OTime import OTime
 from ojai.types.OTimestamp import OTimestamp
 
-from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator
+from mapr.ojai.ojai_utils.ojai_document_creator import OJAIDocumentCreator
 
 try:
     import unittest2 as unittest

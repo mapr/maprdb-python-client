@@ -4,7 +4,11 @@ from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
 """Create a connection, get store, insert new documents into store, find document by id"""
 # create a connection
-connection = ConnectionFactory.get_connection(connection_str="localhost:5678")
+connection_string = "localhost:5678?auth=basic;user=mapr;password=mapr;" \
+          "ssl=true;" \
+          "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
+          "sslTargetNameOverride=node.mapr.com"
+connection = ConnectionFactory.get_connection(connection_str=connection_string)
 
 # Get a store and assign it as a DocumentStore object
 if connection.is_store_exists(store_path='/find_sample_store1'):

@@ -16,6 +16,11 @@ class MapRDbServerStub(object):
     Args:
       channel: A grpc.Channel.
     """
+    self.Ping = channel.unary_unary(
+        '/com.mapr.data.db.MapRDbServer/Ping',
+        request_serializer=maprdb__server__pb2.PingRequest.SerializeToString,
+        response_deserializer=maprdb__server__pb2.PingResponse.FromString,
+        )
     self.CreateTable = channel.unary_unary(
         '/com.mapr.data.db.MapRDbServer/CreateTable',
         request_serializer=maprdb__server__pb2.CreateTableRequest.SerializeToString,
@@ -63,6 +68,13 @@ class MapRDbServerServicer(object):
   RPC calls exported from the service    //
   =============================================//
   """
+
+  def Ping(self, request, context):
+    """Ping RPC
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
 
   def CreateTable(self, request, context):
     """Admin RPCs
@@ -123,6 +135,11 @@ class MapRDbServerServicer(object):
 
 def add_MapRDbServerServicer_to_server(servicer, server):
   rpc_method_handlers = {
+      'Ping': grpc.unary_unary_rpc_method_handler(
+          servicer.Ping,
+          request_deserializer=maprdb__server__pb2.PingRequest.FromString,
+          response_serializer=maprdb__server__pb2.PingResponse.SerializeToString,
+      ),
       'CreateTable': grpc.unary_unary_rpc_method_handler(
           servicer.CreateTable,
           request_deserializer=maprdb__server__pb2.CreateTableRequest.FromString,

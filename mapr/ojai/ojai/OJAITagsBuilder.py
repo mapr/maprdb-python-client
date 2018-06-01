@@ -4,7 +4,7 @@ from ojai.types.OInterval import OInterval
 from ojai.types.OTime import OTime
 from ojai.types.OTimestamp import OTimestamp
 
-from mapr.ojai.ojai.OJAIList import OJAIList
+from mapr.ojai.ojai_utils.ojai_list import OJAIList
 from mapr.ojai.ojai.document_utils import parse_field_path, merge_two_dicts
 
 
@@ -90,7 +90,7 @@ class OJAITagsBuilder:
                                                                 oja_type='$binary'))
 
     def __set_dict(self, field_path, value):
-        from mapr.ojai.ojai.OJAIDict import OJAIDict
+        from mapr.ojai.ojai_utils.ojai_dict import OJAIDict
         value = OJAIDict.parse_dict(value, tags=True)
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,

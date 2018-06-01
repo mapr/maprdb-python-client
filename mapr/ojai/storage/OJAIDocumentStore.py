@@ -85,7 +85,7 @@ class OJAIDocumentStore(DocumentStore):
 
     @staticmethod
     def __build_find_by_id_result(response, results_as_document):
-        from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator
+        from mapr.ojai.ojai_utils.ojai_document_creator import OJAIDocumentCreator
 
         if len(response.json_document) == 0 and results_as_document:
             return OJAIDocumentCreator.create_document("{}")
@@ -127,16 +127,10 @@ class OJAIDocumentStore(DocumentStore):
                 if isinstance(field_paths, list) \
                 else field_paths.split(',')
 
-        if request.WhichOneof('document') == 'json_document' \
-                and request.payload_encoding == \
-                PayloadEncoding.Value('JSON_ENCODING'):
-            if timeout is None:
-                response = self.__connection.FindById(request)
-            else:
-                response = self.__connection.FindById(request, timeout=timeout)
-
+        if timeout is None:
+            response = self.__connection.FindById(request)
         else:
-            raise IllegalArgumentError(m='Invalid find_by_id params')
+            response = self.__connection.FindById(request, timeout=timeout)
 
         return self.__build_find_by_id_result(response=response,
                                               results_as_document=results_as_document)
@@ -209,7 +203,7 @@ class OJAIDocumentStore(DocumentStore):
            stop_max_attempt_number=7,
            retry_on_exception=retry_if_connection_not_established)
     def insert_or_replace(self, doc=None, _id=None, field_as_key=None,
-                          doc_stream=None, json_dictionary=None):
+                          doc_stream=None):
         if doc_stream is None:
             doc_str = OJAIDocumentStore.__get_doc_str(doc=doc, _id=_id)
             self.__evaluate_doc(doc_str=doc_str,
@@ -274,8 +268,7 @@ class OJAIDocumentStore(DocumentStore):
            wait_exponential_max=18000,
            stop_max_attempt_number=7,
            retry_on_exception=retry_if_connection_not_established)
-    def insert(self, doc=None, _id=None, field_as_key=None, doc_stream=None,
-               json_dictionary=None):
+    def insert(self, doc=None, _id=None, field_as_key=None, doc_stream=None):
         if doc_stream is None:
             doc_str = OJAIDocumentStore.__get_doc_str(doc=doc, _id=_id)
             self.__evaluate_doc(doc_str=doc_str, operation_type='INSERT')
@@ -286,8 +279,7 @@ class OJAIDocumentStore(DocumentStore):
            wait_exponential_max=18000,
            stop_max_attempt_number=7,
            retry_on_exception=retry_if_connection_not_established)
-    def replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None,
-                json_dictionary=None):
+    def replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None):
         if doc_stream is None:
             doc_str = OJAIDocumentStore.__get_doc_str(doc=doc, _id=_id)
             self.__evaluate_doc(doc_str=doc_str, operation_type='REPLACE')

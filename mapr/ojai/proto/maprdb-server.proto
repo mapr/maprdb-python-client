@@ -9,6 +9,9 @@ option java_package = "com.mapr.data.db.proto";
 //      RPC calls exported from the service    //
 //=============================================//
 service MapRDbServer {
+  // Ping RPC
+  rpc Ping (PingRequest) returns (PingResponse) {}
+
   // Admin RPCs
   rpc CreateTable (CreateTableRequest) returns (CreateTableResponse) {}
   rpc DeleteTable (DeleteTableRequest) returns (DeleteTableResponse) {}
@@ -135,6 +138,12 @@ enum PayloadEncoding {
 //=============================================//
 //        RPC Request/Response Messages        //
 //=============================================//
+
+message PingRequest {
+}
+
+message PingResponse {
+}
 
 message CreateTableRequest {
   string table_path = 1;
@@ -351,7 +360,7 @@ message UpdateRequest {
 
 message UpdateResponse {
   /**
-   * `NO_ERROR` - if a document was updated successfuly
+   * `NO_ERROR` - if a document was updated successfully
    * `DOCUMENT_NOT_FOUND` - if a document with specified `_id` does not exist or the specified condition
    *                        evaluated to 'false'.
    */
@@ -382,7 +391,7 @@ message DeleteRequest {
 
 message DeleteResponse {
   /**
-   * `NO_ERROR` - if a document was deleted successfuly
+   * `NO_ERROR` - if a document was deleted successfully
    */
   RpcError error = 1;
 }

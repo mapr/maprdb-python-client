@@ -2,22 +2,24 @@ import base64
 import json
 
 import grpc
+from grpc._channel import _Rendezvous
 from ojai.store.Connection import Connection
 from retrying import retry
 
 from mapr.ojai.document.OJAIDocumentMutation import OJAIDocumentMutation
 from mapr.ojai.exceptions.ClusterNotFoundError import ClusterNotFoundError
+from mapr.ojai.exceptions.ConnectionError import ConnectionError
 from mapr.ojai.exceptions.IllegalArgumentError import IllegalArgumentError
 from mapr.ojai.exceptions.PathNotFoundError import PathNotFoundError
 from mapr.ojai.exceptions.StoreAlreadyExistsError import StoreAlreadyExistsError
 from mapr.ojai.exceptions.StoreNotFoundError import StoreNotFoundError
 from mapr.ojai.exceptions.UnknownServerError import UnknownServerError
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
-from mapr.ojai.ojai.OJAIDocumentStore import OJAIDocumentStore
+from mapr.ojai.storage.OJAIDocumentStore import OJAIDocumentStore
 from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
 from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
-from mapr.ojai.proto.gen.maprdb_server_pb2 import CreateTableRequest,\
-    ErrorCode, TableExistsRequest, DeleteTableRequest
+from mapr.ojai.proto.gen.maprdb_server_pb2 import CreateTableRequest, \
+    ErrorCode, TableExistsRequest, DeleteTableRequest, PingRequest
 from mapr.ojai.proto.gen.maprdb_server_pb2_grpc import MapRDbServerStub
 from mapr.ojai.storage import auth_interceptor
 from mapr.ojai.utils.retry_utils import retry_if_connection_not_established
@@ -39,10 +41,21 @@ class OJAIConnection(Connection):
                                                       self.__encoded_user_metadata)
 
         self.__connection = MapRDbServerStub(self.__channel)
+        OJAIConnection.__ping_connection(self.__connection)
 
-    @property
-    def channel(self):
-        return self.__channel
+    @staticmethod
+    @retry(wait_exponential_multiplier=1000,
+           wait_exponential_max=18000,
+           stop_max_attempt_number=7,
+           retry_on_exception=retry_if_connection_not_established)
+    def __ping_connection(connection):
+        try:
+            connection.Ping(PingRequest(), timeout=10)
+        except _Rendezvous as e:
+            if e.code() == grpc.StatusCode.UNAUTHENTICATED:
+                raise ConnectionError(e.details())
+            elif e.code() == grpc.StatusCode.UNAVAILABLE:
+                raise e
 
     @staticmethod
     def __parse_connection_url(connection_url):
@@ -66,7 +79,7 @@ class OJAIConnection(Connection):
             raise AttributeError('sslCa path must be specified when ssl and sslValidation enabled.')
 
         if ssl and ssl_validation and ssl_target_name_override == '':
-            raise AttributeError('ssl_target_name_override must be specified when sslValidation enabled.')
+            raise AttributeError('sslTargetNameOverride must be specified when sslValidation enabled.')
 
         return url, auth, encoded_user_metadata, ssl, ssl_validation, ssl_ca, ssl_target_name_override
 

@@ -14,15 +14,11 @@ except ImportError:
 
 
 class DeleteTest(unittest.TestCase):
-    # url = "192.168.33.11:5678?auth=basic;user=fred;password=george;" \
-    #       "ssl=true;" \
-    #       "sslValidate=true;" \
-    #       "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;"
-    url = "node1.cluster.com:5678?auth=basic;user=fred;password=george;" \
+    url = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
           "ssl=true;" \
-          "sslValidate=true;" \
-          "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;" \
-          "checkServerIdentity=true"
+          "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
+          "sslTargetNameOverride=node1.cluster.com"
+
     dict_stream = [{'_id': "id01", 'test_int': 51, 'test_str': 'strstr'},
                    {'_id': 'id02', 'mystr': 'str', 'test_int': 51, 'test_str': 'strstr'},
                    {'_id': 'id03', 'test_int': 51, 'test_otime': OTime(timestamp=1518689532), 'test_str': 'strstr'},

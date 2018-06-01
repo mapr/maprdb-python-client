@@ -14,15 +14,10 @@ except ImportError:
 
 
 class FindByIdTest(unittest.TestCase):
-    # url = "192.168.33.11:5678?auth=basic;user=fred;password=george;" \
-    #       "ssl=true;" \
-    #       "sslValidate=true;" \
-    #       "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;"
-    url = "node1.cluster.com:5678?auth=basic;user=fred;password=george;" \
+    url = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
           "ssl=true;" \
-          "sslValidate=true;" \
-          "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;" \
-          "checkServerIdentity=true"
+          "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
+          "sslTargetNameOverride=node1.cluster.com"
 
     def test_find_by_id(self):
         connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.url)
@@ -75,7 +70,7 @@ class FindByIdTest(unittest.TestCase):
 
         self.assertEqual(doc.as_json_str(), '{"_id": "121212", "test_int": {"$numberLong": 123}, "first": {'
                                             '"test_invalid": {"$dateDay": "1979-06-20"}, "test_time": {"$time": '
-                                            '"10:12:12"}, "test_bool_false": false, "test_list": [{"$numberLong": 1}, '
+                                            '"12:12:12"}, "test_bool_false": false, "test_list": [{"$numberLong": 1}, '
                                             '{"$numberLong": 2}, "str", false, {"$dateDay": "1979-06-20"}], '
                                             '"test_long": {"$numberLong": 123456789}, "test_dict2": {}, "test_dict": '
                                             '{"a": {"$numberLong": 1}, "b": {"$numberLong": 2}}, "test_bool": true, '

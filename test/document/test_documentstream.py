@@ -1,5 +1,3 @@
-from mapr.ojai.ojai.OJAIDocument import OJAIDocument
-from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator
 # from mapr.ojai.ojai.OJAIDocumentStream import OJAIDocumentStream
 
 try:

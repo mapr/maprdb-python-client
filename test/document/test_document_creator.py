@@ -1,4 +1,4 @@
-from mapr.ojai.ojai.OJAIDocumentCreator import OJAIDocumentCreator
+from mapr.ojai.ojai_utils.ojai_document_creator import OJAIDocumentCreator
 
 try:
     import unittest2 as unittest

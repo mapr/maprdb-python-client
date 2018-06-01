@@ -14,15 +14,10 @@ except ImportError:
 
 
 class UpdateTest(unittest.TestCase):
-    # url = "192.168.33.11:5678?auth=basic;user=fred;password=george;" \
-    #       "ssl=true;" \
-    #       "sslValidate=true;" \
-    #       "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;"
-    url = "node1.cluster.com:5678?auth=basic;user=fred;password=george;" \
+    url = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
           "ssl=true;" \
-          "sslValidate=true;" \
-          "sslCA=/home/creed/projects/maprdb-python-client/docs/ssl_truststore.pem;" \
-          "checkServerIdentity=true"
+          "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
+          "sslTargetNameOverride=node1.cluster.com"
     store_name = '/update-test-store1'
 
     dict_stream = [{'_id': "id01", 'test_int': 51, 'test_str': 'strstr'},
@@ -166,13 +161,13 @@ class UpdateTest(unittest.TestCase):
             document_store = connection.get_store(store_path=UpdateTest.store_name)
         else:
             document_store = connection.create_store(store_path=UpdateTest.store_name)
-        self.assertEqual({'_id': 'id11', 'test_int': 51, 'test_str': 'strstr',
+        self.assertEqual({'_id': 'id11', 'test_int': 50, 'test_str': 'strstr',
                           'test_dict': {'test_int': 5}},
                          document_store.find_by_id('id11'))
         mutation = OJAIDocumentMutation().merge('test_dict',
                                                 {'d': 55, 'g': 'text'})
         document_store.update('id11', mutation)
-        self.assertEqual({'_id': 'id11', 'test_int': 51, 'test_str': 'strstr',
+        self.assertEqual({'_id': 'id11', 'test_int': 50, 'test_str': 'strstr',
                           'test_dict': {'test_int': 5, 'd': 55, 'g': 'text'}},
                          document_store.find_by_id('id11'))
 
@@ -190,8 +185,7 @@ class UpdateTest(unittest.TestCase):
                                                          {'d': 55, 'g': 'text'})
         from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
         false_condition = OJAIQueryCondition().equals_('test_str', 'rtsrts').close().build()
-        with self.assertRaises(DocumentNotFoundError):
-            document_store.check_and_update('id02', mutation=mutation, query_condition=false_condition)
+        self.assertFalse(document_store.check_and_update('id02', mutation=mutation, query_condition=false_condition))
         self.assertEqual({'_id': 'id02', 'mystr': 'str', 'test_int': 51,
                           'test_str': 'strstr'},
                          document_store.find_by_id('id02'))
