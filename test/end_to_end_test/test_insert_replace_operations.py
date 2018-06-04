@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 
 from ojai.types.OTime import OTime
 from ojai.types.OTimestamp import OTimestamp
+
+from mapr.ojai.exceptions.DocumentNotFoundError import DocumentNotFoundError
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 from mapr.ojai.ojai.OJAIDocumentStore import OJAIDocumentStore
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
@@ -147,6 +149,21 @@ class InsertOrReplaceTest(unittest.TestCase):
         self.assertTrue(isinstance(document_store, OJAIDocumentStore))
 
         document_store.insert_or_replace(doc=doc)
+
+    def test_replace_error(self):
+        connection = ConnectionFactory.get_connection(connection_str=InsertOrReplaceTest.url)
+        if connection.is_store_exists(store_path='/test-store9'):
+            document_store = connection.get_store(store_path='/test-store9')
+        else:
+            document_store = connection.create_store(store_path='/test-store9')
+
+        from decimal import Decimal
+        doc_dict = {'_id': 'HtYrSv',
+                    'decimal_field': Decimal('30.225272678504776280306032276712357997894287109375')}
+        doc = connection.new_document(dictionary=doc_dict)
+        with self.assertRaises(DocumentNotFoundError):
+            document_store.replace(doc=doc)
+        connection.delete_store(store_path='/test-store9')
 
 
 if __name__ == '__main__':
