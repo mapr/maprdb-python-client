@@ -19,10 +19,8 @@ The username for the "basic" authentication scheme.
 The password for the "basic" authentication scheme.
 * **ssl=true|false**
 Indicates whether or not a secure connection using SSL/TLS be established. Default is "true". 
-* **sslValidate=true|false**
-When "ssl=true", indicates whether or not the client should validate server's certificate against a list of CA certificates. Currently, client supports only "true".
 * **sslCA=<path_to_a_PEM_file_containing_CA_certificates>**
-Path of a local file containing CA certificates in PEM format. When "sslValidate=true" and a valid file is not specified, client will generate appropriate error/exception. 
+Path of a local file containing CA certificates in PEM format. Required if ssl enabled.
 * **sslTargetNameOverride=<The_CN_identifies_the_host_name_associated_with_the_certificate>**
 Single host name in case of a single-name certificate (e.g. mapr.com) or a wildcard name in case of a wildcard certificate (e.g. *.mapr.com)
 
