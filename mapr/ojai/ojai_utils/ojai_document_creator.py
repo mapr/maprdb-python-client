@@ -1,3 +1,4 @@
+import base64
 import json
 
 from decimal import Decimal
@@ -26,7 +27,7 @@ class OJAIDocumentCreator:
             elif key in ('$numberLong', '$numberFloat', '$numberShort'):
                 return value
             elif key == '$binary':
-                return bytearray(value, 'ISO-8859-1')
+                return bytearray(base64.b64decode(value))
             elif key in ('$interval', '$date', '$dateDay', '$time'):
                 return OJAIDocumentCreator.generate_o_types(key, value)
             elif key == '$decimal':

@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 from ojai.types.OTime import OTime
 from ojai.types.OTimestamp import OTimestamp
 from mapr.ojai.document.OJAIDocumentMutation import OJAIDocumentMutation
-from mapr.ojai.exceptions.DocumentNotFoundError import DocumentNotFoundError
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 
 try:
@@ -194,6 +193,21 @@ class UpdateTest(unittest.TestCase):
         self.assertEqual({'_id': 'id02', 'mystr': 'str', 'test_int': 51,
                           'test_str': 'strstr', 'new_field': {'d': 55, 'g': 'text'}},
                          document_store.find_by_id('id02'))
+
+    def test_test(self):
+        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.url)
+        if connection.is_store_exists(store_path=UpdateTest.store_name):
+            document_store = connection.get_store(store_path=UpdateTest.store_name)
+        else:
+            document_store = connection.create_store(store_path=UpdateTest.store_name)
+        doct = {'_id': 'Hty', 'oho': 55}
+        doc = connection.new_document(dictionary=doct)
+        document_store.insert_or_replace(doc)
+        mut = OJAIDocumentMutation()
+        mut.set_or_replace('b', bytearray(b'\x06\x06'))
+        document_store.update(_id='Hty', mutation=mut)
+        res = document_store.find_by_id(_id='Hty')
+        self.assertEqual({'_id': 'Hty', 'oho': 55, 'b': bytearray(b'\x06\x06')}, res)
 
 
 if __name__ == '__main__':

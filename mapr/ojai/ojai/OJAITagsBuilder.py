@@ -1,3 +1,4 @@
+import base64
 import decimal
 from ojai.types.ODate import ODate
 from ojai.types.OInterval import OInterval
@@ -82,8 +83,7 @@ class OJAITagsBuilder:
                                                                 oja_type='$interval'))
 
     def __set_byte_array(self, field_path, value, offset=None, length=None):
-        # TODO ISO-8859-1 or utf-8 ?
-        to_str = value.decode('ISO-8859-1')
+        to_str = base64.b64encode(value)
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
                                                                 value=to_str,

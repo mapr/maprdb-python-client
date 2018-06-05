@@ -93,7 +93,7 @@ class DocumentTest(unittest.TestCase):
         doc = OJAIDocument().set('test_byte_array', byte_array)
         self.assertEqual(doc.as_dictionary(), {'test_byte_array': bytearray(b'\x13\x00\x00\x00\x08\x00')})
         self.assertEqual(doc.as_json_str(),
-                         '{"test_byte_array": {"$binary": "\\u0013\\u0000\\u0000\\u0000\\b\\u0000"}}')
+                         '{"test_byte_array": {"$binary": "EwAAAAgA"}}')
 
         recreated_doc = OJAIDocumentCreator().create_document(doc.as_json_str())
         self.assertEqual(recreated_doc.as_dictionary(), {'test_byte_array': bytearray(b'\x13\x00\x00\x00\x08\x00')})

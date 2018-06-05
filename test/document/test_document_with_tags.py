@@ -127,7 +127,7 @@ class DocumentTagsTest(unittest.TestCase):
         byte_array = bytearray([0x13, 0x00, 0x00, 0x00, 0x08, 0x00])
         doc = OJAIDocument().set('test_byte_array', byte_array)
         self.assertEqual(doc.as_json_str(),
-                         '{"test_byte_array": {"$binary": "\\u0013\\u0000\\u0000\\u0000\\b\\u0000"}}')
+                         '{"test_byte_array": {"$binary": "EwAAAAgA"}}')
 
     def test_doc_set_doc(self):
         doc_to_set = OJAIDocument().set_id('121212') \
