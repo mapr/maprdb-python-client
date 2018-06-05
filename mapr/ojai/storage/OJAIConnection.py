@@ -29,13 +29,12 @@ import urlparse
 class OJAIConnection(Connection):
 
     def __init__(self, connection_str):
-        self.__url, self.__auth, self.__encoded_user_metadata, self.__ssl, self.__ssl_validation, \
+        self.__url, self.__auth, self.__encoded_user_metadata, self.__ssl,\
         self.__ssl_ca, self.__ssl_target_name_override = OJAIConnection.__parse_connection_url(
             connection_url=connection_str)
 
         self.__channel = OJAIConnection.__get_channel(self.__url,
                                                       self.__ssl,
-                                                      self.__ssl_validation,
                                                       self.__ssl_ca,
                                                       self.__ssl_target_name_override,
                                                       self.__encoded_user_metadata)
@@ -71,39 +70,32 @@ class OJAIConnection(Connection):
         encoded_user_metadata = base64.b64encode('{0}:{1}'.format(options_dict.get('user', [''])[0],
                                                                   options_dict.get('password', [''])[0]))
         ssl = True if options_dict.get('ssl', ['false'])[0] == 'true' else False
-        ssl_validation = True if options_dict.get('sslValidate', ['true'])[0] == 'true' else False
         ssl_ca = options_dict.get('sslCA', [''])[0]
         ssl_target_name_override = options_dict.get('sslTargetNameOverride', [''])[0]
 
-        if ssl and ssl_validation and ssl_ca == '':
-            raise AttributeError('sslCa path must be specified when ssl and sslValidation enabled.')
+        if ssl and ssl_ca == '':
+            raise AttributeError('sslCa path must be specified when ssl enabled.')
 
-        if ssl and ssl_validation and ssl_target_name_override == '':
-            raise AttributeError('sslTargetNameOverride must be specified when sslValidation enabled.')
-
-        return url, auth, encoded_user_metadata, ssl, ssl_validation, ssl_ca, ssl_target_name_override
+        return url, auth, encoded_user_metadata, ssl, ssl_ca, ssl_target_name_override
 
     @staticmethod
     def __get_channel(url,
                       ssl,
-                      ssl_validation,
                       ssl_ca,
                       ssl_target_name_override,
                       encoded_user_metadata):
         interceptor = auth_interceptor.client_auth_interceptor(encoded_user_metadata)
         if ssl:
-            if ssl_validation:
-                ssl_trust_pem = open(ssl_ca).read()
-                ssl_credentials = \
-                    grpc.ssl_channel_credentials(root_certificates=ssl_trust_pem)
-                channel = grpc.secure_channel(url,
-                                              ssl_credentials,
-                                              (('grpc.ssl_target_name_override',
-                                                ssl_target_name_override),))
-                return grpc.intercept_channel(channel, interceptor)
-            else:
-                raise NotImplementedError("This features not implemented in grpc."
-                                          "Track it there: https://github.com/grpc/grpc/pull/15274")
+            # Disabling SSL validation is currently not supported by gRPC Python library
+            # https://github.com/grpc/grpc/pull/15274
+            ssl_trust_pem = open(ssl_ca).read()
+            ssl_credentials = \
+                grpc.ssl_channel_credentials(root_certificates=ssl_trust_pem)
+            channel = grpc.secure_channel(url,
+                                          ssl_credentials,
+                                          (('grpc.ssl_target_name_override',
+                                            ssl_target_name_override),))
+            return grpc.intercept_channel(channel, interceptor)
         else:
             channel = grpc.insecure_channel(url)
             return grpc.intercept_channel(channel, interceptor)
