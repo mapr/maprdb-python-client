@@ -1,4 +1,4 @@
-##Repository for python OJAI client support for MapR-DB
+## Repository for python OJAI client support for MapR-DB
 
 A simple, lightweight library which provide access to MapR-DB.
 Client library able to supports all existing OJAI functionality and being absolutely capable with Java OJAI connector,
