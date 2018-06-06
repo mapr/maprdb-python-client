@@ -24,6 +24,9 @@ from mapr.ojai.proto.gen.maprdb_server_pb2_grpc import MapRDbServerStub
 from mapr.ojai.storage import auth_interceptor
 from mapr.ojai.utils.retry_utils import retry_if_connection_not_established
 import urlparse
+import logging
+
+LOG = logging.getLogger(__name__)
 
 
 class OJAIConnection(Connection):
@@ -42,6 +45,12 @@ class OJAIConnection(Connection):
 
         self.__connection = MapRDbServerStub(self.__channel)
         OJAIConnection.__ping_connection(self.__connection)
+        LOG.debug('Connection was created'
+                  ' for %s with options auth:%s, ssl:%s, sslTargetNameOverride:%s',
+                  self.__url,
+                  self.__auth,
+                  self.__ssl,
+                  self.__ssl_target_name_override)
 
     @staticmethod
     @retry(wait_exponential_multiplier=1000,
@@ -115,7 +124,9 @@ class OJAIConnection(Connection):
     def create_store(self, store_path):
         self.__validate_store_path(store_path=store_path)
         request = CreateTableRequest(table_path=store_path)
+        LOG.debug('Sending CREATE STORE request to the server. Request body: %s', request)
         response = self.__connection.CreateTable(request)
+        LOG.debug('Got CREATE STORE response from the server. Response body: %s', response)
 
         if self.__validate_response(response=response):
             return self.get_store(store_path=store_path)
@@ -127,7 +138,9 @@ class OJAIConnection(Connection):
     def is_store_exists(self, store_path):
         self.__validate_store_path(store_path=store_path)
         request = TableExistsRequest(table_path=store_path)
+        LOG.debug('Sending IS STORE EXISTS request to the server. Request body: %s', request)
         response = self.__connection.TableExists(request)
+        LOG.debug('Got IS STORE EXISTS response from the server. Response body: %s', response)
         if response.error.err_code == ErrorCode.Value('NO_ERROR'):
             return True
         elif response.error.err_code == ErrorCode.Value('CLUSTER_NOT_FOUND'):
@@ -148,7 +161,9 @@ class OJAIConnection(Connection):
     def delete_store(self, store_path):
         self.__validate_store_path(store_path=store_path)
         request = DeleteTableRequest(table_path=store_path)
+        LOG.debug('Sending DELETE STORE request to the server. Request body: %s', request)
         response = self.__connection.DeleteTable(request)
+        LOG.debug('Got DELETE STORE response from the server. Response body: %s', response)
         return self.__validate_response(response=response)
 
     @staticmethod
@@ -178,6 +193,7 @@ class OJAIConnection(Connection):
             return self.create_store(store_path=store_path)
 
     def get_store(self, store_path, options=None):
+        LOG.debug('Trying to get store %s from the server.', store_path)
         if self.is_store_exists(store_path=store_path):
             return OJAIDocumentStore(url=self.__url,
                                      store_path=store_path,
