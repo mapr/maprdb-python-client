@@ -194,3 +194,9 @@ class DocumentMutationTest(unittest.TestCase):
             OJAIDocumentMutation().append('_id', ['1', '2', '3'])
         with self.assertRaises(IllegalArgumentError):
             OJAIDocumentMutation().merge(field_path='_id', value={'a': 5})
+
+    def test_document_mutation_increment_decrement_bool(self):
+        with self.assertRaises(TypeError):
+            OJAIDocumentMutation().increment('test_increment', True)
+        with self.assertRaises(TypeError):
+            OJAIDocumentMutation().decrement('test_decrement', True)
