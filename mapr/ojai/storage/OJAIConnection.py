@@ -91,14 +91,17 @@ class OJAIConnection(Connection):
             ssl_trust_pem = open(ssl_ca).read()
             ssl_credentials = \
                 grpc.ssl_channel_credentials(root_certificates=ssl_trust_pem)
-            channel = grpc.secure_channel(url,
-                                          ssl_credentials,
-                                          (('grpc.ssl_target_name_override',
-                                            ssl_target_name_override),))
-            return grpc.intercept_channel(channel, interceptor)
+            if ssl_target_name_override:
+                channel = grpc.secure_channel(url,
+                                              ssl_credentials,
+                                              (('grpc.ssl_target_name_override',
+                                                ssl_target_name_override),))
+            else:
+                channel = grpc.secure_channel(url,
+                                              ssl_credentials)
         else:
             channel = grpc.insecure_channel(url)
-            return grpc.intercept_channel(channel, interceptor)
+        return grpc.intercept_channel(channel, interceptor)
 
     @retry(wait_exponential_multiplier=1000,
            wait_exponential_max=18000,
