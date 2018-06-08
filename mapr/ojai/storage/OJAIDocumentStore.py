@@ -28,6 +28,9 @@ from mapr.ojai.proto.gen.maprdb_server_pb2 import InsertOrReplaceRequest, \
     InsertMode, FindRequest, DeleteRequest, UpdateRequest
 from mapr.ojai.utils.retry_utils import retry_if_connection_not_established
 from mapr.ojai.ojai.OJAITagsBuilder import OJAITagsBuilder
+import logging
+
+LOG = logging.getLogger(__name__)
 
 
 class OJAIDocumentStore(DocumentStore):
@@ -127,11 +130,12 @@ class OJAIDocumentStore(DocumentStore):
                 if isinstance(field_paths, list) \
                 else field_paths.split(',')
 
+        LOG.debug('Sending FIND BY ID request to the server. Request body: %s', request)
         if timeout is None:
             response = self.__connection.FindById(request)
         else:
             response = self.__connection.FindById(request, timeout=timeout)
-
+        LOG.debug('Got FIND BY ID response from the server. Response body: %s', response)
         return self.__build_find_by_id_result(response=response,
                                               results_as_document=results_as_document)
 
@@ -159,6 +163,7 @@ class OJAIDocumentStore(DocumentStore):
                                   'JSON_ENCODING'),
                               include_query_plan=include_query_plan,
                               json_query=query_str)
+        LOG.debug('Sending FIND request to the server. Request body: %s', request)
         if timeout is None:
             response_stream = \
                 self.__connection.Find(request)
@@ -171,6 +176,7 @@ class OJAIDocumentStore(DocumentStore):
                                include_query_plan=include_query_plan)
 
     def __evaluate_doc_stream(self, doc_stream, operation_type):
+        LOG.debug('Start sending documents on the server.')
         for doc in doc_stream:
             if isinstance(doc, OJAIDocument):
                 self.__validate_dict(doc.as_dictionary())
@@ -194,8 +200,14 @@ class OJAIDocumentStore(DocumentStore):
                                          json_document=doc_str)
         if condition is not None:
             request.json_condition = condition
+        LOG.debug('Sending %s request to the server. Request body: %s',
+                  operation_type,
+                  request)
         response = \
             self.__connection.InsertOrReplace(request)
+        LOG.debug('Got %s response from the server. Response body: %s',
+                  operation_type,
+                  response)
         self.validate_response(response=response)
 
     @retry(wait_exponential_multiplier=1000,
@@ -216,10 +228,13 @@ class OJAIDocumentStore(DocumentStore):
                                 payload_encoding=PayloadEncoding.Value(
                                     'JSON_ENCODING'),
                                 json_document=doc_string)
+        LOG.debug('Sending DELETE request to the server. Request body: %s', request)
         response = self.__connection.Delete(request)
+        LOG.debug('Got DELETE response from the server. Response body: %s', response)
         self.validate_response(response)
 
     def __delete_doc_stream(self, doc_stream):
+        LOG.debug('Start deleting documents on the server.')
         if not isinstance(doc_stream, list):
             raise IllegalArgumentError(
                 m="Invalid type of the doc_stream parameter.")
@@ -307,7 +322,9 @@ class OJAIDocumentStore(DocumentStore):
                                 json_mutation=mutation)
         if condition:
             request.json_condition = condition
+        LOG.debug('Sending UPDATE request to the server. Request body: %s', request)
         response = self.__connection.Update(request)
+        LOG.debug('Got UPDATE response from the server. Response body: %s', response)
         self.validate_response(response=response)
 
     @retry(wait_exponential_multiplier=1000,
@@ -350,7 +367,9 @@ class OJAIDocumentStore(DocumentStore):
                                 json_condition=str_condition,
                                 json_document=OJAIDocument().set_id(
                                     _id=_id).as_json_str())
+        LOG.debug('Sending CHECK AND DELETE request to the server. Request body: %s', request)
         response = self.__connection.Delete(request)
+        LOG.debug('Got CHECK AND DELETE response from the server. Response body: %s', response)
         self.validate_response(response)
 
     @retry(wait_exponential_multiplier=1000,

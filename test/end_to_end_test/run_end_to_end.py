@@ -1,3 +1,6 @@
+import logging
+
+from mapr.ojai import enable_debug_log
 from test.end_to_end_test.test_check_and_delete import CheckAndDeleteTest
 from test.end_to_end_test.test_check_and_replace import CheckAndReplaceTest
 from test.end_to_end_test.test_ddl_operations import ConnectionTest
@@ -25,6 +28,8 @@ if __name__ == '__main__':
                            ]
 
     loader = unittest.TestLoader()
+    enable_debug_log('mapr.ojai.storage',
+                     logger_level=logging.DEBUG)
 
     suites_list = []
     for test_class in test_classes_to_run:
