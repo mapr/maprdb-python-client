@@ -35,10 +35,31 @@ LOG = logging.getLogger(__name__)
 
 class OJAIDocumentStore(DocumentStore):
 
-    def __init__(self, url, store_path, connection):
+    def __init__(self, url, store_path, connection, retry_config):
         self.__url = url
         self.__store_path = store_path
         self.__connection = connection
+        self.__retry_config = retry_config
+
+    def __configure_retry(self, retry_config):
+        retry_dec = retry(
+            wait_exponential_multiplier=retry_config.wait_exponential_multiplier,
+            wait_exponential_max=retry_config.wait_exponential_max,
+            stop_max_attempt_number=retry_config.stop_max_attempt_number,
+            retry_on_exception=retry_if_connection_not_established
+        )
+        self.find_by_id = retry_dec(self.find_by_id)
+        self.find = retry_dec(self.find)
+        self.__evaluate_doc = retry_dec(self.__evaluate_doc)
+        self.insert_or_replace = retry_dec(self.insert_or_replace)
+        self.delete = retry_dec(self.delete)
+        self.insert = retry_dec(self.insert)
+        self.replace = retry_dec(self.replace)
+        self.check_and_delete = retry_dec(self.check_and_delete)
+        self.update = retry_dec(self.update)
+        self.check_and_update = retry_dec(self.check_and_update)
+        self.check_and_replace = retry_dec(self.check_and_replace)
+        self.increment = retry_dec(self.increment)
 
     def is_read_only(self):
         pass
@@ -101,10 +122,6 @@ class OJAIDocumentStore(DocumentStore):
             return OJAIDocumentCreator.create_document(
                 json_string=response.json_document).as_dictionary()
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def find_by_id(self, _id, field_paths=None, condition=None,
                    results_as_document=False, timeout=None):
         if not isinstance(_id, (str, unicode)):
@@ -139,10 +156,6 @@ class OJAIDocumentStore(DocumentStore):
         return self.__build_find_by_id_result(response=response,
                                               results_as_document=results_as_document)
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def find(self, query=None, results_as_document=False,
              include_query_plan=False, timeout=None):
         if query is None:
@@ -187,10 +200,6 @@ class OJAIDocumentStore(DocumentStore):
             self.__evaluate_doc(doc_str=doc_str,
                                 operation_type=operation_type)
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def __evaluate_doc(self, doc_str, operation_type, condition=None):
         request = InsertOrReplaceRequest(table_path=self.__store_path,
                                          insert_mode=InsertMode.Value(
@@ -210,10 +219,6 @@ class OJAIDocumentStore(DocumentStore):
                   response)
         self.validate_response(response=response)
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def insert_or_replace(self, doc=None, _id=None, field_as_key=None,
                           doc_stream=None):
         if doc_stream is None:
@@ -265,10 +270,6 @@ class OJAIDocumentStore(DocumentStore):
             self.__evaluate_delete(
                 OJAIDocument().from_dict(document_dict=document).as_json_str())
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def delete(self, doc=None, _id=None, field_as_key=None, doc_stream=None):
         if doc is not None:
             self.__delete_document(document=doc)
@@ -279,10 +280,6 @@ class OJAIDocumentStore(DocumentStore):
         else:
             raise IllegalArgumentError(m="Invalid set of the parameters.")
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def insert(self, doc=None, _id=None, field_as_key=None, doc_stream=None):
         if doc_stream is None:
             doc_str = OJAIDocumentStore.__get_doc_str(doc=doc, _id=_id)
@@ -290,10 +287,6 @@ class OJAIDocumentStore(DocumentStore):
         else:
             self.__evaluate_doc_stream(doc_stream, 'INSERT')
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def replace(self, doc=None, _id=None, field_as_key=None, doc_stream=None):
         if doc_stream is None:
             doc_str = OJAIDocumentStore.__get_doc_str(doc=doc, _id=_id)
@@ -301,10 +294,6 @@ class OJAIDocumentStore(DocumentStore):
         else:
             self.__evaluate_doc_stream(doc_stream, 'REPLACE')
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def increment(self, _id, field, inc):
         str_doc = OJAIDocument().set_id(_id=_id).as_json_str()
         from mapr.ojai.document.OJAIDocumentMutation import \
@@ -327,10 +316,6 @@ class OJAIDocumentStore(DocumentStore):
         LOG.debug('Got UPDATE response from the server. Response body: %s', response)
         self.validate_response(response=response)
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def update(self, _id, mutation):
         str_doc = OJAIDocument().set_id(_id=_id).as_json_str()
         str_mutation = OJAIDocumentStore.__get_str_mutation(mutation)
@@ -338,10 +323,6 @@ class OJAIDocumentStore(DocumentStore):
         self.__execute_update(_id=str_doc,
                               mutation=str_mutation)
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def check_and_update(self, _id, query_condition, mutation):
         str_condition = OJAIDocumentStore.__get_str_condition(query_condition)
         str_doc = OJAIDocument().set_id(_id=_id).as_json_str()
@@ -354,10 +335,6 @@ class OJAIDocumentStore(DocumentStore):
             return False
         return True
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def check_and_delete(self, _id, condition):
         str_condition = OJAIDocumentStore.__get_str_condition(
             condition=condition)
@@ -372,10 +349,6 @@ class OJAIDocumentStore(DocumentStore):
         LOG.debug('Got CHECK AND DELETE response from the server. Response body: %s', response)
         self.validate_response(response)
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def check_and_replace(self, doc, condition, _id=None):
         if _id is not None:
             doc.set_id(_id=_id)

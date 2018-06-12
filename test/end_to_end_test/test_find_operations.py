@@ -14,13 +14,13 @@ except ImportError:
 
 
 class FindTest(unittest.TestCase):
-    url = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
+    connection_str = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
           "ssl=true;" \
           "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
           "sslTargetNameOverride=node1.cluster.com"
 
     def test_simple_find(self):
-        connection = ConnectionFactory.get_connection(connection_str=FindTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=FindTest.connection_str)
 
         if connection.is_store_exists(store_path='/find-test-store1'):
             document_store = connection.get_store(store_path='/find-test-store1')
@@ -43,7 +43,7 @@ class FindTest(unittest.TestCase):
             self.assertEqual(doc, document.as_dictionary())
 
     def test_find_on_empty_table(self):
-        connection = ConnectionFactory.get_connection(connection_str=FindTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=FindTest.connection_str)
 
         if connection.is_store_exists(store_path='/find-test-store2'):
             document_store = connection.get_store(store_path='/find-test-store2')
@@ -61,7 +61,7 @@ class FindTest(unittest.TestCase):
         self.assertEqual(size, 0)
 
     def test_find_table_not_found(self):
-        connection = ConnectionFactory.get_connection(connection_str=FindTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=FindTest.connection_str)
         query = OJAIQuery().select(['_id', 'test_int', 'test_str', 'test_dict', 'test_list', 'test_null']).build()
         connection.delete_store('/find-test-store3')
         self.assertFalse(connection.is_store_exists('/find-test-store3'))
@@ -72,7 +72,7 @@ class FindTest(unittest.TestCase):
                 print(doc)
 
     def test_find_multiple_records(self):
-        connection = ConnectionFactory.get_connection(connection_str=FindTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=FindTest.connection_str)
 
         if connection.is_store_exists(store_path='/find-test-store4'):
             document_store = connection.get_store(store_path='/find-test-store4')
@@ -98,7 +98,7 @@ class FindTest(unittest.TestCase):
             index += 1
 
     def test_find_with_condition(self):
-        connection = ConnectionFactory.get_connection(connection_str=FindTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=FindTest.connection_str)
         document_list = []
         for i in range(3, 7):
             document_list.append(connection.new_document(dictionary={'_id': 'id00%s' % i,
@@ -126,7 +126,7 @@ class FindTest(unittest.TestCase):
             index += 1
 
     def test_find_all(self):
-        connection = ConnectionFactory.get_connection(connection_str=FindTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=FindTest.connection_str)
 
         if connection.is_store_exists(store_path='/find-test-store4'):
             document_store = connection.get_store(store_path='/find-test-store4')

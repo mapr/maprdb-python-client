@@ -13,7 +13,7 @@ except ImportError:
 
 
 class UpdateTest(unittest.TestCase):
-    url = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
+    connection_str = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
           "ssl=true;" \
           "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
           "sslTargetNameOverride=node1.cluster.com"
@@ -44,7 +44,7 @@ class UpdateTest(unittest.TestCase):
                    ]
 
     def test_update_document_set(self):
-        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.connection_str)
 
         if connection.is_store_exists(store_path=UpdateTest.store_name):
             document_store = connection.get_store(store_path=UpdateTest.store_name)
@@ -66,7 +66,7 @@ class UpdateTest(unittest.TestCase):
                          document_store.find_by_id('id08'))
 
     def test_update_document_set_error(self):
-        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.connection_str)
 
         if connection.is_store_exists(store_path=UpdateTest.store_name):
             document_store = connection.get_store(store_path=UpdateTest.store_name)
@@ -82,7 +82,7 @@ class UpdateTest(unittest.TestCase):
                          document_store.find_by_id('id11'))
 
     def test_update_document_put(self):
-        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.connection_str)
 
         if connection.is_store_exists(store_path=UpdateTest.store_name):
             document_store = connection.get_store(store_path=UpdateTest.store_name)
@@ -100,7 +100,7 @@ class UpdateTest(unittest.TestCase):
                          document_store.find_by_id('id06'))
 
     def test_update_document_increment_decrement(self):
-        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.connection_str)
 
         if connection.is_store_exists(store_path=UpdateTest.store_name):
             document_store = connection.get_store(store_path=UpdateTest.store_name)
@@ -122,7 +122,7 @@ class UpdateTest(unittest.TestCase):
         # TODO verify error code for invalid decrement/increment command
 
     def test_update_document_delete(self):
-        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.connection_str)
 
         if connection.is_store_exists(store_path=UpdateTest.store_name):
             document_store = connection.get_store(store_path=UpdateTest.store_name)
@@ -137,7 +137,7 @@ class UpdateTest(unittest.TestCase):
                          document_store.find_by_id('id01'))
 
     def test_update_document_append(self):
-        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.connection_str)
 
         if connection.is_store_exists(store_path=UpdateTest.store_name):
             document_store = connection.get_store(store_path=UpdateTest.store_name)
@@ -154,7 +154,7 @@ class UpdateTest(unittest.TestCase):
                          document_store.find_by_id('id09'))
 
     def test_update_document_merge(self):
-        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.connection_str)
 
         if connection.is_store_exists(store_path=UpdateTest.store_name):
             document_store = connection.get_store(store_path=UpdateTest.store_name)
@@ -171,7 +171,7 @@ class UpdateTest(unittest.TestCase):
                          document_store.find_by_id('id11'))
 
     def test_check_and_update(self):
-        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.connection_str)
 
         if connection.is_store_exists(store_path=UpdateTest.store_name):
             document_store = connection.get_store(store_path=UpdateTest.store_name)
@@ -195,7 +195,7 @@ class UpdateTest(unittest.TestCase):
                          document_store.find_by_id('id02'))
 
     def test_test(self):
-        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=UpdateTest.connection_str)
         if connection.is_store_exists(store_path=UpdateTest.store_name):
             document_store = connection.get_store(store_path=UpdateTest.store_name)
         else:

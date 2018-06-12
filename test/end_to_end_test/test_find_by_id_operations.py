@@ -14,13 +14,13 @@ except ImportError:
 
 
 class FindByIdTest(unittest.TestCase):
-    url = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
+    connection_str = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
           "ssl=true;" \
           "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
           "sslTargetNameOverride=node1.cluster.com"
 
     def test_find_by_id(self):
-        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.connection_str)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
             document_store = connection.get_store(store_path='/find-by-id-test-store1')
@@ -56,7 +56,7 @@ class FindByIdTest(unittest.TestCase):
             .set('first.test_dict2', {}) \
             .set('first.test_list', [1, 2, 'str', False, ODate(days_since_epoch=3457)]) \
 
-        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.connection_str)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
             document_store = connection.get_store(store_path='/find-by-id-test-store1')
@@ -79,7 +79,7 @@ class FindByIdTest(unittest.TestCase):
         self.assertEqual(doc.as_dictionary(), document.as_dictionary())
 
     def test_find_by_id_as_dict(self):
-        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.connection_str)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
             document_store = connection.get_store(store_path='/find-by-id-test-store1')
@@ -106,7 +106,7 @@ class FindByIdTest(unittest.TestCase):
         self.assertEqual(doc, document.as_dictionary())
 
     def test_find_by_id_empty_response(self):
-        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.connection_str)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
             document_store = connection.get_store(store_path='/find-by-id-test-store1')
@@ -122,7 +122,7 @@ class FindByIdTest(unittest.TestCase):
         self.assertEqual(doc_as_object.as_dictionary(), {})
 
     def test_find_by_id_with_condition(self):
-        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.url)
+        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.connection_str)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
             document_store = connection.get_store(store_path='/find-by-id-test-store1')
