@@ -15,13 +15,13 @@ except ImportError:
 
 class LongRunningTest(unittest.TestCase):
 
-    url = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
+    connection_str = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
           "ssl=true;" \
           "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
           "sslTargetNameOverride=node1.cluster.com"
 
     def test_huge_operations(self):
-        connection = ConnectionFactory.get_connection(LongRunningTest.url)
+        connection = ConnectionFactory.get_connection(LongRunningTest.connection_str)
 
         if connection.is_store_exists(store_path='/long-run-test-store'):
             connection.delete_store(store_path='/long-run-test-store')

@@ -22,7 +22,8 @@ from mapr.ojai.proto.gen.maprdb_server_pb2 import CreateTableRequest, \
     ErrorCode, TableExistsRequest, DeleteTableRequest, PingRequest
 from mapr.ojai.proto.gen.maprdb_server_pb2_grpc import MapRDbServerStub
 from mapr.ojai.storage import auth_interceptor
-from mapr.ojai.utils.retry_utils import retry_if_connection_not_established
+from mapr.ojai.utils.retry_utils import retry_if_connection_not_established, RetryOptions, \
+    DEFAULT_WAIT_EXPONENTIAL_MULTIPLIER, DEFAULT_WAIT_EXPONENTIAL_MAX, DEFAULT_STOP_MAX_ATTEMPT
 import urlparse
 import logging
 
@@ -31,8 +32,21 @@ LOG = logging.getLogger(__name__)
 
 class OJAIConnection(Connection):
 
-    def __init__(self, connection_str):
-        self.__url, self.__auth, self.__encoded_user_metadata, self.__ssl,\
+    def __init__(self, connection_str, options=None):
+
+        if options is None:
+            options = {}
+
+        if not isinstance(options, dict):
+            raise TypeError('Options type must be dict.')
+        self.__retry_config = \
+            RetryOptions(options.get('ojai.mapr.rpc.wait-multiplier',
+                                     DEFAULT_WAIT_EXPONENTIAL_MULTIPLIER),
+                         options.get('ojai.mapr.rpc.wait-max-attempt',
+                                     DEFAULT_WAIT_EXPONENTIAL_MAX),
+                         options.get('ojai.mapr.rpc.max-retries',
+                                     DEFAULT_STOP_MAX_ATTEMPT))
+        self.__url, self.__auth, self.__encoded_user_metadata, self.__ssl, \
         self.__ssl_ca, self.__ssl_target_name_override = OJAIConnection.__parse_connection_url(
             connection_url=connection_str)
 
@@ -43,7 +57,8 @@ class OJAIConnection(Connection):
                                                       self.__encoded_user_metadata)
 
         self.__connection = MapRDbServerStub(self.__channel)
-        OJAIConnection.__ping_connection(self.__connection)
+        self.__configure_retry(self.__retry_config)
+        self.__ping_connection(self.__connection)
         LOG.debug('Connection was created'
                   ' for %s with options auth:%s, ssl:%s, sslTargetNameOverride:%s',
                   self.__url,
@@ -51,12 +66,19 @@ class OJAIConnection(Connection):
                   self.__ssl,
                   self.__ssl_target_name_override)
 
-    @staticmethod
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
-    def __ping_connection(connection):
+    def __configure_retry(self, retry_config):
+        retry_dec = retry(
+            wait_exponential_multiplier=retry_config.wait_exponential_multiplier,
+            wait_exponential_max=retry_config.wait_exponential_max,
+            stop_max_attempt_number=retry_config.stop_max_attempt_number,
+            retry_on_exception=retry_if_connection_not_established
+        )
+        self.__ping_connection = retry_dec(self.__ping_connection)
+        self.create_store = retry_dec(self.create_store)
+        self.is_store_exists = retry_dec(self.is_store_exists)
+        self.delete_store = retry_dec(self.delete_store)
+
+    def __ping_connection(self, connection):
         try:
             connection.Ping(PingRequest(), timeout=10)
         except _Rendezvous as e:
@@ -112,10 +134,6 @@ class OJAIConnection(Connection):
             channel = grpc.insecure_channel(url)
         return grpc.intercept_channel(channel, interceptor)
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def create_store(self, store_path):
         self.__validate_store_path(store_path=store_path)
         request = CreateTableRequest(table_path=store_path)
@@ -126,10 +144,6 @@ class OJAIConnection(Connection):
         if self.__validate_response(response=response):
             return self.get_store(store_path=store_path)
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def is_store_exists(self, store_path):
         self.__validate_store_path(store_path=store_path)
         request = TableExistsRequest(table_path=store_path)
@@ -149,10 +163,6 @@ class OJAIConnection(Connection):
         else:
             raise UnknownServerError
 
-    @retry(wait_exponential_multiplier=1000,
-           wait_exponential_max=18000,
-           stop_max_attempt_number=7,
-           retry_on_exception=retry_if_connection_not_established)
     def delete_store(self, store_path):
         self.__validate_store_path(store_path=store_path)
         request = DeleteTableRequest(table_path=store_path)
@@ -193,7 +203,7 @@ class OJAIConnection(Connection):
             return OJAIDocumentStore(url=self.__url,
                                      store_path=store_path,
                                      connection=self.__connection,
-                                     )
+                                     retry_config=self.__retry_config)
         else:
             raise StoreNotFoundError(m='Store {0} not found.'.format(store_path))
 
