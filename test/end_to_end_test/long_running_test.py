@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 from __future__ import unicode_literals
 
-from ojai.types.OTime import OTime
-from ojai.types.OTimestamp import OTimestamp
-
 from mapr.ojai.document.OJAIDocumentMutation import OJAIDocumentMutation
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
+from test.test_utils.constants import CONNECTION_STR
 
 try:
     import unittest2 as unittest
@@ -15,13 +13,8 @@ except ImportError:
 
 class LongRunningTest(unittest.TestCase):
 
-    connection_str = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
-          "ssl=true;" \
-          "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
-          "sslTargetNameOverride=node1.cluster.com"
-
     def test_huge_operations(self):
-        connection = ConnectionFactory.get_connection(LongRunningTest.connection_str)
+        connection = ConnectionFactory.get_connection(CONNECTION_STR)
 
         if connection.is_store_exists(store_path='/long-run-test-store'):
             connection.delete_store(store_path='/long-run-test-store')
