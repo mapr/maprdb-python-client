@@ -2,7 +2,6 @@ from test.document.test_document import DocumentTest
 from test.document.test_document_creator import DocumentCreatorTest
 from test.document.test_document_with_tags import DocumentTagsTest
 from test.document.test_documentmutation import DocumentMutationTest
-from test.document.test_documentstream import DocumentStreamTest
 from test.query_test.test_query import QueryTest
 
 try:
@@ -15,7 +14,6 @@ if __name__ == '__main__':
     test_classes_to_run = [DocumentTest,
                            DocumentTagsTest,
                            QueryTest,
-                           DocumentStreamTest,
                            DocumentCreatorTest,
                            DocumentMutationTest
                            ]

@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-import json
-
 from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
 from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
 from mapr.ojai.ojai_query.QueryOp import QueryOp

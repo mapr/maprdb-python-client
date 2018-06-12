@@ -6,6 +6,7 @@ from ojai.types.OTime import OTime
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
+from test.test_utils.constants import CONNECTION_STR, CONNECTION_OPTIONS
 
 try:
     import unittest2 as unittest
@@ -14,13 +15,10 @@ except ImportError:
 
 
 class FindByIdTest(unittest.TestCase):
-    connection_str = "192.168.33.11:5678?auth=basic;user=root;password=r00t;" \
-          "ssl=true;" \
-          "sslCA=/opt/mapr/conf/ssl_truststore.pem;" \
-          "sslTargetNameOverride=node1.cluster.com"
 
     def test_find_by_id(self):
-        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.connection_str)
+        connection = ConnectionFactory.get_connection(connection_str=CONNECTION_STR,
+                                                      options=CONNECTION_OPTIONS)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
             document_store = connection.get_store(store_path='/find-by-id-test-store1')
@@ -56,7 +54,8 @@ class FindByIdTest(unittest.TestCase):
             .set('first.test_dict2', {}) \
             .set('first.test_list', [1, 2, 'str', False, ODate(days_since_epoch=3457)]) \
 
-        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.connection_str)
+        connection = ConnectionFactory.get_connection(connection_str=CONNECTION_STR,
+                                                      options=CONNECTION_OPTIONS)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
             document_store = connection.get_store(store_path='/find-by-id-test-store1')
@@ -79,7 +78,8 @@ class FindByIdTest(unittest.TestCase):
         self.assertEqual(doc.as_dictionary(), document.as_dictionary())
 
     def test_find_by_id_as_dict(self):
-        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.connection_str)
+        connection = ConnectionFactory.get_connection(connection_str=CONNECTION_STR,
+                                                      options=CONNECTION_OPTIONS)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
             document_store = connection.get_store(store_path='/find-by-id-test-store1')
@@ -106,7 +106,8 @@ class FindByIdTest(unittest.TestCase):
         self.assertEqual(doc, document.as_dictionary())
 
     def test_find_by_id_empty_response(self):
-        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.connection_str)
+        connection = ConnectionFactory.get_connection(connection_str=CONNECTION_STR,
+                                                      options=CONNECTION_OPTIONS)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
             document_store = connection.get_store(store_path='/find-by-id-test-store1')
@@ -122,7 +123,8 @@ class FindByIdTest(unittest.TestCase):
         self.assertEqual(doc_as_object.as_dictionary(), {})
 
     def test_find_by_id_with_condition(self):
-        connection = ConnectionFactory.get_connection(connection_str=FindByIdTest.connection_str)
+        connection = ConnectionFactory.get_connection(connection_str=CONNECTION_STR,
+                                                      options=CONNECTION_OPTIONS)
 
         if connection.is_store_exists(store_path='/find-by-id-test-store1'):
             document_store = connection.get_store(store_path='/find-by-id-test-store1')
