@@ -1,7 +1,6 @@
 import base64
 import json
 
-from decimal import Decimal
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 
 
@@ -30,8 +29,6 @@ class OJAIDocumentCreator:
                 return bytearray(base64.b64decode(value))
             elif key in ('$interval', '$date', '$dateDay', '$time'):
                 return OJAIDocumentCreator.generate_o_types(key, value)
-            elif key == '$decimal':
-                return Decimal(value)
             else:
                 result_dict[key] = value
         return result_dict

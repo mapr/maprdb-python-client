@@ -3,8 +3,6 @@ from __future__ import unicode_literals
 import json
 from datetime import datetime
 
-from decimal import Decimal
-
 from ojai.types.OInterval import OInterval
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 from ojai.types.ODate import ODate
@@ -90,11 +88,6 @@ class DocumentTagsTest(unittest.TestCase):
             .set('test_long', long(123))
         self.assertEqual(doc.as_json_str(), '{"test_bool": true, "test_long": {"$numberLong": 123}, "test_int": {'
                                             '"$numberLong": 11}, "test_boolean_false": false}')
-
-    def test_doc_set_decimal(self):
-        doc = OJAIDocument().set('test_decimal', Decimal(3.14))
-        self.assertEqual(doc.as_json_str(),
-                         '{"test_decimal": {"$decimal": "3.140000000000000124344978758017532527446746826171875"}}')
 
     def test_doc_set_float(self):
         doc = OJAIDocument() \
@@ -209,16 +202,3 @@ class DocumentTagsTest(unittest.TestCase):
         self.assertEqual(doc.as_json_str(), '{"list_field": [{"$numberLong": 1}, {"$numberLong": 1}]}')
         doc.set(field, value=[2, 2])
         self.assertEqual(doc.as_json_str(), '{"list_field": [{"$numberLong": 2}, {"$numberLong": 2}]}')
-
-    def test_set_decimal(self):
-        doc = OJAIDocument().set('test_decimal', Decimal(3.14))
-        self.assertEqual(doc.as_dictionary(),
-                         {u'test_decimal': Decimal('3.140000000000000124344978758017532527446746826171875')})
-        self.assertEqual(doc.as_json_str(),
-                         '{"test_decimal": {"$decimal": "3.140000000000000124344978758017532527446746826171875"}}')
-        from mapr.ojai.ojai_utils.ojai_document_creator import OJAIDocumentCreator
-        parsed_doc = OJAIDocumentCreator.create_document(doc.as_json_str())
-        self.assertEqual(parsed_doc.as_dictionary(),
-                         {u'test_decimal': Decimal('3.140000000000000124344978758017532527446746826171875')})
-        self.assertEqual(parsed_doc.as_json_str(),
-                         '{"test_decimal": {"$decimal": "3.140000000000000124344978758017532527446746826171875"}}')

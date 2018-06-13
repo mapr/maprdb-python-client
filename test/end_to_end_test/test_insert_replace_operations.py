@@ -119,9 +119,8 @@ class InsertOrReplaceTest(unittest.TestCase):
         else:
             document_store = connection.create_store(store_path='/test-store9')
 
-        from decimal import Decimal
         doc_dict = {'_id': 'HtYrSv',
-                    'decimal_field': Decimal('30.225272678504776280306032276712357997894287109375')}
+                    'long_field': 55}
         doc = connection.new_document(dictionary=doc_dict)
         with self.assertRaises(DocumentNotFoundError):
             document_store.replace(doc=doc)

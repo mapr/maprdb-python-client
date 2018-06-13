@@ -1,5 +1,4 @@
 import base64
-import decimal
 from ojai.types.ODate import ODate
 from ojai.types.OInterval import OInterval
 from ojai.types.OTime import OTime
@@ -51,12 +50,6 @@ class OJAITagsBuilder:
                                                parse_field_path(field_path=field_path,
                                                                 value=value,
                                                                 oja_type='$numberFloat'))
-
-    def __set_decimal(self, field_path, value):
-        self.__internal_dict = merge_two_dicts(self.__internal_dict,
-                                               parse_field_path(field_path=field_path,
-                                                                value=value.to_eng_string(),
-                                                                oja_type='$decimal'))
 
     def __set_time(self, field_path, value):
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
@@ -126,7 +119,6 @@ class OJAITagsBuilder:
         list: __set_array,
         dict: __set_dict,
         bytearray: __set_byte_array,
-        decimal.Decimal: __set_decimal,
         None: __set_none
     }
 

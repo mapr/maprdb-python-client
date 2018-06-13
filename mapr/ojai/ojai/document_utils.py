@@ -2,7 +2,6 @@ from copy import deepcopy
 
 import re
 
-import decimal
 from ojai.types.ODate import ODate
 from ojai.types.OInterval import OInterval
 from ojai.types.OTime import OTime
@@ -74,7 +73,7 @@ def merge_two_dicts(dict1, dict2):
         elif k in merged_dict and isinstance(merged_dict[k], list):
             merged_dict = merge_list_value(merged_dict=merged_dict, k=k, v=v)
         else:
-            if k in ('$decimal', '$numberLong', '$numberFloat', '$numberShort', '$decimal', '$binary',
+            if k in ('$numberLong', '$numberFloat', '$numberShort', '$binary',
                      '$interval', '$date', '$dateDay', '$time') and len(merged_dict) == 1:
                 merged_dict = dict2
             else:
@@ -95,8 +94,6 @@ def type_serializer(obj):
     except:
         if isinstance(obj, (OTime, ODate, OTimestamp, OInterval)):
             return obj.__str__()
-        elif isinstance(obj, decimal.Decimal):
-            return obj.to_eng_string()
         elif isinstance(obj, bytearray):
             return obj.decode('utf8')
         else:
