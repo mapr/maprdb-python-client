@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-from decimal import Decimal
 from random import getrandbits, randint
 
 from ojai.types.OInterval import OInterval
@@ -50,11 +49,6 @@ class DocumentTest(unittest.TestCase):
                                                'test_boolean_false': False,
                                                'test_int': 11,
                                                'test_long': 123})
-
-    def test_doc_set_decimal(self):
-        doc = OJAIDocument().set('test_decimal', Decimal(3.14))
-        self.assertEqual(doc.as_dictionary(),
-                         {'test_decimal': Decimal('3.140000000000000124344978758017532527446746826171875')})
 
     def test_doc_set_float(self):
         doc = OJAIDocument() \
@@ -233,11 +227,6 @@ class DocumentTest(unittest.TestCase):
         doc.set(field, value=[1, 1])
         self.assertEqual(doc.as_dictionary(), {field: [1, 1]})
 
-    def test_get_boolean_as_decimal(self):
-        doc = OJAIDocument()
-        doc.set('bool', True)
-        self.assertEqual(doc.get_decimal('bool'), None)
-
     def test_set_array_element(self):
         doc = OJAIDocument().set('a.b.c', [1, 2, 3])
         self.assertEqual(doc.as_dictionary(), {'a': {'b': {'c': [1, 2, 3]}}})
@@ -267,26 +256,23 @@ class DocumentTest(unittest.TestCase):
             .set('first.test_dict', {'a': 1, 'b': 2}) \
             .set('first.test_dict2', {}) \
             .set('first.test_list', [1, 2, 'str', False, ODate(days_since_epoch=3457)])\
-            .set('test_decimal', Decimal(3.14))\
             .set('test_bytearray', bytearray(b'\x06\x06'))
 
-        self.assertEqual('{"test_decimal": "3.140000000000000124344978758017532527446746826171875", '
-                         '"test_bytearray": "\\u0006\\u0006", '
-                         '"test_float": 11.1, '
+        self.assertEqual('{"test_float": 11.1, '
                          '"_id": "121212", '
+                         '"test_bytearray": "\\u0006\\u0006", '
                          '"test_int": 123, '
                          '"first": {"test_invalid": "1979-06-20", '
                          '"test_time": "12:12:12", '
                          '"test_bool_false": false, '
-                         '"test_list": [1, 2, "str", false, "1979-06-20"], '
+                         '"test_date": "1979-06-19", '
                          '"test_long": 123456789, '
                          '"test_dict2": {}, '
                          '"test_dict": {"a": 1, "b": 2}, '
                          '"test_bool": true, '
-                         '"test_date": "1979-06-19", '
+                         '"test_list": [1, 2, "str", false, "1979-06-20"], '
                          '"test_float": 123456789.123, '
-                         '"test_timestamp": '
-                         '"1970-12-12T19:12:12.000000Z", '
+                         '"test_timestamp": "1970-12-12T19:12:12.000000Z", '
                          '"test_str": "strstr", '
                          '"test_int": 1235}}',
                          doc.as_json_str(with_tags=False))
