@@ -79,7 +79,6 @@ class OJAIDocumentMutation(DocumentMutation):
     def increment(self, field_path, inc=None):
         if inc is None:
             inc = 1
-        # TODO add decimal
         if not isinstance(inc, (int, long, float))\
                 or isinstance(inc, bool):
             raise TypeError('Field path value can only be int, long or float.')

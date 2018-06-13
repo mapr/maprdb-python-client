@@ -1,8 +1,6 @@
 import json
 import re
 
-import decimal
-
 from ojai.Document import Document
 
 from ojai.types.ODate import ODate
@@ -17,10 +15,6 @@ from mapr.ojai.ojai.document_utils import merge_two_dicts, parse_field_path, rep
 
 
 class OJAIDocument(Document):
-
-    # Not needed?
-    def get_byte(self, field_path):
-        pass
 
     __json_stream_document_reader = None
     __regex = re.compile(r"""(["']).*?\1|(?P<dot>\.)""")
@@ -115,12 +109,6 @@ class OJAIDocument(Document):
                                                                 value=value,
                                                                 ))
 
-    def __set_decimal(self, field_path, value):
-        self.__internal_dict = merge_two_dicts(self.__internal_dict,
-                                               parse_field_path(field_path=field_path,
-                                                                value=value,
-                                                                ))
-
     def __set_time(self, field_path, value):
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
@@ -145,7 +133,7 @@ class OJAIDocument(Document):
                                                                 value=value,
                                                                 ))
 
-    def __set_byte_array(self, field_path, value, offset=None, length=None):
+    def __set_byte_array(self, field_path, value):
         self.__internal_dict = merge_two_dicts(self.__internal_dict,
                                                parse_field_path(field_path=field_path,
                                                                 value=value,
@@ -191,7 +179,6 @@ class OJAIDocument(Document):
         list: __set_array,
         dict: __set_dict,
         bytearray: __set_byte_array,
-        decimal.Decimal: __set_decimal,
         None: __set_none
     }
 
@@ -262,13 +249,6 @@ class OJAIDocument(Document):
     def get_float(self, field_path):
         value = self.get(field_path=field_path)
         if isinstance(value, float):
-            return value
-        else:
-            return None
-
-    def get_decimal(self, field_path):
-        value = self.get(field_path=field_path)
-        if isinstance(value, decimal.Decimal):
             return value
         else:
             return None
