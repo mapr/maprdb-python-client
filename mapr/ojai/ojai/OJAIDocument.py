@@ -15,7 +15,6 @@ from mapr.ojai.ojai.document_utils import merge_two_dicts, parse_field_path, rep
 
 
 class OJAIDocument(Document):
-
     __json_stream_document_reader = None
     __regex = re.compile(r"""(["']).*?\1|(?P<dot>\.)""")
     __list_regex = re.compile(r"\[(\w+)\]")
@@ -188,15 +187,22 @@ class OJAIDocument(Document):
         f(self, field_path, value)
 
     def delete(self, field_path):
-        split_path = [part.strip("'").strip('"') for part in self.__regex.sub(replacer,
-                                                                              field_path).split("pass") if part]
-        try:
-            e = self.__internal_dict
-            for k in split_path[:-1]:
-                e = e[k]
-            del e[split_path[-1]]
-        except KeyError:
-            pass
+        if self.__list_regex.search(field_path):
+            index, stored_value = \
+                self.__get_index_and_stored_value(field_path=field_path)
+            del stored_value[index]
+        else:
+            split_path = [part.strip("'").strip('"')
+                          for part in self.__regex.sub(replacer,
+                                                       field_path)
+                              .split("pass") if part]
+            try:
+                e = self.__internal_dict
+                for k in split_path[:-1]:
+                    e = e[k]
+                del e[split_path[-1]]
+            except KeyError:
+                pass
         return self
 
     def get(self, field_path):
