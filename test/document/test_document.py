@@ -108,6 +108,16 @@ class DocumentTest(unittest.TestCase):
                                                'test_int': 123,
                                                'test_float': 11.1})
 
+    def test_delete_by_index(self):
+        doc = OJAIDocument().set('test_list',
+                                 [1, 2, 3, 4, 5, 6, 7])
+
+        self.assertEqual({'test_list': [1, 2, 3, 4, 5, 6, 7]},
+                         doc.as_dictionary())
+        doc.delete('test_list[3]')
+        self.assertEqual({'test_list': [1, 2, 3, 5, 6, 7]},
+                         doc.as_dictionary())
+
     def test_doc_delete_nested(self):
         doc = OJAIDocument().set_id('121212') \
             .set('test_int', 123) \
