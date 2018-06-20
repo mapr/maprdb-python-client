@@ -48,7 +48,7 @@ class OJAIConnection(Connection):
                                      DEFAULT_STOP_MAX_ATTEMPT))
         self.__url, self.__auth, self.__encoded_user_metadata, self.__ssl, \
         self.__ssl_ca, self.__ssl_target_name_override = OJAIConnection.__parse_connection_url(
-            connection_url=connection_str)
+            connection_str=connection_str)
 
         self.__channel = OJAIConnection.__get_channel(self.__url,
                                                       self.__ssl,
@@ -88,19 +88,19 @@ class OJAIConnection(Connection):
                 raise e
 
     @staticmethod
-    def __parse_connection_url(connection_url):
+    def __parse_connection_url(connection_str):
         try:
-            url, options = connection_url.split('?')
+            url, options = connection_str.split('@')[-1].split('?')
         except ValueError as e:
             raise ValueError('{0}. \n{1}'
                              .format(e.message,
                                      'Common url string format'
                                      ' is <host>[:<port>][?<options...>].'))
-        options_dict = (urlparse.parse_qs(urlparse.urlparse(connection_url).query))
+        options_dict = (urlparse.parse_qs(urlparse.urlparse(connection_str).query))
         auth = options_dict.get('auth', ['basic'])[0]
         encoded_user_metadata = base64.b64encode('{0}:{1}'.format(options_dict.get('user', [''])[0],
                                                                   options_dict.get('password', [''])[0]))
-        ssl = True if options_dict.get('ssl', ['false'])[0] == 'true' else False
+        ssl = True if options_dict.get('ssl', ['true'])[0] == 'true' else False
         ssl_ca = options_dict.get('sslCA', [''])[0]
         ssl_target_name_override = options_dict.get('sslTargetNameOverride', [''])[0]
 
