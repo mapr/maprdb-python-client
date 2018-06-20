@@ -10,7 +10,7 @@ SSL = 'true'
 SSL_CA = '/opt/mapr/conf/ssl_truststore.pem'
 SSL_TARGET_NAME_OVERRIDE = 'node1.cluster.com'
 
-CONNECTION_STR = '{0}:{1}?auth={2};user={3};password={4};' \
+CONNECTION_STR = 'ojai:mapr:thin:v1@{0}:{1}?auth={2};user={3};password={4};' \
                  'ssl={5};' \
                  'sslCA={6};' \
                  'sslTargetNameOverride={7}'.format(URL,
