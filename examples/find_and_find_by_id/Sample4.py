@@ -22,9 +22,18 @@ query_condition = connection.new_condition()\
     .is_('address.street', QueryOp.EQUAL, '39 De Mattei Court')\
     .is_('address.zipCode', QueryOp.EQUAL, 99999).close().close().build()
 
-query = connection.new_query().select(['address']).where(query_condition).build()
+query = connection.new_query()\
+    .select(['address'])\
+    .where(query_condition)\
+    .build()
 
-query_result = document_store.find(query, results_as_document=True, include_query_plan=True)
+options = {
+    'ojai.mapr.query.include-query-plan': True,
+    'ojai.mapr.query.result-as-document': True
+    }
+
+query_result = document_store.find(query, options=options)
+document_store.delete()
 
 for doc in query_result:
     print(doc.as_dictionary())

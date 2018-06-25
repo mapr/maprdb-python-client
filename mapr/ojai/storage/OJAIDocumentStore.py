@@ -40,6 +40,7 @@ class OJAIDocumentStore(DocumentStore):
         self.__store_path = store_path
         self.__connection = connection
         self.__retry_config = retry_config
+        self.__configure_retry(self.__retry_config)
 
     def __configure_retry(self, retry_config):
         retry_dec = retry(
@@ -156,8 +157,7 @@ class OJAIDocumentStore(DocumentStore):
         return self.__build_find_by_id_result(response=response,
                                               results_as_document=results_as_document)
 
-    def find(self, query=None, results_as_document=False,
-             include_query_plan=False, timeout=None):
+    def __get_query_str(self, query=None):
         if query is None:
             query_str = '{}'
         elif isinstance(query, str):
@@ -170,13 +170,27 @@ class OJAIDocumentStore(DocumentStore):
         else:
             raise IllegalArgumentError(
                 m="Invalid type of the query parameter.")
+        return query_str
+
+    def find(self, query=None, options=None):
+        if options is None:
+            options = {}
+        query_str = self.__get_query_str(query)
+        include_query_plan = options.get('ojai.mapr.query.include-query-plan',
+                                         False)
+        timeout = options.get('ojai.mapr.query.timeout-milliseconds', None)
+        if timeout is not None:
+            timeout = timeout / 1000.0
+        result_as_document = \
+            options.get('ojai.mapr.query.result-as-document', False)
 
         request = FindRequest(table_path=self.__store_path,
                               payload_encoding=PayloadEncoding.Value(
                                   'JSON_ENCODING'),
                               include_query_plan=include_query_plan,
                               json_query=query_str)
-        LOG.debug('Sending FIND request to the server. Request body: %s', request)
+        LOG.debug('Sending FIND request to the server. Request body: %s',
+                  request)
         if timeout is None:
             response_stream = \
                 self.__connection.Find(request)
@@ -185,7 +199,7 @@ class OJAIDocumentStore(DocumentStore):
                 self.__connection.Find(request,
                                        timeout=timeout)
         return OJAIQueryResult(document_stream=response_stream,
-                               results_as_document=results_as_document,
+                               results_as_document=result_as_document,
                                include_query_plan=include_query_plan)
 
     def __evaluate_doc_stream(self, doc_stream, operation_type):
