@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from __future__ import unicode_literals
 
+from mapr.ojai.exceptions.IllegalArgumentError import IllegalArgumentError
 from mapr.ojai.exceptions.StoreNotFoundError import StoreNotFoundError
 from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
 from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
@@ -64,6 +65,23 @@ class FindTest(unittest.TestCase):
             size += 1
             print(doc)
         self.assertEqual(size, 0)
+
+    def test_find_timeout_error(self):
+        connection = ConnectionFactory.get_connection(connection_str=CONNECTION_STR,
+                                                      options=CONNECTION_OPTIONS)
+
+        options = {
+            'ojai.mapr.query.include-query-plan': True,
+            'ojai.mapr.query.timeout-milliseconds': 2147483648,
+            'ojai.mapr.query.result-as-document': False
+        }
+
+        if connection.is_store_exists(store_path='/find-test-store2'):
+            document_store = connection.get_store(store_path='/find-test-store2')
+        else:
+            document_store = connection.create_store(store_path='/find-test-store2')
+        with self.assertRaises(IllegalArgumentError):
+            document_store.find(options=options)
 
     def test_find_table_not_found(self):
         connection = ConnectionFactory.get_connection(connection_str=CONNECTION_STR,
