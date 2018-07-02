@@ -16,10 +16,20 @@ if connection.is_store_exists(store_path='/find_sample_store1'):
 else:
     document_store = connection.create_store(store_path='/find_sample_store1')
 
+options = {
+    'ojai.mapr.query.include-query-plan': True,
+    'ojai.mapr.query.timeout-milliseconds': 1000,
+    'ojai.mapr.query.result-as-document': False
+    }
+query_dict = {'$select': ['*'],
+              '$where': {'$and': [
+                  {'$ge': {u'age': 26}},
+                  {'$le': {u'age': 35}}]}}
+
 print("Create find request with query as a dictionary.")
 query_result = document_store.find(
-    {'$select': ['*'], '$where': {'$and': [{'$ge': {u'age': 26}}, {'$le': {u'age': 35}}]}},
-    include_query_plan=False, results_as_document=False)
+    query_dict,
+    options=options)
 
 print(query_result.get_query_plan())
 for d in query_result:
@@ -30,11 +40,6 @@ query = connection.new_query().select(['*']) \
     .where(connection.new_condition().and_().is_('age', QueryOp.GREATER_OR_EQUAL, 26)
            .is_('age', QueryOp.LESS_OR_EQUAL, 35).close().close().build()).build()
 
-options = {
-    'ojai.mapr.query.include-query-plan': True,
-    'ojai.mapr.query.timeout-milliseconds': 1000,
-    'ojai.mapr.query.result-as-document': False
-    }
 query_result = document_store.find(query, options=options)
 print(query_result.get_query_plan())
 
