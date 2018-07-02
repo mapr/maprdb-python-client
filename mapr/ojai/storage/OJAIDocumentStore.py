@@ -31,6 +31,7 @@ from mapr.ojai.ojai.OJAITagsBuilder import OJAITagsBuilder
 import logging
 
 LOG = logging.getLogger(__name__)
+MAX_TIMEOUT = 2147483647
 
 
 class OJAIDocumentStore(DocumentStore):
@@ -180,6 +181,13 @@ class OJAIDocumentStore(DocumentStore):
                                          False)
         timeout = options.get('ojai.mapr.query.timeout-milliseconds', None)
         if timeout is not None:
+            if timeout > MAX_TIMEOUT:
+                raise IllegalArgumentError('ojai.mapr.query.'
+                                           'timeout-milliseconds'
+                                           ' cannot be > {0}.'
+                                           .format(MAX_TIMEOUT))
+            # Converting timeout from milliseconds to seconds,
+            # due to gRPC expect timeout in seconds.
             timeout = timeout / 1000.0
         result_as_document = \
             options.get('ojai.mapr.query.result-as-document', False)
