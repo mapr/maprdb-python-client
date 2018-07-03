@@ -16,7 +16,7 @@ class OJAITagsBuilder:
     def clear(self):
         self.__internal_dict = {}
 
-    def set(self, field_path, value, off=None, length=None):
+    def set(self, field_path, value):
         from mapr.ojai.ojai.OJAIDocument import OJAIDocument
         if field_path == '_id' and isinstance(value, (unicode, str)):
             self.__internal_dict[field_path] = value

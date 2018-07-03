@@ -34,9 +34,6 @@ class OJAIDocument(Document):
     def get_id(self):
         return self.__internal_dict['_id']
 
-    def get_id_binary(self):
-        raise NotImplementedError
-
     def size(self):
         return len(self.__internal_dict)
 
@@ -46,10 +43,7 @@ class OJAIDocument(Document):
     def clear(self):
         self.__internal_dict = {}
 
-    def get_id_str(self):
-        return str(self.__internal_dict["_id"])
-
-    def set(self, field_path, value, off=None, length=None):
+    def set(self, field_path, value):
         if field_path == '_id' and isinstance(value, (unicode, str, bytearray)):
             self.__internal_dict[field_path] = value
         elif self.__list_regex.search(field_path):
@@ -293,10 +287,6 @@ class OJAIDocument(Document):
             return value
         else:
             return None
-
-    def get_value(self, field_path):
-        # self.get(field_path=field_path)
-        raise NotImplementedError
 
     def get_dictionary(self, field_path):
         value = self.get(field_path=field_path)
