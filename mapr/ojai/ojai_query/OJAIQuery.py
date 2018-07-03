@@ -56,17 +56,6 @@ class OJAIQuery(Query):
         :return list where each element is str"""
         return map(str, values)
 
-    def set_option(self, option_name, value=None):
-        pass
-
-    # TODO $options
-    def set_options(self, options):
-        pass
-
-    # TODO need
-    def set_timeout(self, timeout_in_millis):
-        pass
-
     def select(self, *args):
         field_paths = []
         for arg in args:
