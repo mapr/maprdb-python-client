@@ -63,12 +63,6 @@ class OJAIDocumentStore(DocumentStore):
         self.check_and_replace = retry_dec(self.check_and_replace)
         self.increment = retry_dec(self.increment)
 
-    def is_read_only(self):
-        pass
-
-    def flush(self):
-        pass
-
     @staticmethod
     def __get_str_mutation(mutation):
         from mapr.ojai.document.OJAIDocumentMutation import \

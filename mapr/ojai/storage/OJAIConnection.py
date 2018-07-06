@@ -191,13 +191,13 @@ class OJAIConnection(Connection):
         if not isinstance(store_path, (str, unicode)):
             raise TypeError
 
-    def get_or_create_store(self, store_path, options=None):
+    def get_or_create_store(self, store_path):
         if self.is_store_exists(store_path=store_path):
-            return self.get_store(store_path=store_path, options=options)
+            return self.get_store(store_path=store_path)
         else:
             return self.create_store(store_path=store_path)
 
-    def get_store(self, store_path, options=None):
+    def get_store(self, store_path):
         LOG.debug('Trying to get store %s from the server.', store_path)
         if self.is_store_exists(store_path=store_path):
             return OJAIDocumentStore(url=self.__url,
