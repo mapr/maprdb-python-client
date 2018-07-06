@@ -73,6 +73,8 @@ class OJAIDocument(Document):
 
         if isinstance(stored_value, list):
             if len(stored_value) < index:
+                while len(stored_value) < index:
+                    stored_value.append(None)
                 stored_value.append(value)
             else:
                 stored_value[index] = value
