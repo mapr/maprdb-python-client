@@ -242,12 +242,17 @@ class DocumentTest(unittest.TestCase):
         self.assertEqual(doc.as_dictionary(), {'a': {'b': {'c': [1, 2, 3]}}})
         doc.set('a.b.c[1]', 9)
         self.assertEqual(doc.as_dictionary(), {'a': {'b': {'c': [1, 9, 3]}}})
-        doc.set('a.b.c[100]', 55)
-        self.assertEqual(doc.as_dictionary(), {'a': {'b': {'c': [1, 9, 3, 55]}}})
-        self.assertEqual(doc.get('a.b.c[55]'), None)
+        doc.set('a.b.c[12]', 55)
+        self.assertEqual(doc.as_dictionary(), {'a': {'b': {'c': [1, 9, 3, None,
+                                                                 None, None,
+                                                                 None, None,
+                                                                 None, None,
+                                                                 None, None,
+                                                                 55]}}})
+        self.assertEqual(doc.get('a.b.c[12]'), 55)
         self.assertEqual(doc.get('a.b.c[0]'), 1)
         self.assertEqual(doc.get('a.b.c[1]'), 9)
-        self.assertEqual(doc.get('a.b.c[3]'), 55)
+        self.assertEqual(doc.get('a.b.c[3]'), None)
 
     def test_document_to_json_str_without_tags(self):
         doc = OJAIDocument().set_id('121212') \
