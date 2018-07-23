@@ -7,7 +7,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='maprdb_python_client',
-      version='1.0.18070301',
+      version='1.0.0',
       description='MapR-DB Python Client',
       url='https://github.com/mapr/maprdb-python-client/',
       author='MapR, Inc.',
