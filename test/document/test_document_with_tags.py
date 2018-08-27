@@ -171,10 +171,10 @@ class DocumentTagsTest(unittest.TestCase):
     def test_doc_set_list(self):
         nested_doc = OJAIDocument().set('nested_int', 11).set('nested_str', 'strstr')
         doc = OJAIDocument().set('test_list', [1, 2, 3, 4, False, 'mystr', [{}, {}, [7, 8, 9, nested_doc]]])
-        self.assertEqual(doc.as_json_str(), '{"test_list": [{"$numberLong": 1}, {"$numberLong": 2}, {"$numberLong": '
-                                            '3}, {"$numberLong": 4}, false, "mystr", [{}, {}, [{"$numberLong": 7}, '
-                                            '{"$numberLong": 8}, {"$numberLong": 9}, {"nested_str": "strstr"}, '
-                                            '{"nested_int": {"$numberLong": 11}}]]]}')
+        self.assertEqual(doc.as_json_str(), '{"test_list": [{"$numberLong": 1}, {"$numberLong": 2},'
+                                            ' {"$numberLong": 3}, {"$numberLong": 4}, false, "mystr", '
+                                            '[{}, {}, [{"$numberLong": 7}, {"$numberLong": 8}, {"$numberLong": 9},'
+                                            ' {"nested_str": "strstr", "nested_int": {"$numberLong": 11}}]]]}')
 
     # MAPRDB-779
     def test_document_change_value_type(self):
@@ -202,3 +202,21 @@ class DocumentTagsTest(unittest.TestCase):
         self.assertEqual(doc.as_json_str(), '{"list_field": [{"$numberLong": 1}, {"$numberLong": 1}]}')
         doc.set(field, value=[2, 2])
         self.assertEqual(doc.as_json_str(), '{"list_field": [{"$numberLong": 2}, {"$numberLong": 2}]}')
+
+    # MAPRDB-1512
+    def test_list_with_nested_dict(self):
+        test_doc_dict = {"_id": "some_id", "list": [{"name": 55,
+                                                     "surname": "Surname",
+                                                     "city": "City"}]}
+        doc = OJAIDocument().from_dict(test_doc_dict)
+        self.assertEqual(doc.as_dictionary(),
+                         {'_id': 'some_id', 'list': [{'city': 'City', 'surname': 'Surname', 'name': 55}]})
+        self.assertEqual(doc.as_json_str(),
+                         '{"_id": "some_id",'
+                         ' "list": [{"city": "City",'
+                         ' "surname": "Surname",'
+                         ' "name": {"$numberLong": 55}}]}')
+        self.assertEqual(doc.as_json_str(with_tags=False),
+                         '{"_id": "some_id",'
+                         ' "list": [{"city": "City",'
+                         ' "surname": "Surname", "name": 55}]}')
