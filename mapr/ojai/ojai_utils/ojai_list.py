@@ -1,3 +1,10 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 class OJAIList(list):
     def __init__(self):
         super(OJAIList, self).__init__()
@@ -21,7 +28,7 @@ class OJAIList(list):
                 ojai_list.append(nested_list)
             elif isinstance(elem, dict) and bool(elem):
                 tmp_dict = {}
-                for k, v in elem.iteritems():
+                for k, v in list(elem.items()):
                     if isinstance(v, list):
                         tmp_dict[k] = OJAIList.set_list(v)
                     else:

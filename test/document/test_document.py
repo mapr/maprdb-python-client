@@ -1,5 +1,15 @@
 from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
 
+import json
+
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
+from builtins import *
 from random import getrandbits, randint
 
 from ojai.types.OInterval import OInterval
@@ -27,10 +37,10 @@ class DocumentTest(unittest.TestCase):
         doc = OJAIDocument()
         doc.set_id("75")
         self.assertEqual(doc.get_id(), "75")
-        self.assertEqual(type(doc.get_id()), unicode)
+        self.assertIsInstance(doc.get_id(), str)
         doc.set_id(str("75"))
         self.assertEqual(doc.get_id(), "75")
-        self.assertEqual(type(doc.get_id()), str)
+        self.assertIsInstance(doc.get_id(), str)
 
         self.assertEqual(doc.as_dictionary(), {'_id': "75"})
 
@@ -44,7 +54,7 @@ class DocumentTest(unittest.TestCase):
             .set('test_boolean_false', False)
         self.assertEqual(doc.as_dictionary(), {'test_bool': True, 'test_boolean_false': False})
         doc.set('test_int', 11) \
-            .set('test_long', long(123))
+            .set('test_long', int(123))
         self.assertEqual(doc.as_dictionary(), {'test_bool': True,
                                                'test_boolean_false': False,
                                                'test_int': 11,
@@ -56,7 +66,7 @@ class DocumentTest(unittest.TestCase):
             .set('test_float_two', 12.34)
         self.assertEqual(doc.as_dictionary(), {'test_float': 11.1,
                                                'test_float_two': 12.34})
-        doc.set('test_int', 999).set('test_long', long(51233123))
+        doc.set('test_int', 999).set('test_long', int(51233123))
         self.assertEqual(doc.as_dictionary(), {'test_float': 11.1,
                                                'test_float_two': 12.34,
                                                'test_long': 51233123,
@@ -273,21 +283,13 @@ class DocumentTest(unittest.TestCase):
             .set('first.test_list', [1, 2, 'str', False, ODate(days_since_epoch=3457)])\
             .set('test_bytearray', bytearray(b'\x06\x06'))
 
-        self.assertEqual('{"test_float": 11.1, '
-                         '"_id": "121212", '
-                         '"test_bytearray": "\\u0006\\u0006", '
-                         '"test_int": 123, '
-                         '"first": {"test_invalid": "1979-06-20", '
-                         '"test_time": "12:12:12", '
-                         '"test_bool_false": false, '
-                         '"test_date": "1979-06-19", '
-                         '"test_long": 123456789, '
-                         '"test_dict2": {}, '
-                         '"test_dict": {"a": 1, "b": 2}, '
-                         '"test_bool": true, '
-                         '"test_list": [1, 2, "str", false, "1979-06-20"], '
-                         '"test_float": 123456789.123, '
-                         '"test_timestamp": "1970-12-12T19:12:12.000000Z", '
-                         '"test_str": "strstr", '
-                         '"test_int": 1235}}',
-                         doc.as_json_str(with_tags=False))
+        self.assertEqual({"_id": "121212", "test_int": 123,
+                          "first": {"test_int": 1235, "test_long": 123456789,
+                          "test_float": 123456789.123, "test_time": "12:12:12",
+                          "test_timestamp": "1970-12-12T19:12:12.000000Z",
+                          "test_date": "1979-06-19", "test_bool": True,
+                          "test_bool_false": False, "test_invalid": "1979-06-20",
+                          "test_str": "strstr", "test_dict": {"a": 1, "b": 2},
+                          "test_dict2": {}, "test_list": [1, 2, "str", False, "1979-06-20"]},
+                          "test_float": 11.1, "test_bytearray": "\u0006\u0006"},
+                         json.loads(doc.as_json_str(with_tags=False)))

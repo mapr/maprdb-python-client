@@ -1,3 +1,10 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 from copy import deepcopy
 
 import re
@@ -67,7 +74,7 @@ def merge_two_dicts(dict1, dict2):
     if not isinstance(dict2, dict):
         return dict2
     merged_dict = deepcopy(dict1)
-    for k, v in dict2.iteritems():
+    for k, v in list(dict2.items()):
         if k in merged_dict and isinstance(merged_dict[k], dict):
             merged_dict[k] = merge_two_dicts(merged_dict[k], v)
         elif k in merged_dict and isinstance(merged_dict[k], list):
@@ -94,7 +101,7 @@ def type_serializer(obj):
     except:
         if isinstance(obj, (OTime, ODate, OTimestamp, OInterval)):
             return obj.__str__()
-        elif isinstance(obj, bytearray):
+        elif isinstance(obj, (bytearray, bytes)):
             return obj.decode('utf8')
         else:
             return obj.__dict__

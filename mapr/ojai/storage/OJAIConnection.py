@@ -1,3 +1,10 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import *
+from future import standard_library
+standard_library.install_aliases()
 import base64
 import json
 
@@ -24,7 +31,7 @@ from mapr.ojai.proto.gen.maprdb_server_pb2_grpc import MapRDbServerStub
 from mapr.ojai.storage import auth_interceptor
 from mapr.ojai.utils.retry_utils import retry_if_connection_not_established, RetryOptions, \
     DEFAULT_WAIT_EXPONENTIAL_MULTIPLIER, DEFAULT_WAIT_EXPONENTIAL_MAX, DEFAULT_STOP_MAX_ATTEMPT
-import urlparse
+import urllib.parse
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -96,7 +103,7 @@ class OJAIConnection(Connection):
                              .format(e.message,
                                      'Common url string format'
                                      ' is <host>[:<port>][?<options...>].'))
-        options_dict = (urlparse.parse_qs(urlparse.urlparse(connection_str).query))
+        options_dict = (urllib.parse.parse_qs(urllib.parse.urlparse(connection_str).query))
         auth = options_dict.get('auth', ['basic'])[0]
         encoded_user_metadata = base64.b64encode('{0}:{1}'.format(options_dict.get('user', [''])[0],
                                                                   options_dict.get('password', [''])[0]))
@@ -188,7 +195,7 @@ class OJAIConnection(Connection):
 
     @staticmethod
     def __validate_store_path(store_path):
-        if not isinstance(store_path, (str, unicode)):
+        if not isinstance(store_path, str):
             raise TypeError
 
     def get_or_create_store(self, store_path):
@@ -215,7 +222,7 @@ class OJAIConnection(Connection):
         elif dictionary is not None and isinstance(dictionary, dict):
             doc.from_dict(dictionary)
         elif json_string is not None \
-                and isinstance(json_string, (str, unicode)):
+                and isinstance(json_string, str):
             doc.from_dict(json.loads(json_string))
         else:
             raise IllegalArgumentError(

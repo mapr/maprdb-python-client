@@ -1,10 +1,18 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
+from builtins import object
 import base64
 import json
 
 from mapr.ojai.ojai.OJAIDocument import OJAIDocument
 
 
-class OJAIDocumentCreator:
+class OJAIDocumentCreator(object):
 
     def __init__(self):
         pass
@@ -18,7 +26,7 @@ class OJAIDocumentCreator:
     def remove_tags(tags_dict):
         result_dict = {}
 
-        for key, value in tags_dict.iteritems():
+        for key, value in list(tags_dict.items()):
             if isinstance(value, dict):
                 result_dict[key] = OJAIDocumentCreator.remove_tags(value)
             elif isinstance(value, list):
