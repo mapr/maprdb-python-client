@@ -105,8 +105,8 @@ class OJAIConnection(Connection):
                                      ' is <host>[:<port>][?<options...>].'))
         options_dict = (urllib.parse.parse_qs(urllib.parse.urlparse(connection_str).query))
         auth = options_dict.get('auth', ['basic'])[0]
-        encoded_user_metadata = base64.b64encode('{0}:{1}'.format(options_dict.get('user', [''])[0],
-                                                                  options_dict.get('password', [''])[0]))
+        key = '{0}:{1}'.format(options_dict.get('user', [''])[0], options_dict.get('password', [''])[0]).encode()
+        encoded_user_metadata = base64.b64encode(key).decode()
         ssl = True if options_dict.get('ssl', ['true'])[0] == 'true' else False
         ssl_ca = options_dict.get('sslCA', [''])[0]
         ssl_target_name_override = options_dict.get('sslTargetNameOverride', [''])[0]
@@ -126,9 +126,10 @@ class OJAIConnection(Connection):
         if ssl:
             # Disabling SSL validation is currently not supported by gRPC Python library
             # https://github.com/grpc/grpc/pull/15274
-            ssl_trust_pem = open(ssl_ca).read()
+            with open(ssl_ca, 'rb') as f:
+                ssl_trust_pem = f.read()
             ssl_credentials = \
-                grpc.ssl_channel_credentials(root_certificates=ssl_trust_pem)
+                grpc.ssl_channel_credentials(ssl_trust_pem)
             if ssl_target_name_override:
                 channel = grpc.secure_channel(url,
                                               ssl_credentials,

@@ -46,6 +46,8 @@ class OJAIDocumentStream(DocumentStream):
             .create_document(self.__init_cache.popleft())
         return doc_response if self.__results_as_document else doc_response.as_dictionary()
 
+    next = __next__
+
     def __fill_cache(self):
         try:
             for _ in range(10):
