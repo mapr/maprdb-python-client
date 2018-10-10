@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from future import standard_library
 standard_library.install_aliases()
 from builtins import *
+from past.builtins import *
 from past.utils import old_div
 import json
 
@@ -128,7 +129,7 @@ class OJAIDocumentStore(DocumentStore):
 
     def find_by_id(self, _id, field_paths=None, condition=None,
                    results_as_document=False, timeout=None):
-        if not isinstance(_id, str):
+        if not isinstance(_id, basestring):
             raise TypeError
 
         request = FindByIdRequest(table_path=self.__store_path,
@@ -144,7 +145,7 @@ class OJAIDocumentStore(DocumentStore):
                                                 else condition.as_dictionary(),
                                                 default=document_utils.type_serializer)
         if field_paths is not None:
-            if not isinstance(field_paths, (list, str)):
+            if not isinstance(field_paths, (list, basestring)):
                 raise IllegalArgumentError(
                     m='Field paths must be instance of list, str.')
             request.projections[:] = field_paths \
@@ -163,7 +164,7 @@ class OJAIDocumentStore(DocumentStore):
     def __get_query_str(self, query=None):
         if query is None:
             query_str = '{}'
-        elif isinstance(query, str):
+        elif isinstance(query, basestring):
             query_str = query
         elif isinstance(query, OJAIQuery):
             query_str = query.to_json_str()
@@ -280,7 +281,7 @@ class OJAIDocumentStore(DocumentStore):
                       "OJAIDocument or dict.")
 
     def __delete_id_field(self, _id):
-        if not isinstance(_id, (str, bytearray)):
+        if not isinstance(_id, (basestring, bytearray)):
             raise IllegalArgumentError(m="Invalid type of the _id parameter.")
         self.__evaluate_delete(OJAIDocument().set_id(_id=_id).as_json_str())
 
@@ -391,7 +392,7 @@ class OJAIDocumentStore(DocumentStore):
             raise IllegalArgumentError(m="Invalid type of the parameter.")
 
         if '_id' in doc_to_insert.as_dictionary() and isinstance(
-                doc_to_insert.as_dictionary()['_id'], str):
+                doc_to_insert.as_dictionary()['_id'], basestring):
             return True
 
         raise InvalidOJAIDocumentError(m="Invalid OJAI Document")
@@ -402,7 +403,7 @@ class OJAIDocumentStore(DocumentStore):
             raise TypeError
 
         if '_id' in dict_to_insert and isinstance(dict_to_insert['_id'],
-                                                  str):
+                                                  basestring):
             return True
 
         raise InvalidOJAIDocumentError(m="Invalid dictionary")

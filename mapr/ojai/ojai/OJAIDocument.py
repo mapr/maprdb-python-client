@@ -3,6 +3,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 from future import standard_library
+from past.builtins import *
 standard_library.install_aliases()
 from builtins import *
 import json
@@ -33,7 +34,7 @@ class OJAIDocument(Document):
     def set_id(self, _id):
         """Set _id field into the Document. _id field required for each document in MapR-DB
         :param _id: type should be binary or str"""
-        if not isinstance(_id, (str, bytearray)):
+        if not isinstance(_id, (basestring, bytearray)):
             raise TypeError
         self.set(field_path="_id", value=_id)
         return self
@@ -51,7 +52,7 @@ class OJAIDocument(Document):
         self.__internal_dict = {}
 
     def set(self, field_path, value):
-        if field_path == '_id' and isinstance(value, (str, bytearray)):
+        if field_path == '_id' and isinstance(value, (basestring, bytearray)):
             self.__internal_dict[field_path] = value
         elif self.__list_regex.search(field_path):
             self.__set_list_element(field_path=field_path, value=value)
@@ -189,7 +190,7 @@ class OJAIDocument(Document):
 
     # TODO remove duplicate here or in OJAITagsBuilder
     __dispatcher2 = (
-        (str, __set_str),
+        (basestring, __set_str),
         (bool, __set_boolean),
         (int, __set_long),
         (float, __set_float),
@@ -252,7 +253,7 @@ class OJAIDocument(Document):
 
     def get_str(self, field_path):
         value = self.get(field_path=field_path)
-        if isinstance(value, str):
+        if isinstance(value, basestring):
             return value
         else:
             return None

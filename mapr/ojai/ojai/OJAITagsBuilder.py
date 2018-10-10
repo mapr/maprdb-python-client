@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from future import standard_library
 standard_library.install_aliases()
 from builtins import *
+from past.builtins import *
 from builtins import object
 import base64
 from ojai.types.ODate import ODate
@@ -26,7 +27,7 @@ class OJAITagsBuilder(object):
 
     def set(self, field_path, value):
         from mapr.ojai.ojai.OJAIDocument import OJAIDocument
-        if field_path == '_id' and isinstance(value, str):
+        if field_path == '_id' and isinstance(value, basestring):
             self.__internal_dict[field_path] = value
         elif isinstance(value, OJAIDocument):
             self.__set_document(field_path=field_path, value=value)
@@ -114,7 +115,7 @@ class OJAITagsBuilder(object):
                                                                 value=None))
 
     __dispatcher = (
-        (str, __set_str),
+        (basestring, __set_str),
         (bool, __set_boolean),
         (int, __set_long),
         (float, __set_float),

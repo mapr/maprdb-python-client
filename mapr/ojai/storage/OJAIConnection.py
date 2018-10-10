@@ -3,6 +3,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 from builtins import *
+from past.builtins import *
 from future import standard_library
 standard_library.install_aliases()
 import base64
@@ -196,7 +197,7 @@ class OJAIConnection(Connection):
 
     @staticmethod
     def __validate_store_path(store_path):
-        if not isinstance(store_path, str):
+        if not isinstance(store_path, basestring):
             raise TypeError
 
     def get_or_create_store(self, store_path):
@@ -223,7 +224,7 @@ class OJAIConnection(Connection):
         elif dictionary is not None and isinstance(dictionary, dict):
             doc.from_dict(dictionary)
         elif json_string is not None \
-                and isinstance(json_string, str):
+                and isinstance(json_string, basestring):
             doc.from_dict(json.loads(json_string))
         else:
             raise IllegalArgumentError(
