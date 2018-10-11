@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from future import standard_library
 standard_library.install_aliases()
 from builtins import *
+from past.builtins import *
 from ojai.store.DocumentMutation import DocumentMutation
 
 from mapr.ojai.document.MutationOp import MutationOp
@@ -60,7 +61,7 @@ class OJAIDocumentMutation(DocumentMutation):
 
     @validate_field_path
     def append(self, field_path, value, offset=None, length=None):
-        if not isinstance(value, (list, str, bytearray)):
+        if not isinstance(value, (list, basestring, bytearray)):
             raise TypeError('Value type is not supported. Must be list, str, bytearray')
         self.__mutation_dict = \
             MutationUtil.evaluate_common(path=field_path,
