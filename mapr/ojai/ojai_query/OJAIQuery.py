@@ -6,6 +6,7 @@ from future import standard_library
 standard_library.install_aliases()
 from builtins import *
 from builtins import map
+from past.builtins import *
 import json
 from copy import deepcopy
 
@@ -69,7 +70,7 @@ class OJAIQuery(Query):
         for arg in args:
             if isinstance(arg, list):
                 field_paths = field_paths + arg
-            elif isinstance(arg, str):
+            elif isinstance(arg, basestring):
                 field_paths.append(arg)
             else:
                 raise TypeError
@@ -80,7 +81,7 @@ class OJAIQuery(Query):
         return self
 
     def where(self, condition):
-        if not isinstance(condition, (OJAIQueryCondition, dict, str)):
+        if not isinstance(condition, (OJAIQueryCondition, dict, basestring)):
             raise TypeError("Condition type must be OJAIQueryCondition or dict.")
 
         if isinstance(condition, OJAIQueryCondition):
@@ -88,7 +89,7 @@ class OJAIQuery(Query):
                 raise AttributeError("Condition can't be empty.")
             self.__query_dict = self.__merge_two_dicts(self.__query_dict,
                                                        {Operations.WHERE: condition.as_dictionary()})
-        elif isinstance(condition, str):
+        elif isinstance(condition, basestring):
             if not condition:
                 raise AttributeError("Condition can't be empty.")
             self.__query_dict = self.__merge_two_dicts(self.__query_dict,
@@ -101,11 +102,11 @@ class OJAIQuery(Query):
         return self
 
     def order_by(self, field_paths, order='asc'):
-        if not isinstance(field_paths, (str, list)) or not field_paths:
+        if not isinstance(field_paths, (basestring, list)) or not field_paths:
             raise TypeError('The field paths type can be either str or list and cannot be empty.')
         self.__query_dict = self.__merge_two_dicts(self.__query_dict,
                                                    {Operations.ORDER_BY:
-                                                    {field_paths: order} if isinstance(field_paths, str)
+                                                    {field_paths: order} if isinstance(field_paths, basestring)
                                                     else [{field: order} for field in field_paths]})
         return self
 

@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from future import standard_library
 standard_library.install_aliases()
 from builtins import *
+from past.builtins import *
 from copy import deepcopy
 from collections import deque
 
@@ -49,7 +50,7 @@ class OJAIQueryCondition(QueryCondition):
         return self
 
     def element_and(self, field_path):
-        if not isinstance(field_path, str) or not field_path:
+        if not isinstance(field_path, basestring) or not field_path:
             raise InvalidArgumentError(m='field path must be str or unicode.')
         self.__tokens.append('$elementAnd')
         self.__tokens.append(field_path)
