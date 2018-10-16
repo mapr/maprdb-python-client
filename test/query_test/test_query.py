@@ -280,3 +280,14 @@ class QueryTest(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             OJAIQuery().order_by([]).build().to_json_str()
+
+    def test_incompatible_str_type(self):
+        from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
+        from mapr.ojai.ojai_query.OJAIQueryCondition import OJAIQueryCondition
+
+        id_field = '_id'
+        try:
+            condition = OJAIQueryCondition().equals_(id_field, id_field).close().build()
+            query = OJAIQuery().select([id_field])
+        except BaseException:
+            self.fail("Probably incompatible str type.")

@@ -4,9 +4,9 @@ from __future__ import division
 from __future__ import absolute_import
 from future import standard_library
 standard_library.install_aliases()
+from past.builtins import *
 from builtins import *
 from builtins import map
-from past.builtins import *
 import json
 from copy import deepcopy
 
