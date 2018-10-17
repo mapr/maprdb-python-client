@@ -99,9 +99,12 @@ class OJAIConnection(Connection):
     def __parse_connection_url(connection_str):
         try:
             url, options = connection_str.split('@')[-1].split('?')
+        except TypeError as e:
+            raise IllegalArgumentError(m='Connection string type must be str, but was {0}. \n{1}'
+                                       .format(type(connection_str), e))
         except ValueError as e:
             raise ValueError('{0}. \n{1}'
-                             .format(e.message,
+                             .format(e,
                                      'Common url string format'
                                      ' is <host>[:<port>][?<options...>].'))
         options_dict = (urllib.parse.parse_qs(urllib.parse.urlparse(connection_str).query))
