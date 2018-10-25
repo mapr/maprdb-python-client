@@ -168,28 +168,7 @@ class OJAIDocument(Document):
                                                parse_field_path(field_path=field_path,
                                                                 value=None))
 
-    # __dispatcher = {
-    #     str: __set_str,
-    #     bool: __set_boolean,
-    #     int: __set_long,
-    #     float: __set_float,
-    #     OTime: __set_time,
-    #     OTimestamp: __set_timestamp,
-    #     ODate: __set_date,
-    #     OInterval: __set_interval,
-    #     list: __set_array,
-    #     dict: __set_dict,
-    #     bytearray: __set_byte_array,
-    #     None: __set_none
-    # }
-    #
-    # def __set_dispatcher(self, field_path, value):
-    #     t = type(value)
-    #     f = OJAIDocument.__dispatcher[t]
-    #     f(self, field_path, value)
-
-    # TODO remove duplicate here or in OJAITagsBuilder
-    __dispatcher2 = (
+    __dispatcher = (
         (basestring, __set_str),
         (bool, __set_boolean),
         (int, __set_long),
@@ -205,7 +184,7 @@ class OJAIDocument(Document):
     )
 
     def __set_dispatcher(self, field_path, value):
-        for (t, m) in OJAIDocument.__dispatcher2:
+        for (t, m) in OJAIDocument.__dispatcher:
             if isinstance(value, t):
                 return m(self, field_path, value)
 
