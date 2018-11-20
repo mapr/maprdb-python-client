@@ -1,3 +1,10 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 from test.document.test_document import DocumentTest
 from test.document.test_document_creator import DocumentCreatorTest
 from test.document.test_document_with_tags import DocumentTagsTest

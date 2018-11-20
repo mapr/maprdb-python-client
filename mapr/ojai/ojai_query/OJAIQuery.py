@@ -1,3 +1,12 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from past.builtins import *
+from builtins import *
+from builtins import map
 import json
 from copy import deepcopy
 
@@ -41,7 +50,7 @@ class OJAIQuery(Query):
         if not isinstance(dict2, dict):
             return dict2
         merged_dict = deepcopy(dict1)
-        for k, v in dict2.iteritems():
+        for k, v in list(dict2.items()):
             if k in merged_dict and isinstance(merged_dict[k], dict):
                 merged_dict[k] = self.__merge_two_dicts(merged_dict[k], v)
             elif k in merged_dict and isinstance(merged_dict[k], list):
@@ -54,14 +63,14 @@ class OJAIQuery(Query):
         """Converting all values in the list to str
         :param values: list of params
         :return list where each element is str"""
-        return map(str, values)
+        return list(map(str, values))
 
     def select(self, *args):
         field_paths = []
         for arg in args:
             if isinstance(arg, list):
                 field_paths = field_paths + arg
-            elif isinstance(arg, (unicode, str)):
+            elif isinstance(arg, basestring):
                 field_paths.append(arg)
             else:
                 raise TypeError
@@ -72,7 +81,7 @@ class OJAIQuery(Query):
         return self
 
     def where(self, condition):
-        if not isinstance(condition, (OJAIQueryCondition, dict, str, unicode)):
+        if not isinstance(condition, (OJAIQueryCondition, dict, basestring)):
             raise TypeError("Condition type must be OJAIQueryCondition or dict.")
 
         if isinstance(condition, OJAIQueryCondition):
@@ -80,7 +89,7 @@ class OJAIQuery(Query):
                 raise AttributeError("Condition can't be empty.")
             self.__query_dict = self.__merge_two_dicts(self.__query_dict,
                                                        {Operations.WHERE: condition.as_dictionary()})
-        elif isinstance(condition, (str, unicode)):
+        elif isinstance(condition, basestring):
             if not condition:
                 raise AttributeError("Condition can't be empty.")
             self.__query_dict = self.__merge_two_dicts(self.__query_dict,
@@ -93,23 +102,23 @@ class OJAIQuery(Query):
         return self
 
     def order_by(self, field_paths, order='asc'):
-        if not isinstance(field_paths, (str, unicode, list)) or not field_paths:
+        if not isinstance(field_paths, (basestring, list)) or not field_paths:
             raise TypeError('The field paths type can be either str or list and cannot be empty.')
         self.__query_dict = self.__merge_two_dicts(self.__query_dict,
                                                    {Operations.ORDER_BY:
-                                                    {field_paths: order} if isinstance(field_paths, (unicode, str))
-                                                    else map(lambda field: {field: order}, field_paths)})
+                                                    {field_paths: order} if isinstance(field_paths, basestring)
+                                                    else [{field: order} for field in field_paths]})
         return self
 
     def offset(self, offset):
-        if not isinstance(offset, (int, long)) or offset < 0 or isinstance(offset, bool):
+        if not isinstance(offset, int) or offset < 0 or isinstance(offset, bool):
             raise TypeError
         self.__query_dict = self.__merge_two_dicts(self.__query_dict, {Operations.OFFSET: offset})
 
         return self
 
     def limit(self, limit):
-        if not isinstance(limit, (int, long)) or limit < 0 or isinstance(limit, bool):
+        if not isinstance(limit, int) or limit < 0 or isinstance(limit, bool):
             raise TypeError
         self.__query_dict = self.__merge_two_dicts(self.__query_dict, {Operations.LIMIT: limit})
 

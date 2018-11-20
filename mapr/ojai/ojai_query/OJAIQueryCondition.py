@@ -1,3 +1,11 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
+from past.builtins import *
 from copy import deepcopy
 from collections import deque
 
@@ -20,7 +28,7 @@ class OJAIQueryCondition(QueryCondition):
         if not isinstance(dict2, dict):
             return dict2
         merged_dict = deepcopy(dict1)
-        for k, v in dict2.iteritems():
+        for k, v in list(dict2.items()):
             if k in merged_dict and isinstance(merged_dict[k], dict):
                 merged_dict[k] = self.__merge_two_dicts(merged_dict[k], v)
             else:
@@ -42,7 +50,7 @@ class OJAIQueryCondition(QueryCondition):
         return self
 
     def element_and(self, field_path):
-        if not isinstance(field_path, (str, unicode)) or not field_path:
+        if not isinstance(field_path, basestring) or not field_path:
             raise InvalidArgumentError(m='field path must be str or unicode.')
         self.__tokens.append('$elementAnd')
         self.__tokens.append(field_path)

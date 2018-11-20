@@ -1,3 +1,12 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
+from builtins import next
+from builtins import object
 import base64
 import collections
 import grpc
@@ -29,7 +38,7 @@ class _ClientAuthInterceptor(
         return postprocess(response_it) if postprocess else response_it
 
 
-class __UserMetadata:
+class __UserMetadata(object):
 
     def __init__(self, encoded_user_metadata):
         self._token = None

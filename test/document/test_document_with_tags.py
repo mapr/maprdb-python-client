@@ -1,5 +1,12 @@
 from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
 
+from future import standard_library
+
+standard_library.install_aliases()
+from builtins import *
 import json
 from datetime import datetime
 
@@ -26,28 +33,28 @@ class DocumentTagsTest(unittest.TestCase):
         doc = OJAIDocument()
         doc.set_id("75")
         self.assertEqual(doc.get_id(), "75")
-        self.assertEqual(type(doc.get_id()), unicode)
+        self.assertIsInstance(doc.get_id(), str)
         doc.set_id(str("75"))
+        self.assertIsInstance(doc.get_id(), str)
         self.assertEqual(doc.get_id(), "75")
-        self.assertEqual(type(doc.get_id()), str)
-
+        #
         self.assertEqual(doc.as_dictionary(), {'_id': "75"})
 
     def test_doc_set_date(self):
         doc = OJAIDocument()
         doc.set("today", ODate(days_since_epoch=3456))
-        self.assertEqual(doc.as_json_str(), '{"today": {"$dateDay": "1979-06-19"}}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"today": {"$dateDay": "1979-06-19"}}))
         doc.set_id("6123")
-        self.assertEqual(doc.as_json_str(), '{"_id": "6123", "today": {"$dateDay": "1979-06-19"}}')
+        self.assertEqual(json.loads(doc.as_json_str()), {"_id": "6123", "today": {"$dateDay": "1979-06-19"}})
 
     def test_doc_set_time(self):
         doc1 = OJAIDocument().set("test_time", OTime(timestamp=1518689532)).set_id('121212')
         doc2 = OJAIDocument().set("test_time", OTime(hour_of_day=12, minutes=12, seconds=12)).set_id('121212')
         doc3 = OJAIDocument().set("test_time", OTime(date=datetime(year=1999, month=12, day=31, hour=12, minute=12,
                                                                    second=12))).set_id("121212")
-        self.assertEqual(doc1.as_json_str(), '{"test_time": {"$time": "12:12:12"}, "_id": "121212"}')
-        self.assertEqual(doc2.as_json_str(), '{"test_time": {"$time": "12:12:12"}, "_id": "121212"}')
-        self.assertEqual(doc3.as_json_str(), '{"test_time": {"$time": "12:12:12"}, "_id": "121212"}')
+        self.assertEqual(doc1.as_json_str(), json.dumps({"test_time": {"$time": "12:12:12"}, "_id": "121212"}))
+        self.assertEqual(doc2.as_json_str(), json.dumps({"test_time": {"$time": "12:12:12"}, "_id": "121212"}))
+        self.assertEqual(doc3.as_json_str(), json.dumps({"test_time": {"$time": "12:12:12"}, "_id": "121212"}))
 
     def test_doc_set_timestamp(self):
         doc1 = OJAIDocument().set('test_timestamp', OTimestamp(millis_since_epoch=29877132000)).set_id('121212')
@@ -56,12 +63,12 @@ class DocumentTagsTest(unittest.TestCase):
                                                                millis_of_second=12)).set_id('121212')
         doc3 = OJAIDocument().set('test_timestamp', OTimestamp(date=datetime(year=1970, month=12, day=12, hour=12,
                                                                              minute=12, second=12))).set_id('121212')
-        self.assertEqual(doc1.as_json_str(), '{"test_timestamp": {"$date": "1970-12-12T19:12:12.000000Z"}, "_id": '
-                                             '"121212"}')
-        self.assertEqual(doc2.as_json_str(), '{"test_timestamp": {"$date": "1970-12-12T12:12:12.012000Z"}, "_id": '
-                                             '"121212"}')
-        self.assertEqual(doc3.as_json_str(), '{"test_timestamp": {"$date": "1970-12-12T12:12:12.000000Z"}, "_id": '
-                                             '"121212"}')
+        self.assertEqual(doc1.as_json_str(), json.dumps({"test_timestamp": {"$date": "1970-12-12T19:12:12.000000Z"},
+                                                         "_id": "121212"}))
+        self.assertEqual(doc2.as_json_str(), json.dumps({"test_timestamp": {"$date": "1970-12-12T12:12:12.012000Z"},
+                                                         "_id": "121212"}))
+        self.assertEqual(doc3.as_json_str(),
+                         json.dumps({"test_timestamp": {"$date": "1970-12-12T12:12:12.000000Z"}, "_id": "121212"}))
 
     def test_doc_set_interval(self):
         doc = OJAIDocument() \
@@ -71,13 +78,15 @@ class DocumentTagsTest(unittest.TestCase):
             .set('test_int', 123) \
             .set('test_timestamp', OTimestamp(millis_since_epoch=29877132000)) \
             .set('test_float', 11.1)
-        self.assertEqual(doc.as_json_str(), '{"test_interval": {"$interval": 172800000}, "test_float": {'
-                                            '"$numberFloat": 11.1}, "_id": "121212", "test_int": {"$numberLong": '
-                                            '123}, "test_timestamp": {"$date": "1970-12-12T19:12:12.000000Z"}}')
+        json.loads(doc.as_json_str())
+        self.assertEqual(doc.as_json_str(), json.dumps({"test_interval": {"$interval": 172800000}, "_id": "121212",
+                                                        "test_int": {"$numberLong": 123},
+                                                        "test_timestamp": {"$date": "1970-12-12T19:12:12.000000Z"},
+                                                        "test_float": {"$numberFloat": 11.1}}))
 
     def test_doc_set_int(self):
         doc = OJAIDocument().set('test_int', 123).set_id('121212')
-        self.assertEqual(doc.as_json_str(), '{"_id": "121212", "test_int": {"$numberLong": 123}}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"test_int": {"$numberLong": 123}, "_id": "121212"}))
 
     def test_doc_set_bool(self):
         doc = OJAIDocument() \
@@ -85,42 +94,46 @@ class DocumentTagsTest(unittest.TestCase):
             .set('test_boolean_false', False)
         self.assertEqual(doc.as_json_str(), '{"test_bool": true, "test_boolean_false": false}')
         doc.set('test_int', 11) \
-            .set('test_long', long(123))
-        self.assertEqual(doc.as_json_str(), '{"test_bool": true, "test_long": {"$numberLong": 123}, "test_int": {'
-                                            '"$numberLong": 11}, "test_boolean_false": false}')
+            .set('test_long', int(123))
+        self.assertEqual(doc.as_json_str(), json.dumps({"test_bool": True, "test_boolean_false": False,
+                                                        "test_int": {"$numberLong": 11},
+                                                        "test_long": {"$numberLong": 123}}))
 
     def test_doc_set_float(self):
         doc = OJAIDocument() \
             .set('test_float', 11.1) \
             .set('test_float_two', 12.34)
-        self.assertEqual(doc.as_json_str(), '{"test_float": {"$numberFloat": 11.1}, "test_float_two": {'
-                                            '"$numberFloat": 12.34}}')
-        doc.set('test_int', 999).set('test_long', long(51233123))
-        self.assertEqual(doc.as_json_str(), '{"test_float": {"$numberFloat": 11.1}, "test_long": {"$numberLong": '
-                                            '51233123}, "test_float_two": {"$numberFloat": 12.34}, "test_int": {'
-                                            '"$numberLong": 999}}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"test_float": {"$numberFloat": 11.1}, "test_float_two": {
+            "$numberFloat": 12.34}}))
+        doc.set('test_int', 999).set('test_long', int(51233123))
+        self.assertEqual(json.loads(doc.as_json_str()), {"test_float": {"$numberFloat": 11.1},
+                                                         "test_long": {"$numberLong": 51233123},
+                                                         "test_float_two": {"$numberFloat": 12.34},
+                                                         "test_int": {"$numberLong": 999}})
         doc.set('test_bool', False)
-        self.assertEqual(doc.as_json_str(), '{"test_float": {"$numberFloat": 11.1}, "test_bool": false, '
-                                            '"test_long": {"$numberLong": 51233123}, "test_int": {"$numberLong": '
-                                            '999}, "test_float_two": {"$numberFloat": 12.34}}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"test_float": {"$numberFloat": 11.1},
+                                                        "test_float_two": {"$numberFloat": 12.34},
+                                                        "test_int": {"$numberLong": 999},
+                                                        "test_long": {"$numberLong": 51233123}, "test_bool": False}))
 
     def test_doc_set_dict(self):
         test_dict = {'field_one': 12, 'field_two': 14}
         doc = OJAIDocument().set('test_dict', test_dict)
-        self.assertEqual(doc.as_json_str(), '{"test_dict": {"field_one": {"$numberLong": 12}, "field_two": {'
-                                            '"$numberLong": 14}}}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"test_dict": {"field_one": {"$numberLong": 12}, "field_two": {
+            "$numberLong": 14}}}))
         doc.set_id('50')
-        self.assertEqual(doc.as_json_str(), '{"_id": "50", "test_dict": {"field_one": {"$numberLong": 12}, '
-                                            '"field_two": {"$numberLong": 14}}}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"test_dict": {"field_one": {"$numberLong": 12},
+                                                                      "field_two": {"$numberLong": 14}}, "_id": "50"}))
         doc.set('test_dict.insert', 90)
-        self.assertEqual(doc.as_json_str(), '{"_id": "50", "test_dict": {"field_one": {"$numberLong": 12}, '
-                                            '"insert": {"$numberLong": 90}, "field_two": {"$numberLong": 14}}}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"test_dict": {"field_one": {"$numberLong": 12},
+                                                                      "field_two": {"$numberLong": 14},
+                                                                      "insert": {"$numberLong": 90}}, "_id": "50"}))
 
     def test_doc_set_byte_array(self):
         byte_array = bytearray([0x13, 0x00, 0x00, 0x00, 0x08, 0x00])
         doc = OJAIDocument().set('test_byte_array', byte_array)
         self.assertEqual(doc.as_json_str(),
-                         '{"test_byte_array": {"$binary": "EwAAAAgA"}}')
+                         json.dumps({"test_byte_array": {"$binary": "EwAAAAgA"}}))
 
     def test_doc_set_doc(self):
         doc_to_set = OJAIDocument().set_id('121212') \
@@ -129,25 +142,28 @@ class DocumentTagsTest(unittest.TestCase):
             .set('test_float', 11.1)
 
         doc = OJAIDocument().set('test_int_again', 55).set('internal_doc', doc_to_set)
-        self.assertEqual(doc.as_json_str(), '{"internal_doc": {"test_float": {"$numberFloat": 11.1}, "_id": "121212", '
-                                            '"test_int": {"$numberLong": 123}, "test_timestamp": {"$date": '
-                                            '"1970-12-12T19:12:12.000000Z"}}, "test_int_again": {"$numberLong": 55}}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"test_int_again": {"$numberLong": 55},
+                                                        "internal_doc": {"_id": "121212",
+                                                                         "test_int": {"$numberLong": 123},
+                                                                         "test_timestamp": {
+                                                                             "$date": "1970-12-12T19:12:12.000000Z"},
+                                                                         "test_float": {"$numberFloat": 11.1}}}))
 
     def test_doc_set_none(self):
         doc = OJAIDocument().set('test_none', None)
-        self.assertEqual('{"test_none": null}', doc.as_json_str())
+        self.assertEqual(json.dumps({"test_none": None}), doc.as_json_str())
 
     def test_doc_delete_first_level(self):
         doc = OJAIDocument().set_id('121212') \
             .set('test_int', 123) \
             .set('test_timestamp', OTimestamp(millis_since_epoch=29877132000)) \
             .set('test_float', 11.1)
-        self.assertEqual(doc.as_json_str(), '{"test_float": {"$numberFloat": 11.1}, "_id": "121212", "test_int": {'
-                                            '"$numberLong": 123}, "test_timestamp": {"$date": '
-                                            '"1970-12-12T19:12:12.000000Z"}}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"_id": "121212", "test_int": {"$numberLong": 123},
+                                                        "test_timestamp": {"$date": "1970-12-12T19:12:12.000000Z"},
+                                                        "test_float": {"$numberFloat": 11.1}}))
         doc.delete('test_timestamp')
-        self.assertEqual(doc.as_json_str(), '{"test_float": {"$numberFloat": 11.1}, "_id": "121212", "test_int": {'
-                                            '"$numberLong": 123}}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"_id": "121212", "test_int": {"$numberLong": 123},
+                                                        "test_float": {"$numberFloat": 11.1}}))
 
     def test_doc_delete_nested(self):
         doc = OJAIDocument().set_id('121212') \
@@ -156,37 +172,44 @@ class DocumentTagsTest(unittest.TestCase):
             .set('first.test_timestamp', OTimestamp(millis_since_epoch=29877132000)) \
             .set('test_float', 11.1)
 
-        self.assertEqual(doc.as_json_str(), '{"test_float": {"$numberFloat": 11.1}, "_id": "121212", "test_int": {'
-                                            '"$numberLong": 123}, "first": {"test_timestamp": {"$date": '
-                                            '"1970-12-12T19:12:12.000000Z"}, "test_int": {"$numberLong": 1235}}}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"_id": "121212", "test_int": {"$numberLong": 123},
+                                                        "first": {"test_int": {"$numberLong": 1235},
+                                                                  "test_timestamp": {
+                                                                      "$date": "1970-12-12T19:12:12.000000Z"}},
+                                                        "test_float": {"$numberFloat": 11.1}}))
 
         doc.delete('first.test_int')
-        self.assertEqual(doc.as_json_str(), '{"test_float": {"$numberFloat": 11.1}, "_id": "121212", "test_int": {'
-                                            '"$numberLong": 123}, "first": {"test_timestamp": {"$date": '
-                                            '"1970-12-12T19:12:12.000000Z"}}}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"_id": "121212", "test_int": {"$numberLong": 123},
+                                                        "first": {
+                                                            "test_timestamp": {"$date": "1970-12-12T19:12:12.000000Z"}},
+                                                        "test_float": {"$numberFloat": 11.1}}))
         doc.delete('first.test_timestamp')
-        self.assertEqual(doc.as_json_str(), '{"test_float": {"$numberFloat": 11.1}, "_id": "121212", "test_int": {'
-                                            '"$numberLong": 123}, "first": {}}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"_id": "121212", "test_int": {"$numberLong": 123},
+                                                        "first": {}, "test_float": {"$numberFloat": 11.1}}))
 
     def test_doc_set_list(self):
         nested_doc = OJAIDocument().set('nested_int', 11).set('nested_str', 'strstr')
         doc = OJAIDocument().set('test_list', [1, 2, 3, 4, False, 'mystr', [{}, {}, [7, 8, 9, nested_doc]]])
-        self.assertEqual(doc.as_json_str(), '{"test_list": [{"$numberLong": 1}, {"$numberLong": 2},'
-                                            ' {"$numberLong": 3}, {"$numberLong": 4}, false, "mystr", '
-                                            '[{}, {}, [{"$numberLong": 7}, {"$numberLong": 8}, {"$numberLong": 9},'
-                                            ' {"nested_str": "strstr", "nested_int": {"$numberLong": 11}}]]]}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"test_list": [{"$numberLong": 1}, {"$numberLong": 2},
+                                                                      {"$numberLong": 3}, {"$numberLong": 4}, False,
+                                                                      "mystr",
+                                                                      [{}, {}, [{"$numberLong": 7}, {"$numberLong": 8},
+                                                                                {"$numberLong": 9},
+                                                                                {"nested_int": {"$numberLong": 11},
+                                                                                 "nested_str": "strstr"}]]]}))
 
     # MAPRDB-779
     def test_document_change_value_type(self):
         doc = OJAIDocument().set_id('121212') \
             .set('test_int', 123) \
             .set('test_float', 11.1)
-        self.assertEqual(doc.as_json_str(), '{"test_float": {"$numberFloat": 11.1}, "_id": "121212", "test_int": {'
-                                            '"$numberLong": 123}}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"_id": "121212", "test_int": {"$numberLong": 123},
+                                                        "test_float": {"$numberFloat": 11.1}}))
         doc.set('test_int', OTimestamp(millis_since_epoch=29877132000))
 
-        self.assertEqual(doc.as_json_str(), '{"test_float": {"$numberFloat": 11.1}, "_id": "121212", "test_int": {'
-                                            '"$date": "1970-12-12T19:12:12.000000Z"}}')
+        self.assertEqual(doc.as_json_str(),
+                         json.dumps({"_id": "121212", "test_int": {"$date": "1970-12-12T19:12:12.000000Z"},
+                                     "test_float": {"$numberFloat": 11.1}}))
 
     def test_set_dict_instead_of_dict(self):
         doc = OJAIDocument()
@@ -199,9 +222,9 @@ class DocumentTagsTest(unittest.TestCase):
         doc = OJAIDocument()
         field = 'list_field'
         doc.set(field, value=[1, 1])
-        self.assertEqual(doc.as_json_str(), '{"list_field": [{"$numberLong": 1}, {"$numberLong": 1}]}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"list_field": [{"$numberLong": 1}, {"$numberLong": 1}]}))
         doc.set(field, value=[2, 2])
-        self.assertEqual(doc.as_json_str(), '{"list_field": [{"$numberLong": 2}, {"$numberLong": 2}]}')
+        self.assertEqual(doc.as_json_str(), json.dumps({"list_field": [{"$numberLong": 2}, {"$numberLong": 2}]}))
 
     # MAPRDB-1512
     def test_list_with_nested_dict(self):
@@ -212,11 +235,7 @@ class DocumentTagsTest(unittest.TestCase):
         self.assertEqual(doc.as_dictionary(),
                          {'_id': 'some_id', 'list': [{'city': 'City', 'surname': 'Surname', 'name': 55}]})
         self.assertEqual(doc.as_json_str(),
-                         '{"_id": "some_id",'
-                         ' "list": [{"city": "City",'
-                         ' "surname": "Surname",'
-                         ' "name": {"$numberLong": 55}}]}')
+                         json.dumps({"_id": "some_id", "list": [{"name": {"$numberLong": 55},
+                                                                 "surname": "Surname", "city": "City"}]}))
         self.assertEqual(doc.as_json_str(with_tags=False),
-                         '{"_id": "some_id",'
-                         ' "list": [{"city": "City",'
-                         ' "surname": "Surname", "name": 55}]}')
+                         json.dumps({"_id": "some_id", "list": [{"name": 55, "surname": "Surname", "city": "City"}]}))

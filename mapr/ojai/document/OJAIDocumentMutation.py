@@ -1,3 +1,11 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
+from past.builtins import *
 from ojai.store.DocumentMutation import DocumentMutation
 
 from mapr.ojai.document.MutationOp import MutationOp
@@ -53,7 +61,7 @@ class OJAIDocumentMutation(DocumentMutation):
 
     @validate_field_path
     def append(self, field_path, value, offset=None, length=None):
-        if not isinstance(value, (list, str, bytearray)):
+        if not isinstance(value, (list, basestring, bytearray)):
             raise TypeError('Value type is not supported. Must be list, str, bytearray')
         self.__mutation_dict = \
             MutationUtil.evaluate_common(path=field_path,
@@ -79,7 +87,7 @@ class OJAIDocumentMutation(DocumentMutation):
     def increment(self, field_path, inc=None):
         if inc is None:
             inc = 1
-        if not isinstance(inc, (int, long, float))\
+        if not isinstance(inc, (int, float))\
                 or isinstance(inc, bool):
             raise TypeError('Field path value can only be int, long or float.')
         self.__mutation_dict = \
@@ -94,7 +102,7 @@ class OJAIDocumentMutation(DocumentMutation):
     def decrement(self, field_path, dec=None):
         if dec is None:
             dec = 1
-        if not isinstance(dec, (int, long, float))\
+        if not isinstance(dec, (int, float))\
                 or isinstance(dec, bool):
             raise TypeError('Field path value can only be int, long or float.')
         self.__mutation_dict = \

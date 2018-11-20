@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from builtins import *
 from mapr.ojai.document.OJAIDocumentMutation import OJAIDocumentMutation
 from mapr.ojai.storage.ConnectionFactory import ConnectionFactory
 from test.test_utils.constants import CONNECTION_STR

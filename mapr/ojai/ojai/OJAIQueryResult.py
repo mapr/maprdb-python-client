@@ -1,3 +1,12 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
+from builtins import next
+from builtins import range
 from collections import deque
 
 from grpc._channel import _Rendezvous
@@ -18,13 +27,13 @@ class OJAIQueryResult(QueryResult):
         self.__results_as_document = results_as_document
         self.__init_cache = deque()
         if self.__include_query_plan:
-            json_response = self.__parse_find_response(self.__doc_stream.next())
+            json_response = self.__parse_find_response(next(self.__doc_stream))
             self.__query_plan = json_response
         try:
             for _ in range(10):
                 try:
                     self.__init_cache.append(OJAIDocumentStream.
-                                             parse_find_response(self.__doc_stream.next()))
+                                             parse_find_response(next(self.__doc_stream)))
                 except StopIteration:
                     break
         except _Rendezvous as e:

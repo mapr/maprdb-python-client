@@ -1,3 +1,12 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
+from builtins import next
+from builtins import range
 from collections import deque
 
 from grpc._channel import _Rendezvous
@@ -30,18 +39,20 @@ class OJAIDocumentStream(DocumentStream):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         if not self.__init_cache:
             self.__fill_cache()
         doc_response = OJAIDocumentCreator\
             .create_document(self.__init_cache.popleft())
         return doc_response if self.__results_as_document else doc_response.as_dictionary()
 
+    next = __next__
+
     def __fill_cache(self):
         try:
             for _ in range(10):
                 self.__init_cache.append(OJAIDocumentStream.
-                                         parse_find_response(self.__input_stream.next()))
+                                         parse_find_response(next(self.__input_stream)))
         except _Rendezvous:
             # TODO check code, state before raise!!!
             from mapr.ojai.exceptions.ConnectionLostError import ConnectionLostError

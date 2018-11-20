@@ -1,3 +1,12 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
+from past.builtins import *
+from builtins import object
 import base64
 from ojai.types.ODate import ODate
 from ojai.types.OInterval import OInterval
@@ -8,7 +17,7 @@ from mapr.ojai.ojai_utils.ojai_list import OJAIList
 from mapr.ojai.ojai.document_utils import parse_field_path, merge_two_dicts
 
 
-class OJAITagsBuilder:
+class OJAITagsBuilder(object):
 
     def __init__(self):
         self.__internal_dict = {}
@@ -18,7 +27,7 @@ class OJAITagsBuilder:
 
     def set(self, field_path, value):
         from mapr.ojai.ojai.OJAIDocument import OJAIDocument
-        if field_path == '_id' and isinstance(value, (unicode, str)):
+        if field_path == '_id' and isinstance(value, basestring):
             self.__internal_dict[field_path] = value
         elif isinstance(value, OJAIDocument):
             self.__set_document(field_path=field_path, value=value)
@@ -105,27 +114,25 @@ class OJAITagsBuilder:
                                                parse_field_path(field_path=field_path,
                                                                 value=None))
 
-    __dispatcher = {
-        str: __set_str,
-        unicode: __set_str,
-        bool: __set_boolean,
-        int: __set_long,
-        long: __set_long,
-        float: __set_float,
-        OTime: __set_time,
-        OTimestamp: __set_timestamp,
-        ODate: __set_date,
-        OInterval: __set_interval,
-        list: __set_array,
-        dict: __set_dict,
-        bytearray: __set_byte_array,
-        None: __set_none
-    }
+    __dispatcher = (
+        (basestring, __set_str),
+        (bool, __set_boolean),
+        (int, __set_long),
+        (float, __set_float),
+        (OTime, __set_time),
+        (OTimestamp, __set_timestamp),
+        (ODate, __set_date),
+        (OInterval, __set_interval),
+        (list, __set_array),
+        (dict, __set_dict),
+        (bytearray, __set_byte_array),
+        (None, __set_none),
+    )
 
     def __set_dispatcher(self, field_path, value):
-        t = type(value)
-        f = OJAITagsBuilder.__dispatcher[t]
-        f(self, field_path, value)
+        for (t, m) in OJAITagsBuilder.__dispatcher:
+            if isinstance(value, t):
+                return m(self, field_path, value)
 
     def as_dictionary(self):
         return self.__internal_dict

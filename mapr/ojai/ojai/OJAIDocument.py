@@ -1,3 +1,11 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+from past.builtins import *
+standard_library.install_aliases()
+from builtins import *
 import json
 import re
 
@@ -26,7 +34,7 @@ class OJAIDocument(Document):
     def set_id(self, _id):
         """Set _id field into the Document. _id field required for each document in MapR-DB
         :param _id: type should be binary or str"""
-        if not isinstance(_id, (unicode, str, bytearray)):
+        if not isinstance(_id, (basestring, bytearray)):
             raise TypeError
         self.set(field_path="_id", value=_id)
         return self
@@ -44,7 +52,7 @@ class OJAIDocument(Document):
         self.__internal_dict = {}
 
     def set(self, field_path, value):
-        if field_path == '_id' and isinstance(value, (unicode, str, bytearray)):
+        if field_path == '_id' and isinstance(value, (basestring, bytearray)):
             self.__internal_dict[field_path] = value
         elif self.__list_regex.search(field_path):
             self.__set_list_element(field_path=field_path, value=value)
@@ -160,27 +168,25 @@ class OJAIDocument(Document):
                                                parse_field_path(field_path=field_path,
                                                                 value=None))
 
-    __dispatcher = {
-        str: __set_str,
-        unicode: __set_str,
-        bool: __set_boolean,
-        int: __set_long,
-        long: __set_long,
-        float: __set_float,
-        OTime: __set_time,
-        OTimestamp: __set_timestamp,
-        ODate: __set_date,
-        OInterval: __set_interval,
-        list: __set_array,
-        dict: __set_dict,
-        bytearray: __set_byte_array,
-        None: __set_none
-    }
+    __dispatcher = (
+        (basestring, __set_str),
+        (bool, __set_boolean),
+        (int, __set_long),
+        (float, __set_float),
+        (OTime, __set_time),
+        (OTimestamp, __set_timestamp),
+        (ODate, __set_date),
+        (OInterval, __set_interval),
+        (list, __set_array),
+        (dict, __set_dict),
+        (bytearray, __set_byte_array),
+        (None, __set_none),
+    )
 
     def __set_dispatcher(self, field_path, value):
-        t = type(value)
-        f = OJAIDocument.__dispatcher[t]
-        f(self, field_path, value)
+        for (t, m) in OJAIDocument.__dispatcher:
+            if isinstance(value, t):
+                return m(self, field_path, value)
 
     def delete(self, field_path):
         if self.__list_regex.search(field_path):
@@ -226,7 +232,7 @@ class OJAIDocument(Document):
 
     def get_str(self, field_path):
         value = self.get(field_path=field_path)
-        if isinstance(value, (str, unicode)):
+        if isinstance(value, basestring):
             return value
         else:
             return None
@@ -240,7 +246,7 @@ class OJAIDocument(Document):
 
     def get_int(self, field_path):
         value = self.get(field_path=field_path)
-        if isinstance(value, (int, long)) and not isinstance(value, bool):
+        if isinstance(value, int) and not isinstance(value, bool):
             return value
         else:
             return None
@@ -303,7 +309,7 @@ class OJAIDocument(Document):
         if isinstance(value, list):
             for element in value:
                 if isinstance(element, dict):
-                    result.append(element.values()[0])
+                    result.append(list(element.values())[0])
                 else:
                     result.append(element)
             return result
@@ -317,6 +323,7 @@ class OJAIDocument(Document):
     def as_json_str(self, with_tags=True):
         if with_tags:
             from mapr.ojai.ojai.OJAITagsBuilder import OJAITagsBuilder
-            return json.dumps(OJAITagsBuilder().set('tmp', self.__internal_dict).as_dictionary()['tmp'])
+            return json.dumps(OJAITagsBuilder().set('tmp', self.__internal_dict).as_dictionary()['tmp'],
+                              default=document_utils.type_serializer)
         else:
             return json.dumps(self.__internal_dict, default=document_utils.type_serializer)

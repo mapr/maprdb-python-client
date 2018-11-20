@@ -1,3 +1,11 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import *
+from past.builtins import *
+from future import standard_library
+standard_library.install_aliases()
 import base64
 import json
 
@@ -24,7 +32,7 @@ from mapr.ojai.proto.gen.maprdb_server_pb2_grpc import MapRDbServerStub
 from mapr.ojai.storage import auth_interceptor
 from mapr.ojai.utils.retry_utils import retry_if_connection_not_established, RetryOptions, \
     DEFAULT_WAIT_EXPONENTIAL_MULTIPLIER, DEFAULT_WAIT_EXPONENTIAL_MAX, DEFAULT_STOP_MAX_ATTEMPT
-import urlparse
+import urllib.parse
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -91,15 +99,18 @@ class OJAIConnection(Connection):
     def __parse_connection_url(connection_str):
         try:
             url, options = connection_str.split('@')[-1].split('?')
+        except TypeError as e:
+            raise IllegalArgumentError(m='Connection string type must be str, but was {0}. \n{1}'
+                                       .format(type(connection_str), e))
         except ValueError as e:
             raise ValueError('{0}. \n{1}'
-                             .format(e.message,
+                             .format(e,
                                      'Common url string format'
                                      ' is <host>[:<port>][?<options...>].'))
-        options_dict = (urlparse.parse_qs(urlparse.urlparse(connection_str).query))
+        options_dict = (urllib.parse.parse_qs(urllib.parse.urlparse(connection_str).query))
         auth = options_dict.get('auth', ['basic'])[0]
-        encoded_user_metadata = base64.b64encode('{0}:{1}'.format(options_dict.get('user', [''])[0],
-                                                                  options_dict.get('password', [''])[0]))
+        key = '{0}:{1}'.format(options_dict.get('user', [''])[0], options_dict.get('password', [''])[0]).encode()
+        encoded_user_metadata = base64.b64encode(key).decode()
         ssl = True if options_dict.get('ssl', ['true'])[0] == 'true' else False
         ssl_ca = options_dict.get('sslCA', [''])[0]
         ssl_target_name_override = options_dict.get('sslTargetNameOverride', [''])[0]
@@ -119,9 +130,10 @@ class OJAIConnection(Connection):
         if ssl:
             # Disabling SSL validation is currently not supported by gRPC Python library
             # https://github.com/grpc/grpc/pull/15274
-            ssl_trust_pem = open(ssl_ca).read()
+            with open(ssl_ca, 'rb') as f:
+                ssl_trust_pem = f.read()
             ssl_credentials = \
-                grpc.ssl_channel_credentials(root_certificates=ssl_trust_pem)
+                grpc.ssl_channel_credentials(ssl_trust_pem)
             if ssl_target_name_override:
                 channel = grpc.secure_channel(url,
                                               ssl_credentials,
@@ -188,7 +200,7 @@ class OJAIConnection(Connection):
 
     @staticmethod
     def __validate_store_path(store_path):
-        if not isinstance(store_path, (str, unicode)):
+        if not isinstance(store_path, basestring):
             raise TypeError
 
     def get_or_create_store(self, store_path):
@@ -215,7 +227,7 @@ class OJAIConnection(Connection):
         elif dictionary is not None and isinstance(dictionary, dict):
             doc.from_dict(dictionary)
         elif json_string is not None \
-                and isinstance(json_string, (str, unicode)):
+                and isinstance(json_string, basestring):
             doc.from_dict(json.loads(json_string))
         else:
             raise IllegalArgumentError(

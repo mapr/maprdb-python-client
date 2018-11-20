@@ -8,7 +8,6 @@ from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
-from google.protobuf import descriptor_pb2
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
@@ -20,6 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='maprdb-server.proto',
   package='com.mapr.data.db',
   syntax='proto3',
+  serialized_options=_b('\n\026com.mapr.data.db.protoP\001'),
   serialized_pb=_b('\n\x13maprdb-server.proto\x12\x10\x63om.mapr.data.db\"j\n\x08RpcError\x12-\n\x08\x65rr_code\x18\x01 \x01(\x0e\x32\x1b.com.mapr.data.db.ErrorCode\x12\x15\n\rerror_message\x18\x02 \x01(\t\x12\x18\n\x10java_stack_trace\x18\x03 \x01(\t\"\r\n\x0bPingRequest\"\x0e\n\x0cPingResponse\"(\n\x12\x43reateTableRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13\x43reateTableResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"(\n\x12\x44\x65leteTableRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13\x44\x65leteTableResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"(\n\x12TableExistsRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\"@\n\x13TableExistsResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"\xe4\x01\n\x16InsertOrReplaceRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12\x31\n\x0binsert_mode\x18\x02 \x01(\x0e\x32\x1c.com.mapr.data.db.InsertMode\x12;\n\x10payload_encoding\x18\x03 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x18\n\x0ejson_condition\x18\x04 \x01(\tH\x00\x12\x17\n\rjson_document\x18\x1e \x01(\tH\x01\x42\x0b\n\tconditionB\x06\n\x04\x64\x61ta\"D\n\x17InsertOrReplaceResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"\xc3\x01\n\x0f\x46indByIdRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x13\n\x0bprojections\x18\x03 \x03(\t\x12\x18\n\x0ejson_condition\x18\x04 \x01(\tH\x00\x12\x17\n\rjson_document\x18\x05 \x01(\tH\x01\x42\x0b\n\tconditionB\n\n\x08\x64ocument\"\x9b\x01\n\x10\x46indByIdResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x17\n\rjson_document\x18\x1e \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\x98\x01\n\x0b\x46indRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x1a\n\x12include_query_plan\x18\x03 \x01(\x08\x12\x14\n\njson_query\x18\x04 \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\xc9\x01\n\x0c\x46indResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x30\n\x04type\x18\x03 \x01(\x0e\x32\".com.mapr.data.db.FindResponseType\x12\x17\n\rjson_response\x18\x1e \x01(\tH\x00\x42\x06\n\x04\x64\x61ta\"\xd1\x01\n\rUpdateRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x17\n\rjson_document\x18\x03 \x01(\tH\x00\x12\x18\n\x0ejson_condition\x18\x04 \x01(\tH\x01\x12\x17\n\rjson_mutation\x18\x1e \x01(\tH\x02\x42\n\n\x08\x64ocumentB\x0b\n\tconditionB\n\n\x08mutation\";\n\x0eUpdateResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError\"\xac\x01\n\rDeleteRequest\x12\x12\n\ntable_path\x18\x01 \x01(\t\x12;\n\x10payload_encoding\x18\x02 \x01(\x0e\x32!.com.mapr.data.db.PayloadEncoding\x12\x18\n\x0ejson_condition\x18\x03 \x01(\tH\x00\x12\x17\n\rjson_document\x18\x04 \x01(\tH\x01\x42\x0b\n\tconditionB\n\n\x08\x64ocument\";\n\x0e\x44\x65leteResponse\x12)\n\x05\x65rror\x18\x01 \x01(\x0b\x32\x1a.com.mapr.data.db.RpcError*\x85\x03\n\tErrorCode\x12\x0c\n\x08NO_ERROR\x10\x00\x12\x13\n\x0fTABLE_NOT_FOUND\x10\x02\x12\x0c\n\x08IO_ERROR\x10\x05\x12\x11\n\rOUT_OF_MEMORY\x10\x0c\x12\x11\n\rACCESS_DENIED\x10\r\x12\x18\n\x14TABLE_ALREADY_EXISTS\x10\x11\x12\x14\n\x10INVALID_ARGUMENT\x10\x16\x12\x19\n\x15UNSUPPORTED_OPERATION\x10&\x12\x12\n\rUNKNOWN_ERROR\x10\x80\x02\x12\x1d\n\x18UNKNOWN_PAYLOAD_ENCODING\x10\x84\x02\x12\x16\n\x11\x43LUSTER_NOT_FOUND\x10\x8e\x02\x12\x13\n\x0ePATH_NOT_FOUND\x10\x8f\x02\x12\x1c\n\x17\x44OCUMENT_ALREADY_EXISTS\x10\x98\x02\x12\x17\n\x12\x44OCUMENT_NOT_FOUND\x10\x99\x02\x12\x13\n\x0e\x45NCODING_ERROR\x10\xa2\x02\x12\x13\n\x0e\x44\x45\x43ODING_ERROR\x10\xa3\x02\x12\x15\n\x10ILLEGAL_MUTATION\x10\xa4\x02*:\n\x0fPayloadEncoding\x12\x14\n\x10UNKNOWN_ENCODING\x10\x00\x12\x11\n\rJSON_ENCODING\x10\x01*N\n\nInsertMode\x12\x10\n\x0cUNKNOWN_MODE\x10\x00\x12\x15\n\x11INSERT_OR_REPLACE\x10\x01\x12\n\n\x06INSERT\x10\x02\x12\x0b\n\x07REPLACE\x10\x03*I\n\x10\x46indResponseType\x12\x10\n\x0cUNKNOWN_TYPE\x10\x00\x12\x13\n\x0fRESULT_DOCUMENT\x10\x01\x12\x0e\n\nQUERY_PLAN\x10\x02\x32\x99\x06\n\x0cMapRDbServer\x12G\n\x04Ping\x12\x1d.com.mapr.data.db.PingRequest\x1a\x1e.com.mapr.data.db.PingResponse\"\x00\x12\\\n\x0b\x43reateTable\x12$.com.mapr.data.db.CreateTableRequest\x1a%.com.mapr.data.db.CreateTableResponse\"\x00\x12\\\n\x0b\x44\x65leteTable\x12$.com.mapr.data.db.DeleteTableRequest\x1a%.com.mapr.data.db.DeleteTableResponse\"\x00\x12\\\n\x0bTableExists\x12$.com.mapr.data.db.TableExistsRequest\x1a%.com.mapr.data.db.TableExistsResponse\"\x00\x12h\n\x0fInsertOrReplace\x12(.com.mapr.data.db.InsertOrReplaceRequest\x1a).com.mapr.data.db.InsertOrReplaceResponse\"\x00\x12S\n\x08\x46indById\x12!.com.mapr.data.db.FindByIdRequest\x1a\".com.mapr.data.db.FindByIdResponse\"\x00\x12I\n\x04\x46ind\x12\x1d.com.mapr.data.db.FindRequest\x1a\x1e.com.mapr.data.db.FindResponse\"\x00\x30\x01\x12M\n\x06Update\x12\x1f.com.mapr.data.db.UpdateRequest\x1a .com.mapr.data.db.UpdateResponse\"\x00\x12M\n\x06\x44\x65lete\x12\x1f.com.mapr.data.db.DeleteRequest\x1a .com.mapr.data.db.DeleteResponse\"\x00\x42\x1a\n\x16\x63om.mapr.data.db.protoP\x01\x62\x06proto3')
 )
 
@@ -31,75 +31,75 @@ _ERRORCODE = _descriptor.EnumDescriptor(
   values=[
     _descriptor.EnumValueDescriptor(
       name='NO_ERROR', index=0, number=0,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='TABLE_NOT_FOUND', index=1, number=2,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='IO_ERROR', index=2, number=5,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='OUT_OF_MEMORY', index=3, number=12,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='ACCESS_DENIED', index=4, number=13,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='TABLE_ALREADY_EXISTS', index=5, number=17,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='INVALID_ARGUMENT', index=6, number=22,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='UNSUPPORTED_OPERATION', index=7, number=38,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='UNKNOWN_ERROR', index=8, number=256,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='UNKNOWN_PAYLOAD_ENCODING', index=9, number=260,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='CLUSTER_NOT_FOUND', index=10, number=270,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='PATH_NOT_FOUND', index=11, number=271,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='DOCUMENT_ALREADY_EXISTS', index=12, number=280,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='DOCUMENT_NOT_FOUND', index=13, number=281,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='ENCODING_ERROR', index=14, number=290,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='DECODING_ERROR', index=15, number=291,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='ILLEGAL_MUTATION', index=16, number=292,
-      options=None,
+      serialized_options=None,
       type=None),
   ],
   containing_type=None,
-  options=None,
+  serialized_options=None,
   serialized_start=2030,
   serialized_end=2419,
 )
@@ -114,15 +114,15 @@ _PAYLOADENCODING = _descriptor.EnumDescriptor(
   values=[
     _descriptor.EnumValueDescriptor(
       name='UNKNOWN_ENCODING', index=0, number=0,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='JSON_ENCODING', index=1, number=1,
-      options=None,
+      serialized_options=None,
       type=None),
   ],
   containing_type=None,
-  options=None,
+  serialized_options=None,
   serialized_start=2421,
   serialized_end=2479,
 )
@@ -137,23 +137,23 @@ _INSERTMODE = _descriptor.EnumDescriptor(
   values=[
     _descriptor.EnumValueDescriptor(
       name='UNKNOWN_MODE', index=0, number=0,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='INSERT_OR_REPLACE', index=1, number=1,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='INSERT', index=2, number=2,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='REPLACE', index=3, number=3,
-      options=None,
+      serialized_options=None,
       type=None),
   ],
   containing_type=None,
-  options=None,
+  serialized_options=None,
   serialized_start=2481,
   serialized_end=2559,
 )
@@ -168,19 +168,19 @@ _FINDRESPONSETYPE = _descriptor.EnumDescriptor(
   values=[
     _descriptor.EnumValueDescriptor(
       name='UNKNOWN_TYPE', index=0, number=0,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='RESULT_DOCUMENT', index=1, number=1,
-      options=None,
+      serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
       name='QUERY_PLAN', index=2, number=2,
-      options=None,
+      serialized_options=None,
       type=None),
   ],
   containing_type=None,
-  options=None,
+  serialized_options=None,
   serialized_start=2561,
   serialized_end=2634,
 )
@@ -229,28 +229,28 @@ _RPCERROR = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='error_message', full_name='com.mapr.data.db.RpcError.error_message', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='java_stack_trace', full_name='com.mapr.data.db.RpcError.java_stack_trace', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -274,7 +274,7 @@ _PINGREQUEST = _descriptor.Descriptor(
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -298,7 +298,7 @@ _PINGRESPONSE = _descriptor.Descriptor(
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -322,14 +322,14 @@ _CREATETABLEREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -353,14 +353,14 @@ _CREATETABLERESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -384,14 +384,14 @@ _DELETETABLEREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -415,14 +415,14 @@ _DELETETABLERESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -446,14 +446,14 @@ _TABLEEXISTSREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -477,14 +477,14 @@ _TABLEEXISTSRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -508,42 +508,42 @@ _INSERTORREPLACEREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='insert_mode', full_name='com.mapr.data.db.InsertOrReplaceRequest.insert_mode', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='payload_encoding', full_name='com.mapr.data.db.InsertOrReplaceRequest.payload_encoding', index=2,
       number=3, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='json_condition', full_name='com.mapr.data.db.InsertOrReplaceRequest.json_condition', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='json_document', full_name='com.mapr.data.db.InsertOrReplaceRequest.json_document', index=4,
       number=30, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -573,14 +573,14 @@ _INSERTORREPLACERESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -604,42 +604,42 @@ _FINDBYIDREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='payload_encoding', full_name='com.mapr.data.db.FindByIdRequest.payload_encoding', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='projections', full_name='com.mapr.data.db.FindByIdRequest.projections', index=2,
       number=3, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='json_condition', full_name='com.mapr.data.db.FindByIdRequest.json_condition', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='json_document', full_name='com.mapr.data.db.FindByIdRequest.json_document', index=4,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -669,28 +669,28 @@ _FINDBYIDRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='payload_encoding', full_name='com.mapr.data.db.FindByIdResponse.payload_encoding', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='json_document', full_name='com.mapr.data.db.FindByIdResponse.json_document', index=2,
       number=30, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -717,35 +717,35 @@ _FINDREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='payload_encoding', full_name='com.mapr.data.db.FindRequest.payload_encoding', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='include_query_plan', full_name='com.mapr.data.db.FindRequest.include_query_plan', index=2,
       number=3, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='json_query', full_name='com.mapr.data.db.FindRequest.json_query', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -772,35 +772,35 @@ _FINDRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='payload_encoding', full_name='com.mapr.data.db.FindResponse.payload_encoding', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='type', full_name='com.mapr.data.db.FindResponse.type', index=2,
       number=3, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='json_response', full_name='com.mapr.data.db.FindResponse.json_response', index=3,
       number=30, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -827,42 +827,42 @@ _UPDATEREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='payload_encoding', full_name='com.mapr.data.db.UpdateRequest.payload_encoding', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='json_document', full_name='com.mapr.data.db.UpdateRequest.json_document', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='json_condition', full_name='com.mapr.data.db.UpdateRequest.json_condition', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='json_mutation', full_name='com.mapr.data.db.UpdateRequest.json_mutation', index=4,
       number=30, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -895,14 +895,14 @@ _UPDATERESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -926,35 +926,35 @@ _DELETEREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='payload_encoding', full_name='com.mapr.data.db.DeleteRequest.payload_encoding', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='json_condition', full_name='com.mapr.data.db.DeleteRequest.json_condition', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='json_document', full_name='com.mapr.data.db.DeleteRequest.json_document', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -984,14 +984,14 @@ _DELETERESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
   ],
-  options=None,
+  serialized_options=None,
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
@@ -1214,15 +1214,14 @@ DeleteResponse = _reflection.GeneratedProtocolMessageType('DeleteResponse', (_me
 _sym_db.RegisterMessage(DeleteResponse)
 
 
-DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\026com.mapr.data.db.protoP\001'))
+DESCRIPTOR._options = None
 
 _MAPRDBSERVER = _descriptor.ServiceDescriptor(
   name='MapRDbServer',
   full_name='com.mapr.data.db.MapRDbServer',
   file=DESCRIPTOR,
   index=0,
-  options=None,
+  serialized_options=None,
   serialized_start=2637,
   serialized_end=3430,
   methods=[
@@ -1233,7 +1232,7 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_PINGREQUEST,
     output_type=_PINGRESPONSE,
-    options=None,
+    serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
     name='CreateTable',
@@ -1242,7 +1241,7 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_CREATETABLEREQUEST,
     output_type=_CREATETABLERESPONSE,
-    options=None,
+    serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
     name='DeleteTable',
@@ -1251,7 +1250,7 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_DELETETABLEREQUEST,
     output_type=_DELETETABLERESPONSE,
-    options=None,
+    serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
     name='TableExists',
@@ -1260,7 +1259,7 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_TABLEEXISTSREQUEST,
     output_type=_TABLEEXISTSRESPONSE,
-    options=None,
+    serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
     name='InsertOrReplace',
@@ -1269,7 +1268,7 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_INSERTORREPLACEREQUEST,
     output_type=_INSERTORREPLACERESPONSE,
-    options=None,
+    serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
     name='FindById',
@@ -1278,7 +1277,7 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_FINDBYIDREQUEST,
     output_type=_FINDBYIDRESPONSE,
-    options=None,
+    serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
     name='Find',
@@ -1287,7 +1286,7 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_FINDREQUEST,
     output_type=_FINDRESPONSE,
-    options=None,
+    serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
     name='Update',
@@ -1296,7 +1295,7 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_UPDATEREQUEST,
     output_type=_UPDATERESPONSE,
-    options=None,
+    serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
     name='Delete',
@@ -1305,7 +1304,7 @@ _MAPRDBSERVER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_DELETEREQUEST,
     output_type=_DELETERESPONSE,
-    options=None,
+    serialized_options=None,
   ),
 ])
 _sym_db.RegisterServiceDescriptor(_MAPRDBSERVER)
