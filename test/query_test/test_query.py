@@ -20,7 +20,6 @@ class QueryTest(unittest.TestCase):
 
     def test_simple_query(self):
         query = OJAIQuery().select([True, 5, 123123124123]).build()
-
         self.assertEqual(query.query_dict(), {'$select': ['True', '5', '123123124123']})
 
     def test_condition(self):
