@@ -20,4 +20,4 @@ If you encounter issues installing setuptools, run the following command:
 
 If you want to add the package you have created locally in your project, copy dist/maprdb_python_client* to your project.
 To add the package in your virtual environment, run:
-```pip install maprdb_python_client-0.1-py2-none-any.whl```
+```pip install maprdb_python_client-1.1-py2-none-any.whl```

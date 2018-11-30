@@ -45,4 +45,4 @@ connection = ConnectionFactory.get_connection(connection_string)
 document_store = connection.create_store('/test-store)
 ```
 
-More examples how to use MapR-DB Python client you can find [here](https://github.com/mapr-demos/private-ojai-2-examples/tree/master/python)
+More examples how to use MapR-DB Python client you can find [here](https://github.com/mapr-demos/ojai-examples/tree/master/python)
