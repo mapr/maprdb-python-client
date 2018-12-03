@@ -8,4 +8,4 @@ For example, to install pip on CentOS, run: `sudo yum install python-pip`
 3. Execute in terminal `pip install maprdb-python-client`
 
 Now you can use MapR-DB python client as a library.
-More details and usage examples you can find in the [MapR official documentation](https://mapr.com/docs/61/MapR-DB/JSON_DB/GettingStartedPythonOJAI.html).
+You can find more examples for using the MapR-DB Python client [here](https://mapr.com/docs/61/MapR-DB/JSON_DB/GettingStartedPythonOJAI.html).
