@@ -67,7 +67,7 @@ class OJAIQueryCondition(QueryCondition):
             else:
                 self.__tokens.append(condition_to_add.build().as_dictionary())
         elif isinstance(condition_to_add, dict):
-            self.__tokens.append(condition_to_add.as_dictionary())
+            self.__tokens.append(condition_to_add)
         else:
             raise TypeError
         return self

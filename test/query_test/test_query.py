@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 from future import standard_library
+
 standard_library.install_aliases()
 from builtins import *
 from mapr.ojai.ojai_query.OJAIQuery import OJAIQuery
@@ -129,6 +130,23 @@ class QueryTest(unittest.TestCase):
                 {'$ge': {u'age': 18}},
                 {'$eq': {u'city': u'London'}}]}
         ]})
+
+    def test_query_condition_dict(self):
+        condition_to_add = OJAIQueryCondition() \
+            .or_() \
+            .is_('age', QueryOp.GREATER_OR_EQUAL, 21) \
+            .is_('city', QueryOp.EQUAL, 'NY') \
+            .close().build()
+
+        qc = OJAIQueryCondition() \
+            .or_() \
+            .condition_(condition_to_add.as_dictionary()) \
+            .is_('age', QueryOp.GREATER_OR_EQUAL, 18).close().build()
+
+        self.assertEqual(qc.as_dictionary(),
+                         {'$or': [{'$or': [{'$ge': {'age': 21}},
+                                           {'$eq': {'city': 'NY'}}]},
+                                  {'$ge': {'age': 18}}]})
 
     def test_full_query(self):
         qc = OJAIQueryCondition().and_() \
@@ -261,17 +279,17 @@ class QueryTest(unittest.TestCase):
             OJAIQuery().order_by('').build()
 
     def test_element_and(self):
-        query_condition = OJAIQueryCondition()\
-            .element_and('grades[]')\
-            .equals_('dsc', 'history')\
-            .equals_('ev', 12)\
-            .close()\
+        query_condition = OJAIQueryCondition() \
+            .element_and('grades[]') \
+            .equals_('dsc', 'history') \
+            .equals_('ev', 12) \
+            .close() \
             .build()
         self.assertEqual({'$elementAnd': {'grades[]': [
-                                                  {'$eq': {'dsc': 'history'}},
-                                                  {'$eq': {'ev': 12}}
-                                              ]}},
-                         query_condition.as_dictionary())
+            {'$eq': {'dsc': 'history'}},
+            {'$eq': {'ev': 12}}
+        ]}},
+            query_condition.as_dictionary())
 
     def test_empty_value_order_by(self):
         with self.assertRaises(TypeError):
