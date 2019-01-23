@@ -77,7 +77,7 @@ class OJAIDocumentMutation(DocumentMutation):
             raise TypeError('Value must be only Document or dict')
         self.__mutation_dict = \
             MutationUtil.evaluate_common(path=field_path,
-                                         value=value,
+                                         value=value if isinstance(value, dict) else value.as_dictionary(),
                                          operation_type=MutationOp.MERGE,
                                          mutation_dict=self.__mutation_dict,
                                          doc=self.__doc)
