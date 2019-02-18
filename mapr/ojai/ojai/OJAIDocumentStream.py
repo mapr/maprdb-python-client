@@ -3,6 +3,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 from future import standard_library
+
 standard_library.install_aliases()
 from builtins import *
 from builtins import next
@@ -42,7 +43,9 @@ class OJAIDocumentStream(DocumentStream):
     def __next__(self):
         if not self.__init_cache:
             self.__fill_cache()
-        doc_response = OJAIDocumentCreator\
+            if not self.__init_cache:
+                raise StopIteration
+        doc_response = OJAIDocumentCreator \
             .create_document(self.__init_cache.popleft())
         return doc_response if self.__results_as_document else doc_response.as_dictionary()
 
@@ -51,10 +54,12 @@ class OJAIDocumentStream(DocumentStream):
     def __fill_cache(self):
         try:
             for _ in range(10):
-                self.__init_cache.append(OJAIDocumentStream.
-                                         parse_find_response(next(self.__input_stream)))
+                try:
+                    self.__init_cache.append(OJAIDocumentStream.
+                                             parse_find_response(next(self.__input_stream)))
+                except StopIteration:
+                    break
         except _Rendezvous:
-            # TODO check code, state before raise!!!
             from mapr.ojai.exceptions.ConnectionLostError import ConnectionLostError
             raise ConnectionLostError(m="Connection lost during operation.")
 
@@ -63,4 +68,3 @@ class OJAIDocumentStream(DocumentStream):
 
     def close(self):
         raise StopIteration
-
