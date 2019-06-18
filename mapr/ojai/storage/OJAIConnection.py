@@ -2,6 +2,9 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+
+import re
+
 from builtins import *
 from past.builtins import *
 from future import standard_library
@@ -98,7 +101,7 @@ class OJAIConnection(Connection):
     @staticmethod
     def __parse_connection_url(connection_str):
         try:
-            url, options = connection_str.split('@')[-1].split('?')
+            url, options = re.sub('ojai:mapr:thin:v1@', '', connection_str).split('?', 1)
         except TypeError as e:
             raise IllegalArgumentError(m='Connection string type must be str, but was {0}. \n{1}'
                                        .format(type(connection_str), e))
