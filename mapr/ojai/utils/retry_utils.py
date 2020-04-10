@@ -31,7 +31,12 @@ class RetryOptions(object):
 # Retry checker function
 def retry_if_connection_not_established(exception):
     if isinstance(exception, _Rendezvous):
-        return exception.code() == StatusCode.UNAVAILABLE or exception.code() == StatusCode.RESOURCE_EXHAUSTED
+        if exception.code() == StatusCode.UNAUTHENTICATED \
+                and exception.details() == 'STATUS_TOKEN_EXPIRED':
+            return True
+        else:
+            return exception.code() == StatusCode.UNAVAILABLE \
+                   or exception.code() == StatusCode.RESOURCE_EXHAUSTED
     elif isinstance(exception, ExpiredTokenError):
         return True
     else:

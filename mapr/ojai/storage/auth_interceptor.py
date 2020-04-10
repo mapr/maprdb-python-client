@@ -49,6 +49,7 @@ class __UserMetadata(object):
             value = 'basic {0}'.format(self._encoded_user_creds)
         else:
             value = 'bearer {0}'.format(self._token)
+            self._token = None
         return 'authorization', value
 
     def set_jwt_token(self, call, stream=False):
