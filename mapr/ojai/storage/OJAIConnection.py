@@ -176,7 +176,7 @@ class OJAIConnection(Connection):
         elif response.error.err_code == ErrorCode.Value('TABLE_NOT_FOUND'):
             return False
         else:
-            raise UnknownServerError
+            raise UnknownServerError(m=response.error.error_message)
 
     def delete_store(self, store_path):
         self.__validate_store_path(store_path=store_path)
