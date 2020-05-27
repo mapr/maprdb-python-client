@@ -239,3 +239,16 @@ class DocumentTagsTest(unittest.TestCase):
                                                                  "surname": "Surname", "city": "City"}]}))
         self.assertEqual(doc.as_json_str(with_tags=False),
                          json.dumps({"_id": "some_id", "list": [{"name": 55, "surname": "Surname", "city": "City"}]}))
+
+    def test_list_with_nested_complex_dicts(self):
+        test_doc_dict = {"_id": "some_id", "list": [{"age": 55,
+                                                     "name": {"surname": "Surname",
+                                                              "firstname": "firstname"}}]}
+        doc = OJAIDocument().from_dict(test_doc_dict)
+        self.assertEqual(doc.as_dictionary(),
+                         {'_id': 'some_id', 'list': [{'age': 55, "name": {'firstname': 'firstname', 'surname': 'Surname'}}]})
+        self.assertEqual(doc.as_json_str(),
+                         json.dumps({"_id": "some_id", "list": [{"age": {"$numberLong": 55},
+                                                                 "name": {"surname": "Surname", "firstname": "firstname"}}]}))
+        self.assertEqual(doc.as_json_str(with_tags=False),
+                         json.dumps({"_id": "some_id", "list": [{"age": 55, "name": {"surname": "Surname", "firstname": "firstname"}}]}))
