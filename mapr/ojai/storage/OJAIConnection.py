@@ -106,7 +106,7 @@ class OJAIConnection(Connection):
         except TypeError as e:
             raise IllegalArgumentError(
                 m='Connection string type must be str, but was {0}. \n{1}'
-                .format(type(connection_str), e))
+                    .format(type(connection_str), e))
         except ValueError as e:
             raise ValueError('{0}. \n{1}'
                              .format(e,
@@ -114,27 +114,28 @@ class OJAIConnection(Connection):
                                      ' is <host>[:<port>][?<options...>].'))
         options_dict = (
             urllib.parse.parse_qs(urllib.parse.urlparse(connection_str).query))
-        auth = urllib.unquote(options_dict.get('auth', ['basic'])[0])
-        user = urllib.unquote(options_dict.get('user', [''])[0])
-        password = urllib.unquote(options_dict.get('password', [''])[0])
-        key = '{0}:{1}'.format(user, password)
+        auth = urllib.parse.unquote(options_dict.get('auth', ['basic'])[0])
+        user = urllib.parse.unquote(options_dict.get('user', [''])[0])
+        password = urllib.parse.unquote(options_dict.get('password', [''])[0])
+        key = '{0}:{1}'.format(user, password).encode()
         encoded_user_metadata = base64.b64encode(key).decode()
         ssl = \
-            True if urllib.unquote(
+            True if urllib.parse.unquote(
                 options_dict.get('ssl', ['true'])[0]) == 'true' else False
-        ssl_ca = urllib.unquote(options_dict.get('sslCA', [''])[0])
+        ssl_ca = urllib.parse.unquote(options_dict.get('sslCA', [''])[0])
         ssl_target_name_override = \
-            urllib.unquote(options_dict.get('sslTargetNameOverride', [''])[0])
+            urllib.parse.unquote(
+                options_dict.get('sslTargetNameOverride', [''])[0])
 
         if ssl and ssl_ca == '':
             raise AttributeError(
                 'sslCa path must be specified when ssl enabled.')
 
-        return url,\
-               auth,\
-               encoded_user_metadata,\
-               ssl,\
-               ssl_ca,\
+        return url, \
+               auth, \
+               encoded_user_metadata, \
+               ssl, \
+               ssl_ca, \
                ssl_target_name_override
 
     @staticmethod
