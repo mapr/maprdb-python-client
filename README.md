@@ -4,7 +4,7 @@ A simple, lightweight library that provides access to MapR-DB.
 The client library supports all existing OJAI functionality and is absolutely compatible with Java OJAI connector,
 that runs under the MapR Data Access Gateway.
 
-The MapR official documentation [link](https://mapr.com/docs/61/MapR-DB/JSON_DB/UsingPythonOJAIClient.html).
+The MapR official documentation [link](https://mapr.com/docs/62/MapR-DB/JSON_DB/UsingPythonOJAIClient.html).
 
 To install the client library into your application, you need to follow these [install instructions](https://github.com/mapr/maprdb-python-client/blob/master/install_client.md).
 
