@@ -380,8 +380,12 @@ class OJAIDocumentStore(DocumentStore):
         doc_str = OJAIDocumentStore.__get_doc_str(doc=doc, _id=_id)
         str_condition = OJAIDocumentStore.__get_str_condition(
             condition=condition)
-        self.__evaluate_doc(doc_str=doc_str, operation_type='REPLACE',
-                            condition=str_condition)
+        try:
+            self.__evaluate_doc(doc_str=doc_str, operation_type='REPLACE',
+                                condition=str_condition)
+        except DocumentNotFoundError:
+            return False
+        return True
 
     @staticmethod
     def __validate_document(doc_to_insert):
