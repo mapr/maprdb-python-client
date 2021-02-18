@@ -34,6 +34,7 @@ class OJAIList(list):
                     else:
                         internal_value = dump_document.set('dump', v).as_dictionary()['dump']
                         tmp_dict[k] = internal_value
+                        dump_document.clear()
                 ojai_list.append(tmp_dict)
             else:
                 ojai_list.append(dump_document.set('dump', elem).as_dictionary()['dump'])

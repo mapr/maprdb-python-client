@@ -239,3 +239,35 @@ class DocumentTagsTest(unittest.TestCase):
                                                                  "surname": "Surname", "city": "City"}]}))
         self.assertEqual(doc.as_json_str(with_tags=False),
                          json.dumps({"_id": "some_id", "list": [{"name": 55, "surname": "Surname", "city": "City"}]}))
+
+
+    # MAPRDB-2436
+    def test_list_with_multiple_nested_levels(self):
+        test_doc_dict = \
+            {"_id": "some_id",
+             "list": [
+                 0,
+                 {"name": 55,
+                  "data":
+                      {"surname": "Surname",
+                       "city": "City",
+                       "postal": {
+                           "code": 1234,
+                           "tag": "PY"
+                       }}}]}
+        doc = OJAIDocument().from_dict(test_doc_dict)
+        self.assertEqual(doc.as_dictionary(),
+                         test_doc_dict)
+        self.assertEqual(doc.as_json_str(),
+                         json.dumps({"_id": "some_id",
+                                     "list": [
+                                         {"$numberLong": 0},
+                                            {
+                                             "name": {"$numberLong": 55},
+                                             "data":
+                                                 {"surname": "Surname",
+                                                  "city": "City",
+                                                  "postal": {"code": {"$numberLong": 1234},
+                                                             "tag": "PY"}}}]}))
+        self.assertEqual(doc.as_json_str(with_tags=False),
+                         json.dumps(test_doc_dict))
