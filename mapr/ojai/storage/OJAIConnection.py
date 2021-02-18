@@ -101,27 +101,42 @@ class OJAIConnection(Connection):
     @staticmethod
     def __parse_connection_url(connection_str):
         try:
-            url, options = re.sub('ojai:mapr:thin:v1@', '', connection_str).split('?', 1)
+            url, options = re.sub('ojai:mapr:thin:v1@', '',
+                                  connection_str).split('?', 1)
         except TypeError as e:
-            raise IllegalArgumentError(m='Connection string type must be str, but was {0}. \n{1}'
-                                       .format(type(connection_str), e))
+            raise IllegalArgumentError(
+                m='Connection string type must be str, but was {0}. \n{1}'
+                    .format(type(connection_str), e))
         except ValueError as e:
             raise ValueError('{0}. \n{1}'
                              .format(e,
                                      'Common url string format'
                                      ' is <host>[:<port>][?<options...>].'))
-        options_dict = (urllib.parse.parse_qs(urllib.parse.urlparse(connection_str).query))
-        auth = options_dict.get('auth', ['basic'])[0]
-        key = '{0}:{1}'.format(options_dict.get('user', [''])[0], options_dict.get('password', [''])[0]).encode()
+        options_dict = (
+            urllib.parse.parse_qs(urllib.parse.urlparse(connection_str).query))
+        auth = urllib.parse.unquote(options_dict.get('auth', ['basic'])[0])
+        user = urllib.parse.unquote(options_dict.get('user', [''])[0])
+        password = urllib.parse.unquote(options_dict.get('password', [''])[0])
+        key = '{0}:{1}'.format(user, password).encode()
         encoded_user_metadata = base64.b64encode(key).decode()
-        ssl = True if options_dict.get('ssl', ['true'])[0] == 'true' else False
-        ssl_ca = options_dict.get('sslCA', [''])[0]
-        ssl_target_name_override = options_dict.get('sslTargetNameOverride', [''])[0]
+        ssl = \
+            True if urllib.parse.unquote(
+                options_dict.get('ssl', ['true'])[0]) == 'true' else False
+        ssl_ca = urllib.parse.unquote(options_dict.get('sslCA', [''])[0])
+        ssl_target_name_override = \
+            urllib.parse.unquote(
+                options_dict.get('sslTargetNameOverride', [''])[0])
 
         if ssl and ssl_ca == '':
-            raise AttributeError('sslCa path must be specified when ssl enabled.')
+            raise AttributeError(
+                'sslCa path must be specified when ssl enabled.')
 
-        return url, auth, encoded_user_metadata, ssl, ssl_ca, ssl_target_name_override
+        return url, \
+               auth, \
+               encoded_user_metadata, \
+               ssl, \
+               ssl_ca, \
+               ssl_target_name_override
 
     @staticmethod
     def __get_channel(url,
