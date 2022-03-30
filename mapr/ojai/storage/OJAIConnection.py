@@ -22,6 +22,7 @@ from mapr.ojai.exceptions.ClusterNotFoundError import ClusterNotFoundError
 from mapr.ojai.exceptions.ConnectionError import ConnectionError
 from mapr.ojai.exceptions.IllegalArgumentError import IllegalArgumentError
 from mapr.ojai.exceptions.PathNotFoundError import PathNotFoundError
+from mapr.ojai.exceptions.AccessDeniedError import AccessDeniedError
 from mapr.ojai.exceptions.StoreAlreadyExistsError import StoreAlreadyExistsError
 from mapr.ojai.exceptions.StoreNotFoundError import StoreNotFoundError
 from mapr.ojai.exceptions.UnknownServerError import UnknownServerError
@@ -211,6 +212,8 @@ class OJAIConnection(Connection):
             raise StoreAlreadyExistsError(m=response.error.error_message)
         elif response.error.err_code == ErrorCode.Value('PATH_NOT_FOUND'):
             raise PathNotFoundError(m=response.error.error_message)
+        elif response.error.err_code == ErrorCode.Value('ACCESS_DENIED'):
+            raise AccessDeniedError(m=response.error.error_message)
         elif response.error.err_code == ErrorCode.Value('TABLE_NOT_FOUND'):
             return False
         else:
