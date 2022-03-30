@@ -113,31 +113,28 @@ class OJAIConnection(Connection):
                              .format(e,
                                      'Common url string format'
                                      ' is <host>[:<port>][?<options...>].'))
-        options_dict = (
-            urllib.parse.parse_qs(urllib.parse.urlparse(connection_str).query))
-        auth = urllib.parse.unquote(options_dict.get('auth', ['basic'])[0])
-        user = urllib.parse.unquote(options_dict.get('user', [''])[0])
-        password = urllib.parse.unquote(options_dict.get('password', [''])[0])
-        key = '{0}:{1}'.format(user, password).encode()
-        encoded_user_metadata = base64.b64encode(key).decode()
-        ssl = \
-            True if urllib.parse.unquote(
-                options_dict.get('ssl', ['true'])[0]) == 'true' else False
-        ssl_ca = urllib.parse.unquote(options_dict.get('sslCA', [''])[0])
-        ssl_target_name_override = \
-            urllib.parse.unquote(
-                options_dict.get('sslTargetNameOverride', [''])[0])
 
-        if ssl and ssl_ca == '':
+        options_dict = dict()
+        for pair in urllib.parse.urlparse(connection_str).query.split(';'):
+            entry = pair.split('=')
+            if entry[1:]:
+                options_dict[entry[0]] = urllib.parse.unquote(entry[1])
+
+        key = '{0}:{1}'.format(options_dict.get('user', ''), options_dict.get('password', '')).encode()
+        encoded_user_metadata = base64.b64encode(key).decode()
+        ssl = json.loads(options_dict.get('ssl', 'true'))
+        ssl_ca = options_dict.get('sslCA', '')
+
+        if ssl and not ssl_ca:
             raise AttributeError(
                 'sslCa path must be specified when ssl enabled.')
 
         return url, \
-               auth, \
+               options_dict.get('auth', 'basic'), \
                encoded_user_metadata, \
                ssl, \
                ssl_ca, \
-               ssl_target_name_override
+               options_dict.get('sslTargetNameOverride', '')
 
     @staticmethod
     def __get_channel(url,
