@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='maprdb_python_client',
-      version='1.1.5',
+      version='1.1.6',
       description='MapR-DB Python Client',
       url='https://github.com/mapr/maprdb-python-client/',
       author='MapR, Inc.',
