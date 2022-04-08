@@ -105,11 +105,11 @@ class OJAIQueryCondition(QueryCondition):
         return self
 
     def like_(self, field_path, like_expression, escape_char=None):
-        self.__tokens.append({'$like': {field_path: like_expression}})
+        self.__tokens.append({'$like': {field_path: [like_expression, escape_char] if escape_char else like_expression}})
         return self
 
     def not_like_(self, field_path, like_expression, escape_char=None):
-        self.__tokens.append({'$notlike': {field_path: like_expression}})
+        self.__tokens.append({'$notlike': {field_path: [like_expression, escape_char] if escape_char else like_expression}})
         return self
 
     def is_(self, field_path, op, value):
