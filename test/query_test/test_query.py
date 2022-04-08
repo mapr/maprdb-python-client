@@ -206,9 +206,17 @@ class QueryTest(unittest.TestCase):
         qc = OJAIQueryCondition().like_('card', 'visa').close().build()
         self.assertEqual(qc.as_dictionary(), {'$like': {'card': 'visa'}})
 
+    def test_like_with_escape_character(self):
+        qc = OJAIQueryCondition().like_('_id', '00\\\\%2%', '\\\\').close().build()
+        self.assertEqual(qc.as_dictionary(), {'$like': {'_id': ['00\\\\%2%', '\\\\']}})
+
     def test_not_like(self):
         qc = OJAIQueryCondition().not_like_('card', 'visa').close().build()
         self.assertEqual(qc.as_dictionary(), {'$notlike': {'card': 'visa'}})
+
+    def test_not_like_with_escape_character(self):
+        qc = OJAIQueryCondition().not_like_('_id', '00|%2%', '|').close().build()
+        self.assertEqual(qc.as_dictionary(), {'$notlike': {'_id': ['00|%2%', '|']}})
 
     def test_empty_condition(self):
         qc = OJAIQueryCondition()
